@@ -1,0 +1,8 @@
+*.raw
+*.log
+*.toc
+*.aux
+*.synctex.gz
+*.gz
+*.out
+Src\Project\TP1\Debug\
