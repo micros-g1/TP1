@@ -1,3 +1,0 @@
-18:31:40 **** Incremental Build of configuration Debug for project TP1 ****
-make -r -j4 all 
-make: Nothing to be done for `all'.

@@ -1,6 +1,0 @@
-1567045199450	Delete resource 'Baliza_SysTick'
-1567196270746	Delete resource 'Baliza_IRQ'
-1567196293297	Delete resource 'TP1'
-1567196461487	Delete resource 'Baliza_IRQ_SysTick'
-1567196547867	Rename resource 'Baliza_IRQ_SysTick'
-1567196618886	Delete resource 'TP1/source/gpio.c'
