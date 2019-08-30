@@ -28,7 +28,6 @@
  * FUNCTION PROTOTYPES FOR PRIVATE FUNCTIONS WITH FILE LEVEL SCOPE
  ******************************************************************************/
 void button_handler(void);
-static void delayLoop(uint32_t veces);
 void systick_callback(void);
 
 bool baliza;
@@ -54,7 +53,7 @@ void App_Init (void)
 /* Función que se llama constantemente en un ciclo infinito */
 void App_Run (void)
 {
-	while(1){;}
+	while(1);
 }
 
 
@@ -63,11 +62,6 @@ void App_Run (void)
                         LOCAL FUNCTION DEFINITIONS
  *******************************************************************************
  ******************************************************************************/
-
-static void delayLoop(uint32_t veces)
-{
-    while (veces--);
-}
 
 void button_handler(void){
 	baliza = !baliza;

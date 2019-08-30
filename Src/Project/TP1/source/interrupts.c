@@ -4,9 +4,10 @@
  *  Created on: 24 ago. 2019
  *      Author: Tomas, Lisandro, Rocio, Gonzalo
  */
-#include "gpio.h"
+//#include "gpio.h"
 #include "MK64F12.h"
 #include <stdint.h>
+#include "interrupts.h"
 
 static void initial_conf_pcr(int port_num, int pin_num);
 static void initial_conf_gpio(int port_num, int pin_num);
