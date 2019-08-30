@@ -8,3 +8,4 @@
 *.axf
 *.map
 *.ld
+Src/Workspace/.metadata/*
