@@ -38,6 +38,6 @@ typedef void (*pinIrqFun_t)(void);
  * @param irqFun function to call on pin event
  * @return Registration succeed
  */
-bool gpioIRQ (pin_t pin, uint8_t irqMode, pinIrqFun_t irqFun);
+void gpioIRQ (pin_t pin, uint8_t irqMode, pinIrqFun_t irqFun);
 void interrupts_init();
 #endif /* INTERRUPTS_H_ */

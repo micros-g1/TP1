@@ -39,8 +39,7 @@ void systick_callback(void);
 void App_Init (void)
 {
 	interrupts_init();
-	gpioMode(PIN_LED_BLUE,OUTPUT);
-    gpioMode(PIN_SW3, INPUT);
+
     SysTick_Init(systick_callback);
 }
 

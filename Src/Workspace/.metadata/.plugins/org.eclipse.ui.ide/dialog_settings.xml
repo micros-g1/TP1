@@ -36,6 +36,8 @@
 		<item value="false" key="WizardProjectsImportPage.STORE_COPY_PROJECT_ID"/>
 		<item value="false" key="WizardProjectsImportPage.STORE_ARCHIVE_SELECTED"/>
 		<list key="WizardProjectsImportPage.STORE_DIRECTORIES">
+			<item value="C:\ITBA\9 Cuatrimestre\Laboratorio de Microprocesadores\Trabajos Prácticos\TP1\Src\Project\TP1"/>
+			<item value="C:\ITBA\9 Cuatrimestre\Laboratorio de Microprocesadores\Trabajos Prácticos\TP1\Src\Project\Baliza_IRQ_SysTick"/>
 			<item value="C:\ITBA\9 Cuatrimestre\Laboratorio de Microprocesadores\Guias\Guia 3\src\Projects\Baliza_IRQ"/>
 			<item value="C:\ITBA\9 Cuatrimestre\Laboratorio de Microprocesadores\Guias\Guia 3\src\Projects\Baliza_SysTick"/>
 		</list>
