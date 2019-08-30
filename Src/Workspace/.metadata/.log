@@ -479,3 +479,9 @@ This warning can be switched off on the Team > Git > Confirmations and Warnings 
 
 !ENTRY org.eclipse.cdt.core 1 0 2019-08-30 17:22:30.304
 !MESSAGE Indexed 'TP1' (8 sources, 31 headers) in 1,63 sec: 5.204 declarations; 7.439 references; 2 unresolved inclusions; 92 syntax errors; 78 unresolved names (0,61 %)
+
+!ENTRY org.eclipse.jface.text 2 0 2019-08-30 17:25:13.050
+!MESSAGE Duplicate template id: 'org.eclipse.wst.xslt.templates.xpath.number'
+
+!ENTRY org.eclipse.jface.text 2 0 2019-08-30 17:25:13.051
+!MESSAGE Duplicate template id: 'org.eclipse.wst.xslt.templates.xpath.round'

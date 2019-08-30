@@ -8,10 +8,10 @@
  * INCLUDE HEADER FILES
  ******************************************************************************/
 
+#include <interrupts.h>
 #include "board.h"
 #include "gpio.h"
 #include "SysTick.h"
-
 
 /*******************************************************************************
  * CONSTANT AND MACRO DEFINITIONS USING #DEFINE
