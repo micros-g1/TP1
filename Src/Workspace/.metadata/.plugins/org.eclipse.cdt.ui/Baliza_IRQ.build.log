@@ -1,0 +1,6 @@
+23:34:10 **** Incremental Build of configuration Debug for project Baliza_IRQ ****
+make -r -j4 all 
+make: Nothing to be done for `all'.
+
+23:34:10 Build Finished (took 176ms)
+

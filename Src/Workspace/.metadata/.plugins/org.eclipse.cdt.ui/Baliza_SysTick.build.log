@@ -1,0 +1,6 @@
+23:18:05 **** Incremental Build of configuration Debug for project Baliza_SysTick ****
+make -r -j4 all 
+make: Nothing to be done for `all'.
+
+23:18:06 Build Finished (took 243ms)
+
