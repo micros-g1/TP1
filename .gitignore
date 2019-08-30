@@ -5,4 +5,6 @@
 *.synctex.gz
 *.gz
 *.out
-Src\Project\TP1\Debug\
+*.axf
+*.map
+*.ld

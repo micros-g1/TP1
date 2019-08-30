@@ -1,23 +1,3 @@
-17:53:49 **** Incremental Build of configuration Debug for project TP1 ****
+18:13:30 **** Incremental Build of configuration Debug for project TP1 ****
 make -r -j4 all 
-Building file: ../source/interrupts.c
-Invoking: MCU C Compiler
-arm-none-eabi-gcc -DCPU_MK64FN1M0VLL12 -D__USE_CMSIS -DDEBUG -I../source -I../ -I../SDK/CMSIS -I../SDK/startup -O0 -fno-common -g3 -Wall -c -ffunction-sections -fdata-sections -ffreestanding -fno-builtin -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -MMD -MP -MF"source/interrupts.d" -MT"source/interrupts.o" -MT"source/interrupts.d" -o "source/interrupts.o" "../source/interrupts.c"
-Finished building: ../source/interrupts.c
- 
-Building target: TP1.axf
-Invoking: MCU Linker
-arm-none-eabi-gcc -nostdlib -Xlinker -Map="TP1.map" -Xlinker --gc-sections -Xlinker -print-memory-usage -Xlinker --sort-section=alignment -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -T "TP1_Debug.ld" -o "TP1.axf"  ./source/App.o ./source/SysTick.o ./source/interrupts.o  ./SDK/startup/hardware.o ./SDK/startup/main.o ./SDK/startup/semihost_hardfault.o ./SDK/startup/startup_mk64f12.o  ./SDK/CMSIS/system_MK64F12.o   
-Memory region         Used Size  Region Size  %age Used
-   PROGRAM_FLASH:          3 KB         1 MB      0.29%
-      SRAM_UPPER:        9480 B       192 KB      4.82%
-      SRAM_LOWER:          0 GB        64 KB      0.00%
-        FLEX_RAM:          0 GB         4 KB      0.00%
-Finished building target: TP1.axf
- 
-make --no-print-directory post-build
-Performing post-build steps
-arm-none-eabi-size "TP1.axf"; # arm-none-eabi-objcopy -v -O binary "TP1.axf" "TP1.bin" ; # checksum -p MK64FN1M0xxx12 -d "TP1.bin";
-   text	   data	    bss	    dec	    hex	filename
-   3072	      0	   9480	  12552	   3108	TP1.axf
- 
+make: *** No rule to make target `C:/Users/grein/Documents/Labo De Micros/TP1/Src/Project/TP1/source/gpio.o', needed by `TP1.axf'.  Stop.
