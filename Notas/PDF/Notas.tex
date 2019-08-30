@@ -1,0 +1,33 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage[left=2cm,right=2cm,top=2cm,bottom=2cm]{geometry}
+\author{Lisandro Alvarez}
+\begin{document}
+
+
+\section{Perifericos}
+\subsection{Encoder Rotativo}
+
+\subsection{Lector}
+Read ID intenta leer el codigo de la tarjeta. 
+\subsection{Display}
+Vamos a estructurar el codigo en dos capas: \emph{capa de bajo nivel} e \emph{interfaz}.
+\subsubsection{Interfaz}
+Aca vamos a definir y presentar las funciones publicas que puede usar el usuario:
+\begin{itemize}
+\item \textbf{Marquesina: }Recibe un string, la dirección de shifteo y la velocidad de shift. 
+\item Clear all
+\item Escribir
+\item Shift
+\end{itemize}
+\subsection{Puerta}
+Solo dos funciones, bloquear y desbloquear puerta. Al desbloquear se debera indicar el tiempo que permanecerá desbloqueada.
+\section{Varios}
+\subsection{Interrupciones SysTick}
+SysTick nos da la posibilidad de linkear solo UN callback. Este callback se encarga de aumentar el contador de ticks, y de llamar a los handlers asociados a interrupciones de SysTick. Estas funciones handlers estaran almacenadas en un arreglo de punteros a funcion. Entonces este unico callback reocrre el arreglo(ver de que dimensiones) y llamar a los handlers linkeados.
+\end{document}

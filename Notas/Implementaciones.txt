@@ -1,0 +1,31 @@
+GraphicInterface.h
+	#enum{LEFT, RIGHT}
+	Init();
+bool marquee(char* str, int direction, int vel);
+	bool clear_all();
+	bool write_word(char word[4]);
+	bool write_char(char c, int pos);
+	void blink_all(int vel);
+	void blink_one(int pos, int vel);
+	
+DisplayDriver.h	
+char curr_word[4];
+char * entire_word;
+
+bool write_char(char c, int pos);
+bool  clear_char(int pos);
+void change_bright(int bright);
+… Se encarga el que vaya a hacer el de la parte grafica.
+
+Puerta.h
+	bool Init();
+	void lock_door();
+	void unlock_door(int seconds);
+
+Lector.h
+	
+	bool Init();
+	bool read_id(char * id);
+bool read_pin(char* pin);
+
+Encoder.h
