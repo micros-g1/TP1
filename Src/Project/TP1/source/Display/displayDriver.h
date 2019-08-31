@@ -12,6 +12,7 @@
 #define AMOUNT_MAX_DISPLAY_POS		4
 
 void init_display(void);
+void write_sentence(const char* sentence);
 void write_char(char c, int pos);
 void display_draw_callback();
 void clear_all();

@@ -34,10 +34,12 @@ void systick_callback(void);
 void App_Init (void)
 {
 	init_display();
-	write_char('F', 0);
-	write_char('A', 1);
-	write_char('I', 2);
-	write_char('L', 3);
+	//write_char('F', 0);
+	//write_char('A', 1);
+	//write_char('I', 2);
+	//write_char('L', 3);
+	write_sentence("FAIL");
+	write_sentence("FA");
     SysTick_Init(systick_callback);
 }
 

@@ -107,3 +107,14 @@ void display_draw_callback(){
 	else
 		counter++;
 }
+
+void write_sentence(const char* sentence){
+	for(int i = 0; i < AMOUNT_MAX_DISPLAY_POS; i++)
+		if(sentence[i] != 0)
+			curr_displaying[i] = sentence[i];
+		else{
+			for(int j = i; j < AMOUNT_MAX_DISPLAY_POS; j++)
+				curr_displaying[j] = NULL_CHAR;
+			break;
+		}
+}
