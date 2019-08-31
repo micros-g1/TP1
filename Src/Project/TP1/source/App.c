@@ -8,20 +8,15 @@
  * INCLUDE HEADER FILES
  ******************************************************************************/
 
-#include <interrupts.h>
-#include "board.h"
-#include "gpio.h"
+#include "Display/displayDriver.h"
+#include "interrupts.h"
 #include "SysTick.h"
 
 /*******************************************************************************
  * CONSTANT AND MACRO DEFINITIONS USING #DEFINE
  ******************************************************************************/
 
-#define BLINK_FREQ_HZ 1U
-#if SYSTICK_ISR_FREQUENCY_HZ % (2*BLINK_FREQ_HZ) != 0
-#warning BLINK cannot implement this exact frequency.
-		Using floor(SYSTICK_ISR_FREQUENCY_HZ/BLINK_FREQ_HZ/2) instead.
-#endif
+
 
 
 /*******************************************************************************
@@ -38,8 +33,11 @@ void systick_callback(void);
 /* Función que se llama 1 vez, al comienzo del programa */
 void App_Init (void)
 {
-	interrupts_init();
-
+	init_display();
+	write_char('F', 0);
+	write_char('A', 1);
+	write_char('I', 2);
+	write_char('L', 3);
     SysTick_Init(systick_callback);
 }
 
@@ -58,9 +56,7 @@ void App_Run (void)
 
 void systick_callback(void)
 {
-
-
-
+	display_draw_callback();
 }
 
 
