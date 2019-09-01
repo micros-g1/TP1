@@ -1,13 +1,22 @@
+# spice raw data
 *.raw
+
+# tex temporary files
 *.log
 *.toc
 *.aux
 *.synctex.gz
 *.gz
 *.out
-Src\Project\TP1\Debug\
-Src\Project\TP1\source\.idea\*.*
+
+# debugging, project config
 *.axf
 *.map
 *.ld
+*.launch
+Src\Project\TP1\Debug\
+Src\Project\TP1\source\.idea\
 Src\Project\TP1\source\cmake-build-debug\
+Src\Project\TP1\source\CMakeLists.txt
+Src\Workspace\.metadata\
+Src\Workspace\FreeRTOS_TAD_logs\
