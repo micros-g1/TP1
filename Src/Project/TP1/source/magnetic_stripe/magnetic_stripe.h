@@ -1,17 +1,17 @@
 /***************************************************************************//**
-  @file     database.h
-  @brief    User database for security system
+  @file     magnetic_stripe.h
+  @brief    User identification via magnetic stripe, track 2
   @author   22.99 2019 Group 1: Alvarez, Gonzalez, Parra, Reina
  ******************************************************************************/
 
-#ifndef SOURCE_DATABASE_H
-#define SOURCE_DATABASE_H
+#ifndef MAGNETIC_STRIPE_H
+#define MAGNETIC_STRIPE_H
 
-#include <stdbool.h>
+
 /*******************************************************************************
  * INCLUDE HEADER FILES
  ******************************************************************************/
-
+#include <stdbool.h>
 
 
 /*******************************************************************************
@@ -33,15 +33,17 @@
  ******************************************************************************/
 
 /**
- * @brief Initialize SysTic driver
- * @param funcallback Function to be call every SysTick
- * @return Initialization and registration succeed
+ * @brief Initialize magnetic stripe reading
+ * @return Initialization succeed
  */
-bool SysTick_Init (void (*funcallback)(void));
+bool ms_init();
+
+
+void process_bit_ss(bool newbit);
 
 
 /*******************************************************************************
  ******************************************************************************/
 
 
-#endif //SOURCE_DATABASE_H
+#endif //MAGNETIC_STRIPE

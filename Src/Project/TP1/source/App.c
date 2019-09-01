@@ -8,7 +8,7 @@
  * INCLUDE HEADER FILES
  ******************************************************************************/
 
-#include <interrupts.h>
+#include "interrupts.h"
 #include "board.h"
 #include "gpio.h"
 #include "SysTick.h"
@@ -27,8 +27,8 @@
 /*******************************************************************************
  * FUNCTION PROTOTYPES FOR PRIVATE FUNCTIONS WITH FILE LEVEL SCOPE
  ******************************************************************************/
-void systick_callback(void);
-
+void enable_callback(void);
+void clock_callback(void);
 /*******************************************************************************
  *******************************************************************************
                         GLOBAL FUNCTION DEFINITIONS
@@ -40,7 +40,12 @@ void App_Init (void)
 {
 	interrupts_init();
 
-    SysTick_Init(systick_callback);
+	gpioMode(PORTNUM2PIN(PD,0), INPUT);
+	gpioMode(PORTNUM2PIN(PD,2), INPUT);
+	gpioIRQ(PORTNUM2PIN(PD,0), GPIO_IRQ_MODE_BOTH_EDGES, enable_callback); // enable
+	gpioIRQ(PORTNUM2PIN(PD,2), GPIO_IRQ_MODE_FALLING_EDGE, clock_callback); // clock
+	gpioMode(PIN_LED_BLUE, OUTPUT);
+	gpioWrite(PIN_LED_BLUE,1);
 }
 
 /* Función que se llama constantemente en un ciclo infinito */
@@ -56,13 +61,15 @@ void App_Run (void)
  *******************************************************************************
  ******************************************************************************/
 
-void systick_callback(void)
+void enable_callback(void)
 {
-
-
-
+	gpioToggle(PIN_LED_BLUE);
 }
 
+void clock_callback(void)
+{
+	;
+}
 
 /*******************************************************************************
  ******************************************************************************/
