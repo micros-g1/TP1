@@ -8,6 +8,9 @@
 #include <stdint.h>
 #include <stdio.h>
 
+#include "magtek_driver.h"
+
+
 #define START_SENTINEL	0x1C
 
 
@@ -23,9 +26,12 @@
 //}ms_word_t;
 
 static uint8_t currword;
+typedef char ev_queue_t; // placeholder
+
 
 bool ms_init()
 {
+    // mt_init();
 	// port config
 	currword = 0;
 }
