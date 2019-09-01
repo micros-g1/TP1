@@ -6,6 +6,8 @@
 C_SRCS += \
 ../source/App.c \
 ../source/SysTick.c \
+../source/event_queue.c \
+../source/input_device.c \
 ../source/interrupts.c 
 
 O_SRCS += \
@@ -14,11 +16,15 @@ O_SRCS += \
 OBJS += \
 ./source/App.o \
 ./source/SysTick.o \
+./source/event_queue.o \
+./source/input_device.o \
 ./source/interrupts.o 
 
 C_DEPS += \
 ./source/App.d \
 ./source/SysTick.d \
+./source/event_queue.d \
+./source/input_device.d \
 ./source/interrupts.d 
 
 
