@@ -8,22 +8,15 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#include "magtek_driver.h"
 
 
-#define START_SENTINEL	0x1C
+typedef enum {MS_IDLE, MS_WAITING_SS, MS_READING, MS_LRC, MS_N_STATES} ms_state_t;
 
+typedef struct {
+    ms_state_t curr;
+//    ms_queue_t queue;
 
-
-//typedef struct {
-//	union {
-//		struct {
-//			uint8_t b0 : 1; // LSB, first one in
-//			uint8_t b1 : 1;
-//			uint8_t b2 : 1;
-//		}
-//	};
-//}ms_word_t;
+}ms_fsm;
 
 static uint8_t currword;
 typedef char ev_queue_t; // placeholder
@@ -36,13 +29,27 @@ bool ms_init()
 	currword = 0;
 }
 
+void ms_add_to_queue(ms_ev_t ev) {
+    ; // todo
+}
 
 
+void process_bit_ss(ms_ev_t ev);
 
-void process_bit_ss(bool newbit)
+void discard(ms_ev_t ev);
+
+void nop(ms_ev_t ev);
+
+void discard(ms_ev_t ev);
+
+void reset_ss(ms_ev_t ev);
+
+void discard(ms_ev_t ev);
+
+void process_bit_ss(ms_ev_t ev)
 {
 	static uint32_t n = 0; // bits of start sentinel already received
-
+    bool newbit = ev.data;
 	/* The start sentinel bits are received as follows: 11010b
 	 * An FSM detects this sequence for characters, where the state is equivalent to the number of correct bits
 	 * received, and the only action taken is generating an event upon successful detection of the sequence
