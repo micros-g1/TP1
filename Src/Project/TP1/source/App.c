@@ -11,7 +11,7 @@
 #include "Display/displayDriver.h"
 #include "interrupts.h"
 #include "SysTick.h"
-
+#include "general.h"
 /*******************************************************************************
  * CONSTANT AND MACRO DEFINITIONS USING #DEFINE
  ******************************************************************************/
@@ -38,7 +38,7 @@ void App_Init (void)
 	//write_char('A', 1);
 	//write_char('I', 2);
 	//write_char('L', 3);
-	write_sentence("FAIL");
+	//write_sentence("FAIL");
 	write_sentence("FA");
     SysTick_Init(systick_callback);
 }
@@ -58,7 +58,14 @@ void App_Run (void)
 
 void systick_callback(void)
 {
+	static int counter = 0;
+	if(counter == 0 ){
+		//blink(true);
+		counter ++;
+		//shift(LEFT, 'E');
+	}
 	display_draw_callback();
+
 }
 
 
