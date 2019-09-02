@@ -19,11 +19,13 @@
  ******************************************************************************/
 
 #define SYSTICK_ISR_FREQUENCY_HZ 1000U
-
+#define MAX_N_ST_CALLBACKS 10
 
 /*******************************************************************************
  * ENUMERATIONS AND STRUCTURES AND TYPEDEFS
  ******************************************************************************/
+typedef void (*systick_callback_t)(void);
+
 
 /*******************************************************************************
  * VARIABLE PROTOTYPES WITH GLOBAL SCOPE
@@ -35,11 +37,20 @@
 
 /**
  * @brief Initialize SysTic driver
- * @param funcallback Function to be call every SysTick
  * @return Initialization and registration succeed
  */
-bool SysTick_Init (void (*funcallback)(void));
+void systick_init ();
 
+/**
+ * @brief Add function to be called on systick interrupts. Enabled by default
+ * @param callback: function to be called when counter hits 0
+ * @param reload: max value of tick counter
+ * @return Callback ID. MAX_N_ST_CALLBACKS if unsuccessful
+ */
+unsigned int systick_add_callback(systick_callback_t callback, unsigned int reload);
+
+void systick_enable_callback(unsigned int id);
+void systick_disable_callback(unsigned int id);
 
 /*******************************************************************************
  ******************************************************************************/

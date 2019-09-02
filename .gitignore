@@ -1,11 +1,22 @@
+# spice raw data
 *.raw
+
+# tex temporary files
 *.log
 *.toc
 *.aux
 *.synctex.gz
 *.gz
 *.out
+
+# debugging, project config
+Src/Project/TP1/source/CMakeLists.txt
 *.axf
 *.map
 *.ld
-Src/Workspace/.*
+*.launch
+Src/Project/TP1/Debug/
+Src/Project/TP1/source/.idea/
+Src/Project/TP1/source/cmake-build-debug/
+Src/Workspace/
+Src/Project/TP1/source/gpio.c
