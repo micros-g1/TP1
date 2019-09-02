@@ -7,7 +7,7 @@
 
 #ifndef GENERAL_H_
 #define GENERAL_H_
-typedef enum{LEFT, RIGHT} direction;
 
+typedef enum{LEFT, RIGHT} direction;
 
 #endif /* GENERAL_H_ */

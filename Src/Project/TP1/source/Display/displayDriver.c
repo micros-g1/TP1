@@ -23,7 +23,7 @@
 
 #define AMOUNT_SEGS	7
 #define AMOUNT_POSSIBLE_CHAR	128
-#define NULL_CHAR	0X00
+
 #define SHIFT_BUFFER_LENGTH		20
 /*-------------------------------------------
  ----------GLOBAL_VARIABLES------------------
@@ -189,8 +189,9 @@ void display_draw_callback(){
 		counter++;
 }
 
-void write_sentence(const char* sentence){
-	for(int i = 0; i < AMOUNT_MAX_DISPLAY_POS; i++)
+int write_sentence(const char* sentence){
+	int i = 0;
+	for( ; i < AMOUNT_MAX_DISPLAY_POS; i++)
 		if(sentence[i] != 0)
 			curr_displaying[i] = sentence[i];
 		else{
@@ -198,6 +199,7 @@ void write_sentence(const char* sentence){
 				curr_displaying[j] = NULL_CHAR;
 			break;
 		}
+	return i;
 }
 
 //brightness from 1 to 100

@@ -11,9 +11,13 @@
 #include "board.h"
 #include "general.h"
 
+/*-------------------------------------------
+ ----------------DEFINES---------------------
+ -------------------------------------------*/
 //number of positions the display has.
 #define AMOUNT_MAX_DISPLAY_POS		4
-
+//symbol equivalent to nothing showing on the display
+#define NULL_CHAR	0X00
 
 /***********************************
 *********init_display***************
@@ -49,13 +53,14 @@ bool is_blinking(void);
 *********write_sentence****************
 ************************************
 * write_sentence writes to the display buffer the first
-* AMOUNT_MAX_DISPLAY_POS characters of the parameter.
+* AMOUNT_MAX_DISPLAY_POS symbols of the parameter.
 * 	INPUT:
 *		sentence: pointer to the sentence to be written.
 *	OUTPUT:
-*		void.
+*		number of symbols belonging to sentence that were written to the display buffer.
+*		always <= AMOUNT_MAX_DISPLAY_POS
 */
-void write_sentence(const char* sentence);
+int write_sentence(const char* sentence);
 /***********************************
 *********write_char****************
 ************************************
