@@ -8,7 +8,8 @@ C_SRCS += \
 ../source/SysTick.c \
 ../source/event_queue.c \
 ../source/input_device.c \
-../source/interrupts.c 
+../source/interrupts.c \
+../source/rotary_encoder.c 
 
 O_SRCS += \
 ../source/gpio.o 
@@ -18,14 +19,16 @@ OBJS += \
 ./source/SysTick.o \
 ./source/event_queue.o \
 ./source/input_device.o \
-./source/interrupts.o 
+./source/interrupts.o \
+./source/rotary_encoder.o 
 
 C_DEPS += \
 ./source/App.d \
 ./source/SysTick.d \
 ./source/event_queue.d \
 ./source/input_device.d \
-./source/interrupts.d 
+./source/interrupts.d \
+./source/rotary_encoder.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes

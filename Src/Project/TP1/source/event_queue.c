@@ -7,14 +7,14 @@
 
 #include "event_queue.h"
 
-//Event Queue Variables
+//Event queue Variables
 static volatile unsigned int queue_length = 0;
 static volatile event_t event_queue[EV_QUEUE_SIZE];
 static volatile unsigned int in_offset = 0;
 static volatile unsigned int out_offset = 0;
 
 //Wait for event
-void queue_wait_for_event(event_t* ev)
+void event_queue_wait_for_event(event_t* ev)
 {
 	//Atomic operation (assembly)
 	while(queue_length == 0);
@@ -27,7 +27,7 @@ void queue_wait_for_event(event_t* ev)
 }
 
 //Flush event queue
-void queue_flush()
+void event_queue_flush()
 {
 	//TODO: disable interrupts
 	queue_length = in_offset = out_offset = 0;
@@ -35,7 +35,7 @@ void queue_flush()
 }
 
 //Add event to event queue
-void queue_add_event(event_t ev)
+void event_queue_add_event(event_t ev)
 {
 	//TODO: disable interrupts
 	event_queue[in_offset++] = ev;
@@ -46,7 +46,7 @@ void queue_add_event(event_t ev)
 }
 
 //Get current queue length
-unsigned int queue_get_length()
+unsigned int event_queue_get_length()
 {
 	//atomic read operation (assembly)
 	return queue_length;

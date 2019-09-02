@@ -1,23 +1,27 @@
 /*
- * input_device.h
+ * buttons.h
  *
- *  Created on: 30 Aug 2019
+ *  Created on: 2 Sep 2019
  *      Author: grein
  */
 
+// Input device event source
 #ifndef INPUT_DEVICE_H_
 #define INPUT_DEVICE_H_
 
-#define BUTTONS_QUANTITY 3
-typedef enum {BTN_OK,BTN_LEFT,BTN_RIGHT} button_id_t;
+#include "event_queue.h"
 
-//Initialize input device
+typedef enum {ID_LEFT,ID_RIGHT,ID_SHORT_CLICK,ID_LONG_CLICK_1,ID_LONG_CLICK_2,ID_KEY_LEFT,ID_KEY_RIGHT} idev_input_id;
+//ID_LEFT: Rotary encoder idle, turn left
+//ID_RIGHT: Rotary encoder idle, turn right
+//ID_SHORT_CLICK: Rotary encoder idle, press down, release before time T
+//ID_LONG_CLICK_1: Rotary encoder idle, press down, release after time T
+//ID_LONG_CLICK_2: Rotary encoder idle, press down, release after time 2T (RE can turn after time T)
+//ID_KEY_LEFT: Rotary encoder idle, press down, rotate left before time T - like a key *
+//ID_KEY_RIGHT: Rotary encoder idle, press down, rotate right before time T - like a key *
+//* Further left or right rotations will generate ID_KEY_LEFT and ID_KEY_RIGHT respectively
+
 void input_device_init();
-
-//Get button state
-int input_device_get_button_state(button_id_t id);
-
-//ISR for reading buttons
 void input_device_ISR();
 
 #endif /* INPUT_DEVICE_H_ */
