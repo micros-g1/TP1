@@ -15,7 +15,7 @@
  ----------------DEFINES---------------------
  -------------------------------------------*/
 //CALL_FREQ_HZ lower than 80U flickers! (with SYSTICK_ISR_FREQUENCY_HZ 1000U)
-#define CALL_FREQ_HZ 400U
+#define CALL_FREQ_HZ 500U
 #define COUNTER_FREQ 	SYSTICK_ISR_FREQUENCY_HZ/CALL_FREQ_HZ-1
 #if SYSTICK_ISR_FREQUENCY_HZ % CALL_FREQ_HZ != 0
 #warning BLINK cannot implement this exact frequency. Using floor(SYSTICK_ISR_FREQUENCY_HZ/CALL_FREQ_HZ) instead.
@@ -28,12 +28,11 @@
 /*-------------------------------------------
  ----------GLOBAL_VARIABLES------------------
  -------------------------------------------*/
-bool blinking = false;
-bool blink_cleared = false;
-int brightness = 100;
+bool blinking = false;					//blinking (true) or not (false)
+bool blink_cleared = false;				//status of the blinking (showing:true, not showing: false)
+int brightness = MAX_BRIGHT;			//brightness level, from MIN_BRIGHT to MAX_BRIGHT
 int blink_counter_vel = SYSTICK_ISR_FREQUENCY_HZ/2;
-int bright_counter_vel = 100;
-static bool display_on = true;
+static bool display_on = true;			//display on:true, off: false.
 
 /*-------------------------------------------
  ----------FUNCTION_IMPLEMENTATION-----------
@@ -129,10 +128,12 @@ static const unsigned int char_pins[AMOUNT_SEGS] = {PIN_DISPLAY_CHAR0 ,PIN_DISPL
 			PIN_DISPLAY_CHAR4, PIN_DISPLAY_CHAR5, PIN_DISPLAY_CHAR6};
 
 static void draw_display(int pos){
+
 	if(!display_on || !handle_blinking() || !handle_brightness())
 		draw_char(NULL_CHAR, pos);
 	else
 		draw_char(seven_seg_chars[(int)curr_displaying[pos]], pos);
+
 }
 
 static void draw_char(unsigned char printable_char, int pos){
@@ -150,6 +151,7 @@ static void draw_char(unsigned char printable_char, int pos){
 		else
 			gpio->PCOR |= (1 << PIN2NUM(char_pins[k]));
 }
+
 void write_char(char c, int pos){
 	curr_displaying[pos] = c;
 }
@@ -202,9 +204,10 @@ int write_sentence(const char* sentence){
 	return i;
 }
 
-//brightness from 1 to 100
+//brightness from MIN_BRIGHT to MAX_BRIGHT
 void set_brightness(int bright){
-	brightness = bright;
+	if( (bright < MAX_BRIGHT) && (bright >= MIN_BRIGHT) )
+		brightness = bright;
 }
 void blink(bool on_off){
 	/*in case blinking is turned off when curr_displaying is NULL_CHAR,
@@ -257,11 +260,12 @@ void display_on_off(bool on_off){
 
 static bool handle_brightness(void){
 	static int bright_counter = 0;
+
 	bool should_show = true;
-	if((bright_counter++)== 20){
-		should_show = false;
-		bright_counter = 0;
-	}
+	if(brightness < MAX_BRIGHT)
+		if((bright_counter++) == brightness){
+			should_show = false;
+			bright_counter = 0;
+		}
 	return should_show;
-	//return true;
 }

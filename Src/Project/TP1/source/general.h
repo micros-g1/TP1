@@ -9,5 +9,4 @@
 #define GENERAL_H_
 
 typedef enum{LEFT, RIGHT} direction;
-
 #endif /* GENERAL_H_ */

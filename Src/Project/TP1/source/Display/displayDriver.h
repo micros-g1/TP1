@@ -18,7 +18,8 @@
 #define AMOUNT_MAX_DISPLAY_POS		4
 //symbol equivalent to nothing showing on the display
 #define NULL_CHAR	0X00
-
+#define MAX_BRIGHT	5
+#define MIN_BRIGHT	0
 /***********************************
 *********init_display***************
 ************************************
@@ -110,7 +111,7 @@ void display_clear_pos(int pos);
 ******************************************
 * set_brightness sets the display brightness to a given level.
 * 	INPUT:
-*		brightness : level of brightness, between 1 and 100.
+*		brightness : level of brightness, between MIN_BRIGHT and MAX_BRIGHT.
 *	OUTPUT:
 *		void.
 */

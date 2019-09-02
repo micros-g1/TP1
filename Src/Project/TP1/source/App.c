@@ -38,8 +38,8 @@ void App_Init (void)
 	//write_char('A', 1);
 	//write_char('I', 2);
 	//write_char('L', 3);
-	//write_sentence("FAIL");
-	write_sentence("FA");
+	write_sentence("GIL");
+	//write_sentence("FA");
     SysTick_Init(systick_callback);
 }
 
@@ -59,13 +59,21 @@ void App_Run (void)
 void systick_callback(void)
 {
 	static int counter = 0;
-	if(counter == 0 ){
+	if(counter == 0){
 		//blink(true);
+		set_brightness(2);
 		counter ++;
+		//set_brightness(2);
 		//shift(LEFT, 'E');
 	}
-	display_draw_callback();
+	if(counter>=10000){
+		write_sentence("CIL");
+		set_brightness(4);
+	}
 
+	counter++;
+
+	display_draw_callback();
 }
 
 
