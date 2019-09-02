@@ -5,6 +5,7 @@
  *      Author: grein
  */
 #include <stdio.h>
+#include <stdbool.h>
 #include "input_device.h"
 #include "rotary_encoder.h"
 
@@ -13,9 +14,11 @@ typedef enum {ID_DOWN_EV,ID_UP_EV,ID_LEFT_EV,ID_RIGHT_EV,ID_TOUT_EV,ID_NOTHING_E
 #define TOTAL_ID_STATES 5
 typedef enum {ID_IDLE_S,ID_PRESS_1_S,ID_PRESS_2_S,ID_PRESS_3_S,ID_KEY_S} id_state_t;
 static id_state_t id_state;
+//Timer
+static int timer_ticks = 0;
 
 //Save rotary encoder states
-static int rotary_encoder_previous_state[ROTARY_ENCODER_INPUTS];
+static bool rotary_encoder_previous_state[ROTARY_ENCODER_INPUTS];
 
 //Actions
 void id_left();
@@ -49,12 +52,12 @@ static const id_state_t  rotary_encoder_fsm_next_state[TOTAL_ID_STATES][TOTAL_ID
 
 void input_device_init()
 {
-	//TODO: Initialization
+	systick_add_callback(input_device_ISR,INPUT_DEVICE_ISR_PERIOD_TICKS);
 }
 
 void input_device_ISR()
 {
-	int input_state = 0;
+	bool input_state = 0;
 	id_events_t ev = ID_NOTHING_EV;
 	input_state = rotary_encoder_get_input_state(RE_CLICK);
 	if(rotary_encoder_previous_state[RE_CLICK] != input_state)
@@ -69,16 +72,20 @@ void input_device_ISR()
 			ev = ID_RIGHT_EV;
 	rotary_encoder_previous_state[RE_RIGHT] = input_state;
 	if(ev != ID_NOTHING_EV)
-	{
-		//TODO Check timer
-	}
+		timer_ticks = 0;	//Got event. Reset Timer
 	else
 	{
-		//TODO: Reset timer
+		if(timer_ticks == INPUT_DEVICE_T_RELOAD_VALUE)
+		{
+			//Timer Event.
+			timer_ticks = 0;
+			ev = ID_TOUT_EV;
+		}
+		else
+			timer_ticks++;
 	}
 	rotary_encoder_fsm_action[id_state][ev]();
 	id_state = rotary_encoder_fsm_next_state[id_state][ev];
-	//TODO: Timer++
 }
 
 void id_left()

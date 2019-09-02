@@ -13,27 +13,29 @@
 #ifndef EVENT_QUEUE_H_
 #define EVENT_QUEUE_H_
 
+#include <stdbool.h>
+
 //Possible Events
 typedef enum {INPUT_DEVICE_EV,TIMER_EV,CARD_READER_EV} event_id_t;
 
 //Total number of events that event queue can hold
-#define EV_QUEUE_SIZE	20
+#define EV_QUEUE_MAX_LENGTH	20
 
 //Event structure
 typedef struct
 {
-	event_id_t id;
+	event_id_t id;		//Type of event
 	int		metadata;	//Usage defined by event source
 	void*	data;		//Usage defined by event source
 }event_t;
 
-//Wait for event
+//Wait for event. Can only be used by main loop.
 void event_queue_wait_for_event(event_t* ev);
-//Flush event queue
+//Flush event queue. Can only be used by main loop.
 void event_queue_flush();
-//Add event to event queue. Can be used by ISRs
-void event_queue_add_event(event_t ev);
-//Get current queue length. Can be used by ISRs
+//Add event to event queue. True if event queue was not full.
+bool event_queue_add_event(event_t ev);
+//Get current queue length.
 unsigned int event_queue_get_length();
 
 #endif /* EVENT_QUEUE_H_ */

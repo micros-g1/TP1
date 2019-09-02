@@ -8,41 +8,48 @@
 #include "event_queue.h"
 
 //Event queue Variables
-static volatile unsigned int queue_length = 0;
-static volatile event_t event_queue[EV_QUEUE_SIZE];
-static volatile unsigned int in_offset = 0;
-static volatile unsigned int out_offset = 0;
+static volatile event_t event_queue[EV_QUEUE_MAX_LENGTH];	//Circular queue
+static volatile unsigned int queue_length = 0;				//Keeps track of queue length
+static volatile unsigned int in_offset = 0;					//Offset for adding next event
+static volatile unsigned int out_offset = 0;				//Offset for reading next event
 
 //Wait for event
 void event_queue_wait_for_event(event_t* ev)
 {
 	//Atomic operation (assembly)
 	while(queue_length == 0);
-	//TODO: disable interrupts
 	*ev = event_queue[out_offset++];
-	if(out_offset == EV_QUEUE_SIZE)
+	if(out_offset == EV_QUEUE_MAX_LENGTH)
 		out_offset = 0;
+	//Atomic operation (assembly)
 	queue_length--;
-	//TODO: enable interrupts
 }
 
 //Flush event queue
 void event_queue_flush()
 {
-	//TODO: disable interrupts
+	hw_DisableInterrupts();
+	//Must set these three variables to zero before continuing...
 	queue_length = in_offset = out_offset = 0;
-	//TODO: enable interrupts
+	hw_EnableInterrupts();
 }
 
 //Add event to event queue
-void event_queue_add_event(event_t ev)
+bool event_queue_add_event(event_t ev)
 {
-	//TODO: disable interrupts
-	event_queue[in_offset++] = ev;
-	if(in_offset == EV_QUEUE_SIZE)
-		in_offset = 0;
-	queue_length++;
-	//TODO: enable interrupts
+	bool ret_val = false;
+	hw_DisableInterrupts();
+	//Only one event source can add an event to the queue at a given time
+	if(queue_length != EV_QUEUE_MAX_LENGTH)
+	{
+		event_queue[in_offset++] = ev;
+		if(in_offset == EV_QUEUE_SIZE)
+			in_offset = 0;
+		queue_length++;
+		ret_val = true;
+	}
+	hw_EnableInterrupts();
+	return ret_val;
 }
 
 //Get current queue length

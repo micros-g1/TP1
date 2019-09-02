@@ -8,8 +8,6 @@
 //Idea based on
 //https://github.com/ITBAALUMNOS/Tetris/blob/master/Sources/buttons_and_timers.c
 
-//TODO: Make sure everything is active high.
-
 #include <rotary_encoder.h>
 
 //Rotary encoder has 3 electrical signals
@@ -22,7 +20,7 @@ static int re_state = 0;	//Negated so that == 0 when idle
 #define ROTARY_ENCODER_DIRECTIONS 2
 enum {RE_DIR_LEFT, RE_DIR_RIGHT};
 //Variable used to indicate if rotary encoder is turning in a given direction
-static int rotary_encoder_turning[ROTARY_ENCODER_DIRECTIONS] = {0};
+bool rotary_encoder_turning[ROTARY_ENCODER_DIRECTIONS] = {0};
 //Note that this variable will be cleared after reading it!
 
 //Rotary Encoder Actions
@@ -40,19 +38,20 @@ static void (* const  rotary_encoder_fsm[2][4])(void) =
 
 void rotary_encoder_init()
 {
-	//TODO: Initialization
+	gpioMode (PIN_BUTTON_SIGNAL, INPUT_PULLUP);
+	gpioMode (PIN_SIGNAL_A, INPUT_PULLUP);
+	gpioMode (PIN_SIGNAL_B, INPUT_PULLUP);
+	systick_add_callback(rotary_encoder_ISR,ROTARY_ENCODER_ISR_PERIOD_TICKS);
 }
 
-int rotary_encoder_get_input_state(re_id_t id)
+bool rotary_encoder_get_input_state(re_id_t id)
 {
-	int ret_val = 0;
-	int i = 0;	//temp
+	bool ret_val = 0;
 	//Case Rotary Encoder
 	switch(id)
 	{
 		case RE_CLICK:
-			//TODO: Read port value
-			ret_val = i;
+			ret_val = !gpioRead(PIN_BUTTON_SIGNAL);
 			break;
 		case RE_LEFT:
 			ret_val = rotary_encoder_turning[RE_LEFT];
@@ -73,11 +72,8 @@ int rotary_encoder_get_input_state(re_id_t id)
 void rotary_encoder_ISR()
 {
 	//ISR is for rotary encoder only
-	//TODO: Read port value
-	int signal_A = 1;
-	int signal_B = 1;
 	//Get current signal (value is inverted) (interpret as event)
-	int event =  (((signal_A? 0:1)) << 1) + (signal_B? 0:1);
+	int event =  ((gpioRead(PIN_SIGNAL_A)? 0 : 1) << 1) + (gpioRead(PIN_SIGNAL_B) ? 0 : 1);
 	rotary_encoder_fsm[re_state == 0? 0 : 1][event]();	//Execute action
 	//Update rotary encoder state
 	re_state = event;
@@ -87,4 +83,3 @@ void rotary_encoder_ISR()
 static void re_left(){rotary_encoder_turning[RE_LEFT] = 1;}
 static void re_right(){rotary_encoder_turning[RE_RIGHT] = 1;}
 static void re_nothing(){;}
-
