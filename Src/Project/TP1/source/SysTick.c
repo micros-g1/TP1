@@ -55,10 +55,11 @@ void SysTick_Handler(void) // DO NOT CHANGE THE NAME, overrides core_cm4.h weak 
     unsigned int i;
     for (i = 0; i < MAX_N_ST_CALLBACKS; i++) {
         if (st_callbacks[i].func != NULL && st_callbacks[i].enabled) {
-            st_callbacks[i].counter++;
             if (st_callbacks[i].counter == st_callbacks[i].reload) {
+            	st_callbacks[i].func();
                 st_callbacks[i].counter = 0;
             }
+            st_callbacks[i].counter++;
         }
     }
 }
