@@ -21,6 +21,7 @@
 #warning BLINK cannot implement this exact frequency. Using floor(SYSTICK_ISR_FREQUENCY_HZ/CALL_FREQ_HZ) instead.
 #endif
 
+#define NULL_TERMINATOR 0 //for strings
 #define AMOUNT_SEGS	7
 #define AMOUNT_POSSIBLE_CHAR	128
 
@@ -28,14 +29,52 @@
 /*-------------------------------------------
  ----------GLOBAL_VARIABLES------------------
  -------------------------------------------*/
-bool blinking = false;					//blinking (true) or not (false)
-bool blink_cleared = false;				//status of the blinking (showing:true, not showing: false)
-int brightness = MAX_BRIGHT;			//brightness level, from MIN_BRIGHT to MAX_BRIGHT
-int blink_counter_vel = SYSTICK_ISR_FREQUENCY_HZ/2;
+static bool blinking = false;					//blinking (true) or not (false)
+static bool blink_cleared = false;				//status of the blinking (showing:true, not showing: false)
+
+static int brightness = MAX_BRIGHT;			//brightness level, from MIN_BRIGHT to MAX_BRIGHT
+static int blink_counter_vel = SYSTICK_ISR_FREQUENCY_HZ/2;
+
 static bool display_on = true;			//display on:true, off: false.
 
+static unsigned char curr_displaying[AMOUNT_MAX_DISPLAY_POS];			//display buffer. Initialized at init_display()
+static char curr_displaying_photo[AMOUNT_MAX_DISPLAY_POS+1];			//display buffer at the moment get_currently_on_buffer_word was called. null terminated
+
+static char last_drawn_word[AMOUNT_MAX_DISPLAY_POS]; //last drawn word Initialized at init_display().
+static char last_drawn_word_photo[AMOUNT_MAX_DISPLAY_POS + 1]; //last drawn word at the moment get_currently_curr_displaying_word was called. null terminated
+
+//https://en.wikichip.org/wiki/seven-segment_display/representing_letters
+static const unsigned char seven_seg_chars[AMOUNT_POSSIBLE_CHAR]= {
+/*  0     1     2     3     4     5     6     7     8     9  */
+	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+/*  10    11    12    13    14    15    16    17    18    19  */
+	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+/*  20    21    22    23    24    25    26    27    28    29  */
+	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+/*  30    31    32    33    34    35    36    37    38    39  */
+	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+/*  40    41    42    43    44    45    46    47   */
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+/*  0     1     2     3     4     5     6     7     8     9     :     ;     */
+	0x7E, 0x30, 0x6D, 0x79, 0x33, 0x5B, 0x5F, 0x70, 0x7F, 0x7B, 0x00, 0x00,
+/*  <     =     >     ?     @     A     B     C     D     E     F     G     */
+	0x00, 0x00, 0x00, 0x00, 0x00, 0x77, 0x00, 0x4E, 0x00, 0x4F, 0x47, 0x5E,
+/*  H     I     J     K     L     M     N     O     P     Q     R     S     */
+	0x37, 0x06, 0x3C, 0x00, 0x0E, 0x00, 0x00, 0x7E, 0x67, 0x00, 0x00, 0x5B,
+/*  T     U     V     W     X     Y     Z     [     \     ]     ^     _     */
+	0x00, 0x3E, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+/*  `     a     b     c     d     e     f     g     h     i     j     k     */
+	0x00, 0x00, 0x1F, 0x0D, 0x3D, 0x00, 0x00, 0x00, 0x17, 0x00, 0x00, 0x00,
+/*  l     m     n     o     p     q     r     s     t     u     v     w     */
+	0x00, 0x00, 0x15, 0x1D, 0x00, 0x73, 0x05, 0x00, 0x0F, 0x1C, 0x00, 0x00,
+/*  x     y     z     {		|	  }		~	  cuadradito*/
+    0x00, 0x6E, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+};
+static const unsigned int char_pins[AMOUNT_SEGS] = {PIN_DISPLAY_CHAR0 ,PIN_DISPLAY_CHAR1,PIN_DISPLAY_CHAR2,PIN_DISPLAY_CHAR3,
+			PIN_DISPLAY_CHAR4, PIN_DISPLAY_CHAR5, PIN_DISPLAY_CHAR6};
+
 /*-------------------------------------------
- ----------FUNCTION_IMPLEMENTATION-----------
+ ----------STATIC_FUNCTION_DECLARATION-------
  -------------------------------------------*/
 
 /***********************************
@@ -71,7 +110,7 @@ static void draw_char(unsigned char printable_char, int pos);
 *	OUTPUT:
 *		void.
 */
-static void swap_chars(char * sw1, char *sw2);
+static void swap_chars(unsigned char * sw1, char *sw2);
 
 /******************************************
 *************handle_blinking***************
@@ -95,37 +134,10 @@ static bool handle_blinking(void);
 *		void.
 */
 static bool handle_brightness(void);
-static unsigned char curr_displaying[AMOUNT_MAX_DISPLAY_POS] = {NULL_CHAR, NULL_CHAR, NULL_CHAR, NULL_CHAR};
 
-//https://en.wikichip.org/wiki/seven-segment_display/representing_letters
-static const unsigned char seven_seg_chars[AMOUNT_POSSIBLE_CHAR]= {
-/*  0     1     2     3     4     5     6     7     8     9  */
-	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-/*  10    11    12    13    14    15    16    17    18    19  */
-	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-/*  20    21    22    23    24    25    26    27    28    29  */
-	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-/*  30    31    32    33    34    35    36    37    38    39  */
-	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-/*  40    41    42    43    44    45    46    47   */
-0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-/*  0     1     2     3     4     5     6     7     8     9     :     ;     */
-0x7E, 0x30, 0x6D, 0x79, 0x33, 0x5B, 0x5F, 0x70, 0x7F, 0x7B, 0x00, 0x00,
-/*  <     =     >     ?     @     A     B     C     D     E     F     G     */
-0x00, 0x00, 0x00, 0x00, 0x00, 0x77, 0x00, 0x4E, 0x00, 0x4F, 0x47, 0x5E,
-/*  H     I     J     K     L     M     N     O     P     Q     R     S     */
-0x37, 0x06, 0x3C, 0x00, 0x0E, 0x00, 0x00, 0x7E, 0x67, 0x00, 0x00, 0x5B,
-/*  T     U     V     W     X     Y     Z     [     \     ]     ^     _     */
-0x00, 0x3E, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-/*  `     a     b     c     d     e     f     g     h     i     j     k     */
-0x00, 0x00, 0x1F, 0x0D, 0x3D, 0x00, 0x00, 0x00, 0x17, 0x00, 0x00, 0x00,
-/*  l     m     n     o     p     q     r     s     t     u     v     w     */
-0x00, 0x00, 0x15, 0x1D, 0x00, 0x73, 0x05, 0x00, 0x0F, 0x1C, 0x00, 0x00,
-/*  x     y     z     {		|	  }		~	  cuadradito*/
-    0x00, 0x6E, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
-};
-static const unsigned int char_pins[AMOUNT_SEGS] = {PIN_DISPLAY_CHAR0 ,PIN_DISPLAY_CHAR1,PIN_DISPLAY_CHAR2,PIN_DISPLAY_CHAR3,
-			PIN_DISPLAY_CHAR4, PIN_DISPLAY_CHAR5, PIN_DISPLAY_CHAR6};
+/*-------------------------------------------
+ ------------FUNCTION_IMPLEMENTATION---------
+ -------------------------------------------*/
 
 static void draw_display(int pos){
 
@@ -150,6 +162,8 @@ static void draw_char(unsigned char printable_char, int pos){
 			gpio->PSOR |= (1 << PIN2NUM(char_pins[k]));
 		else
 			gpio->PCOR |= (1 << PIN2NUM(char_pins[k]));
+
+	last_drawn_word[pos] = printable_char;
 }
 
 void write_char(char c, int pos){
@@ -163,11 +177,15 @@ void display_clear_pos(int pos){
 	curr_displaying[pos] = NULL_CHAR;
 }
 void init_display(void){
-	//pines encoder
+	static bool initialized = false;
+
+	if(initialized)
+		return;
+	//encoder pins
 	gpioMode(PIN_DISPLAY_ENC0, OUTPUT);
 	gpioMode(PIN_DISPLAY_ENC1, OUTPUT);
 
-	//pines char
+	//char pins
 	gpioMode(PIN_DISPLAY_CHAR0, OUTPUT);
 	gpioMode(PIN_DISPLAY_CHAR1, OUTPUT);
 	gpioMode(PIN_DISPLAY_CHAR2, OUTPUT);
@@ -176,6 +194,12 @@ void init_display(void){
 	gpioMode(PIN_DISPLAY_CHAR5, OUTPUT);
 	gpioMode(PIN_DISPLAY_CHAR6, OUTPUT);
 
+	for(int i =0; i < AMOUNT_MAX_DISPLAY_POS; i++){
+		last_drawn_word[i] = NULL_CHAR;
+		curr_displaying[i] = NULL_CHAR;
+	}
+	last_drawn_word[AMOUNT_MAX_DISPLAY_POS] = NULL_TERMINATOR;
+	initialized = true;
 }
 
 void display_draw_callback(){
@@ -248,8 +272,8 @@ void shift(direction dir, char to_insert){
 			swap_chars(&curr_displaying[i], &to_insert);
 }
 
-static void swap_chars(char * sw1, char *sw2){
-	char aux = *sw1;
+static void swap_chars(unsigned char * sw1, char *sw2){
+	unsigned char aux = *sw1;
 	*sw1 = *sw2;
 	*sw2 = aux;
 }
@@ -268,4 +292,20 @@ static bool handle_brightness(void){
 			bright_counter = 0;
 		}
 	return should_show;
+}
+
+char * get_currently_on_buffer_word(){
+	//should disable interrupts!!!
+	for(int i = 0; i < AMOUNT_MAX_DISPLAY_POS; i++)
+		curr_displaying_photo[i] = curr_displaying[i];
+	curr_displaying_photo[AMOUNT_MAX_DISPLAY_POS+1] = NULL_TERMINATOR;
+	return curr_displaying_photo;
+}
+
+char * get_currently_curr_displaying_word(){
+	//should disable interrupts!!!
+	for(int i = 0; i < AMOUNT_MAX_DISPLAY_POS; i++)
+		last_drawn_word_photo[i] = last_drawn_word[i];
+	last_drawn_word_photo[AMOUNT_MAX_DISPLAY_POS+1] = NULL_TERMINATOR;
+	return last_drawn_word_photo;
 }
