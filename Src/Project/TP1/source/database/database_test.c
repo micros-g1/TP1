@@ -8,7 +8,7 @@
 
 #include <stdio.h>
 #include "database.h"
-
+/*
 int main (void) {
     u_init();
 
@@ -40,7 +40,7 @@ int main (void) {
         }
     }
 }
-
+*/
 
 
 #endif // DB_TEST == 1
