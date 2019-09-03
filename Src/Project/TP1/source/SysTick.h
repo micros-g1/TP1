@@ -36,8 +36,9 @@ typedef void (*systick_callback_t)(void);
  ******************************************************************************/
 
 /**
- * @brief Initialize SysTic driver
- * @return Initialization and registration succeed
+ * @brief Initialize SysTic driver.
+ * The function has no effect when called twice.
+ * @return void.
  */
 void systick_init ();
 
@@ -49,7 +50,17 @@ void systick_init ();
  */
 unsigned int systick_add_callback(systick_callback_t callback, unsigned int reload);
 
+/**
+ * @brief enable callback so that it may be called when the reload limit is reached.
+ * @param id: id (given by systick_add_callback) of the callback that will be enabled.
+ * @return void.
+ */
 void systick_enable_callback(unsigned int id);
+/**
+ * @brief Disable callback so that it wont be called when the reload limit is reached.
+ * @param id: id (given by systick_add_callback) of the callback that will be disabled.
+ * @return void.
+ */
 void systick_disable_callback(unsigned int id);
 
 /*******************************************************************************
