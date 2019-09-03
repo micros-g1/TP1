@@ -179,8 +179,8 @@ void display_clear_pos(int pos){
 void init_display(void){
 	static bool initialized = false;
 
-	if(initialized)
-		return;
+	if(initialized) return;
+
 	//encoder pins
 	gpioMode(PIN_DISPLAY_ENC0, OUTPUT);
 	gpioMode(PIN_DISPLAY_ENC1, OUTPUT);
@@ -199,6 +199,7 @@ void init_display(void){
 		curr_displaying[i] = NULL_CHAR;
 	}
 	last_drawn_word[AMOUNT_MAX_DISPLAY_POS] = NULL_TERMINATOR;
+	systick_init();
 	initialized = true;
 }
 

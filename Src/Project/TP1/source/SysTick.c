@@ -36,6 +36,10 @@ void SysTick_Handler(void);
 
 void systick_init ()
 {
+	static bool initialized = false;
+
+	if(initialized) return;
+
 	NVIC_EnableIRQ(SysTick_IRQn);
 	SysTick->CTRL = 0x00; 								// enable systick interrupts
 	SysTick->LOAD = FCLK/SYSTICK_ISR_FREQUENCY_HZ - 1; 	// load value = pulses per period - 1
@@ -46,6 +50,7 @@ void systick_init ()
 	for (i = 0; i < MAX_N_ST_CALLBACKS; i++) {
 	    st_callbacks[i].func = NULL;
 	}
+	initialized = true;
 }
 
 void SysTick_Handler(void) // DO NOT CHANGE THE NAME, overrides core_cm4.h weak definition

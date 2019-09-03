@@ -76,11 +76,12 @@ static void marquee_callback(){
 
 void init_display_interface(){
 	static bool initialized = false;
-	if(initialized)
-		return;
 
+	if(initialized) return;
 	init_display();
 	clear_marquee_buffer();
+	systick_init();
+	//systick_add_callback(marquee_callback, 100);
 	initialized = true;
 }
 
