@@ -8,7 +8,6 @@
 #ifndef DISPLAY_DISPLAYDRIVER_H_
 #define DISPLAY_DISPLAYDRIVER_H_
 
-#include "board.h"
 #include "general.h"
 /*-------------------------------------------
  ----------------DEFINES---------------------

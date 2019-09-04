@@ -9,7 +9,7 @@
 #include "gpio.h"
 #include "MK64F12.h"
 #include "SysTick.h"
-
+#include "board.h"
 
 /*-------------------------------------------
  ----------------DEFINES---------------------

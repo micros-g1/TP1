@@ -11,16 +11,12 @@
  * INCLUDE HEADER FILES
  ******************************************************************************/
 
-#include <stdbool.h>
-
-
 /*******************************************************************************
  * CONSTANT AND MACRO DEFINITIONS USING #DEFINE
  ******************************************************************************/
-
-#define SYSTICK_ISR_FREQUENCY_HZ 1000U
-#define MAX_N_ST_CALLBACKS 10
-
+#define SYSTICK_ISR_FREQUENCY_HZ 10000U
+//maximum amout of callbacks that can be added to sysTick
+#define MAX_N_ST_CALLBACKS 20
 /*******************************************************************************
  * ENUMERATIONS AND STRUCTURES AND TYPEDEFS
  ******************************************************************************/
@@ -37,20 +33,20 @@ typedef void (*systick_callback_t)(void);
 
 /**
  * @brief Initialize SysTic driver.
- * The function has no effect when called twice.
+ * The function has no effect when called twice (safe init).
  * @return void.
  */
 void systick_init();
 
 /**
  * @brief Add function to be called on systick interrupts. Enabled by default
- * @param callback: function to be called when counter hits 0
- * @param reload: max value of tick counter
+ * @param callback: function to be called when sysTick is called 'reload' times.
+ * @param reload: amount of times sysTick has to tick for the callback to be called.s
  */
 void systick_add_callback(systick_callback_t callback, unsigned int reload);
 
 /**
- * @brief enable callback so that it may be called when the reload limit is reached.
+ * @brief Enable callback so that it may be called when the reload limit is reached.
  * @param callback: callback to be enabled.
  * @return void.
  */
@@ -68,7 +64,6 @@ void systick_disable_callback(systick_callback_t callback);
  * @return void.
  */
 void systick_delete_callback(systick_callback_t callback);
-
 
 /*******************************************************************************
  ******************************************************************************/
