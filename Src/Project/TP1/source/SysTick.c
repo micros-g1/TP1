@@ -10,7 +10,9 @@
 #include <stddef.h>
 #include "core_cm4.h"
 
-
+/*-------------------------------------------
+ ----------------DEFINES---------------------
+ -------------------------------------------*/
 #define FCLK	120000000U // clock frequency, Hz
 
 #if FCLK % SYSTICK_ISR_FREQUENCY_HZ != 0
@@ -19,21 +21,35 @@
 #error SYSTICK frequency must be positive
 #endif /* FCLK % SYSTICK_ISR_FREQUENCY_HZ != 0 */
 
-
-systick_callback_t callback;
-
+/*should be left in this value.
+If COUNTER_INIT should change its value, one should change SysTick_Handler's implementation before doing so
+(for more information on this, check SysTick_Handler's implementation)
+*/
+#define COUNTER_INIT	-1
 typedef struct {
     systick_callback_t func;
-    unsigned int counter;
+    /*has to be a SIGNED int so that COUNTER_INIT may be negative!!
+    *see COUNTER_INIT's definition for a more detailed explanation*/
+    int counter;
     unsigned int reload;
     bool enabled;
 } st_cb_data_t;
 
+/*-------------------------------------------
+ ----------GLOBAL_VARIABLES------------------
+ -------------------------------------------*/
+
 static st_cb_data_t st_callbacks[MAX_N_ST_CALLBACKS];
 
+/*-------------------------------------------
+ ----------STATIC_FUNCTION_DECLARATION-------
+ -------------------------------------------*/
 void SysTick_Handler(void);
+void reset_callback_data(st_cb_data_t* data);
 
-
+/*-------------------------------------------
+ ------------FUNCTION_IMPLEMENTATION---------
+ -------------------------------------------*/
 void systick_init ()
 {
 	static bool initialized = false;
@@ -46,60 +62,68 @@ void systick_init ()
 	SysTick->VAL=0x00;
 	SysTick->CTRL = SysTick_CTRL_CLKSOURCE_Msk| SysTick_CTRL_TICKINT_Msk | SysTick_CTRL_ENABLE_Msk;
 
-	unsigned int i = 0;
-	for (i = 0; i < MAX_N_ST_CALLBACKS; i++) {
-	    st_callbacks[i].func = NULL;
-	}
+	for (int i = 0; i < MAX_N_ST_CALLBACKS; i++)
+		reset_callback_data(&st_callbacks[i]);
+
 	initialized = true;
 }
 
 void SysTick_Handler(void) // DO NOT CHANGE THE NAME, overrides core_cm4.h weak definition
 {
-	// for SysTick, clearing the interrupt flag is not necessary
-	// it is not an omission!
-    unsigned int i;
-    for (i = 0; i < MAX_N_ST_CALLBACKS; i++) {
+	/* for SysTick, clearing the interrupt flag is not necessary
+	* it is not an omission!*/
+    for (int i = 0; i < MAX_N_ST_CALLBACKS; i++) {
         if (st_callbacks[i].func != NULL && st_callbacks[i].enabled) {
+        	/*counter has to be incremented first so that if .func() disables itself from inside the function call,
+        	*the function will still function correctly when reload value is 0.
+        	this is taken into account when defining COUNTER_INIT!!*/
+        	st_callbacks[i].counter++;
             if (st_callbacks[i].counter == st_callbacks[i].reload) {
             	st_callbacks[i].func();
-                st_callbacks[i].counter = 0;
+                st_callbacks[i].counter = COUNTER_INIT;
             }
-            st_callbacks[i].counter++;
         }
     }
 }
 
 
 
-unsigned int systick_add_callback(systick_callback_t cb, unsigned int reload)
+void systick_add_callback(systick_callback_t cb, unsigned int reload)
 {
-    unsigned int id = MAX_N_ST_CALLBACKS;
-    if (cb != NULL) {
-        unsigned int i = 0;
-        while (i < MAX_N_ST_CALLBACKS && id == MAX_N_ST_CALLBACKS) {
-            if (st_callbacks[i].func == NULL) {
-                st_callbacks[i].func = cb;
-                st_callbacks[i].enabled = true;
-                st_callbacks[i].counter = 0;
-                st_callbacks[i].reload = reload;
-
-                id = i;
-            }
-            i++;
-        }
-    }
-
-    return id;
+	if(cb != NULL)
+		for(int i =0; i < MAX_N_ST_CALLBACKS; i++)
+			if(st_callbacks[i].func == NULL){
+				st_callbacks[i].func = cb;
+				st_callbacks[i].enabled = true;
+				st_callbacks[i].counter = COUNTER_INIT;
+				st_callbacks[i].reload = reload;
+				break;						//this break instruction is important here
+			}
 }
 
-void systick_enable_callback(unsigned int id) {
-    if (id < MAX_N_ST_CALLBACKS) {
-        st_callbacks[id].enabled = true;
-    }
+void systick_enable_callback(systick_callback_t callback) {
+	for(int i = 0; i < MAX_N_ST_CALLBACKS; i++)
+		if ( st_callbacks[i].func == callback )
+			st_callbacks[i].enabled = true;
 }
 
-void systick_disable_callback(unsigned int id) {
-    if (id < MAX_N_ST_CALLBACKS) {
-        st_callbacks[id].enabled = false;
-    }
+void systick_disable_callback(systick_callback_t callback) {
+	for(int i = 0; i < MAX_N_ST_CALLBACKS; i++)
+		if ( st_callbacks[i].func == callback ){
+			st_callbacks[i].enabled = false;
+			st_callbacks[i].counter = COUNTER_INIT;
+		}
 }
+
+void systick_delete_callback(systick_callback_t callback){
+	for(int i = 0; i < MAX_N_ST_CALLBACKS; i++)
+		if(st_callbacks[i].func == callback)
+			reset_callback_data(&st_callbacks[i]);
+}
+
+void reset_callback_data(st_cb_data_t* data){
+	data->func = NULL;
+	data->enabled = false;
+	data->counter = COUNTER_INIT;
+}
+

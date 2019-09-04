@@ -21,9 +21,9 @@
 #define MIN_BRIGHT	0
 
 /*****************************************
-*************init_display*****************
+*************display_init*****************
 ******************************************
-* init_display initializes the display.
+* display_init initializes the display.
 * The function has no effect whatsoever if the display
 * is already initialized.
 * 	INPUT:
@@ -31,27 +31,30 @@
 *	OUTPUT:
 *		void
 */
-void init_display();
+void display_init();
 /***********************************
-*********blink**********************
+*********is_blinking_one****************
 ************************************
-* blink enables or disables the blinking function for the display.
-* 	INPUT:
-*		on_off : true for enabling, false for disabling.
-*	OUTPUT:
-*		void.
-*/
-void blink(bool on_off);
-/***********************************
-*********is_blinking****************
-************************************
-* is_blinking lets the user know whether the blinking function is enabled or not.
+* is_blinking_one lets the user know whether the blinking function is enabled or not
+* (for all positions).
 * 	INPUT:
 *		void.
 *	OUTPUT:
 *		true when the blinking option is currently enabled.
+*		false when there is at least one position with its blinking option disabled.
 */
-bool is_blinking(void);
+bool is_blinking_one(int pos);
+/***********************************
+*********blink_one****************
+************************************
+* blink_one
+* 	INPUT:
+* 		pos :
+*		on_off :
+*	OUTPUT:
+*		void.
+*/
+void blink_one(int pos, bool on_off);
 /***********************************
 *********write_sentence****************
 ************************************
@@ -134,7 +137,9 @@ void shift(direction dir, char to_insert);
 /*****************************************
 ************display_on_off****************
 ******************************************
-* display_on_off turns the display on or off (off: nothing showing, on: showing what is on the buffer)
+* display_on_off turns the display on or off (off: nothing showing, on: showing what is on the buffer).
+* The previous status of the display before turning off is remembered when turned on, so the user should call
+* display_reset() function if it wants to reset the display.
 * 	INPUT:
 *		on_off : true when the display should be turned on, false when turning off.
 *	OUTPUT:
@@ -174,4 +179,7 @@ char* get_currently_curr_displaying_word();
 *		the word that is currently on the display buffer.*/
 char* get_currently_on_buffer_word();
 
+void display_reset();
+
+void diode_one(bool on_off);
 #endif /* DISPLAY_DISPLAYDRIVER_H_ */

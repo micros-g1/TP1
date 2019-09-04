@@ -40,28 +40,35 @@ typedef void (*systick_callback_t)(void);
  * The function has no effect when called twice.
  * @return void.
  */
-void systick_init ();
+void systick_init();
 
 /**
  * @brief Add function to be called on systick interrupts. Enabled by default
  * @param callback: function to be called when counter hits 0
  * @param reload: max value of tick counter
- * @return Callback ID. MAX_N_ST_CALLBACKS if unsuccessful
  */
-unsigned int systick_add_callback(systick_callback_t callback, unsigned int reload);
+void systick_add_callback(systick_callback_t callback, unsigned int reload);
 
 /**
  * @brief enable callback so that it may be called when the reload limit is reached.
- * @param id: id (given by systick_add_callback) of the callback that will be enabled.
+ * @param callback: callback to be enabled.
  * @return void.
  */
-void systick_enable_callback(unsigned int id);
+void systick_enable_callback(systick_callback_t callback);
 /**
  * @brief Disable callback so that it wont be called when the reload limit is reached.
- * @param id: id (given by systick_add_callback) of the callback that will be disabled.
+ * @param callback: callback to be disabled.
  * @return void.
  */
-void systick_disable_callback(unsigned int id);
+void systick_disable_callback(systick_callback_t callback);
+
+/**
+ * @brief deletes a specific callback from those added with systick_add_callback function
+ * @param callback: callback to be deleted.
+ * @return void.
+ */
+void systick_delete_callback(systick_callback_t callback);
+
 
 /*******************************************************************************
  ******************************************************************************/

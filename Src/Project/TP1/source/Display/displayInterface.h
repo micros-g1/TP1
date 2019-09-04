@@ -11,11 +11,27 @@
 #include "general.h"
 #include <stdbool.h>
 
+typedef struct {
+	int number_of_pos;
+}display_info_t;
+
+typedef enum{NO_EVENT, MARQUEE_FINISHED} display_event_id;
+typedef struct {
+	display_event_id id;
+}display_event_t;
+typedef void (*inform_event_callback_t)(display_event_t ev);
+
+display_event_t get_last_event();
+
 void marquee(char* sentence, direction dir);
 void clear_all();
-void write_word(char word[4]);
-void set_blinking_all(bool on_off, int vel);
-void set_blinking_one(bool on_off, int pos, int vel);
+
+void write_word_2_display(const char* word);
+
+void set_blinking_all(bool on_off);
+bool get_is_blinking_any();
+void set_blinking_one(bool on_off, int pos);
+bool get_is_blinking(int pos);
 /*****************************************
 *******init_display_interface*************
 ******************************************
@@ -27,6 +43,6 @@ void set_blinking_one(bool on_off, int pos, int vel);
 *	OUTPUT:
 *		void
 */
-void init_display_interface();
-
+void init_display_interface(inform_event_callback_t callback);
+void selectors_on_off(bool sel0 , bool sel1, bool sel2);
 #endif /* DISPLAY_DISPLAYINTERFACE_H_ */

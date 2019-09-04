@@ -9,12 +9,11 @@
 #include "displayInterface.h"
 #include "displayDriver.h"
 #include "SysTick.h"
-
+#include "stdlib.h"
 /*-------------------------------------------
  ----------------DEFINES---------------------
  -------------------------------------------*/
 #define MARQUEE_BUFFER_SIZE		20
-
 
 /*-------------------------------------------
  ----------------GLOBAL_VARIABLES------------
@@ -23,17 +22,34 @@ static char marquee_buffer[MARQUEE_BUFFER_SIZE];
 static int marquee_buffer_curr_size = 0;
 static direction marquee_curr_dir;
 //static int marquee_curr_vel = 0;
-
+static display_info_t info;
+static display_event_t last_event;
+static inform_event_callback_t event_callback = NULL;
 /*-------------------------------------------
  ---------STATIC_FUNCTION_DECLARATION--------
  -------------------------------------------*/
 static void marquee_callback();
 static void clear_marquee_buffer();
 static void set_marquee_buffer(char* sentence);
+static void set_inform_event_callback(inform_event_callback_t callback);
 /*-------------------------------------------
  ----------FUNCTION_IMPLEMENTATION-----------
  -------------------------------------------*/
-//void marquee(char* sentence, direction dir, int vel)
+
+void init_display_interface(inform_event_callback_t callback){
+	static bool initialized = false;
+
+	info.number_of_pos = AMOUNT_MAX_DISPLAY_POS;
+	if(initialized) return;
+	display_init();
+	clear_marquee_buffer();
+	set_inform_event_callback(callback);
+	systick_init();
+	//systick_add_callback(marquee_callback, 100);
+	systick_disable_callback(marquee_callback);
+	initialized = true;
+}
+
 void marquee(char* sentence, direction dir){
 	//FALTA TEMA TIEMPOOOOS!!!
 	clear_marquee_buffer();
@@ -41,6 +57,7 @@ void marquee(char* sentence, direction dir){
 	marquee_curr_dir = dir;
 	//marquee_curr_vel = vel;
 	//set vel for sysTick!!!
+	systick_enable_callback(marquee_callback);
 }
 
 static void clear_marquee_buffer(){
@@ -59,37 +76,63 @@ static void set_marquee_buffer(char* sentence){
 	marquee_buffer_curr_size = i;
 }
 static void marquee_callback(){
-	//bool should_shift = false;
-	//int chars_written;
-	/*
-	if( ( chars_written = write_sentence(sentence) ) == AMOUNT_MAX_DISPLAY_POS ){
-		if( sentence[chars_written+1] != NULL_CHAR ){
-			should_shift = true;
-			shift(marquee_curr_dir, sentence[chars_written+1]);
-		}
-		else
-			for(int i = 0; i < AMOUNT_MAX_DISPLAY_POS; i++)
-				shift(dir, NULL_CHAR);
+	static bool should_shift = false;
+	static int chars_written = 0;
+	static int finishing_shift_counter = 0;
+
+	if(!should_shift){
+		if( ( chars_written = write_sentence(marquee_buffer) ) == AMOUNT_MAX_DISPLAY_POS )
+			if( marquee_buffer[chars_written+1] != NULL_CHAR )
+				should_shift = true;
 	}
-	*/
+	else if(marquee_buffer[chars_written+1] != NULL_CHAR){
+		shift(marquee_curr_dir, marquee_buffer[chars_written+1]);
+		chars_written++;
+	}
+	else if(finishing_shift_counter < AMOUNT_MAX_DISPLAY_POS){
+		shift(marquee_curr_dir, NULL_CHAR);
+		finishing_shift_counter++;
+	}
+	else if(finishing_shift_counter == AMOUNT_MAX_DISPLAY_POS){
+		finishing_shift_counter = 0;
+		should_shift = false;
+		chars_written = 0;
+		last_event.id = MARQUEE_FINISHED;
+		event_callback(last_event);
+		systick_disable_callback(marquee_callback);
+	}
 }
 
-void init_display_interface(){
-	static bool initialized = false;
-
-	if(initialized) return;
-	init_display();
-	clear_marquee_buffer();
-	systick_init();
-	//systick_add_callback(marquee_callback, 100);
-	initialized = true;
+static void set_inform_event_callback(inform_event_callback_t callback){
+	event_callback = callback;
 }
 
-void set_blinking_one(bool on_off, int pos, int vel){
-
+void set_blinking_one(bool on_off, int pos){
+	blink_one(pos, on_off);
 }
-
-void set_blinking_all(bool on_off, int vel){
+bool get_is_blinking(int pos){
+	return is_blinking_one(pos);
+}
+bool get_is_blinking_any(){
+	bool blinking_any = false;
 	for(int i = 0; i < AMOUNT_MAX_DISPLAY_POS; i++)
-		set_blinking_one(on_off, i, vel);
+		if( (blinking_any = is_blinking_one(i)) )
+			break;
+
+	return blinking_any;
+}
+void set_blinking_all(bool on_off){
+	for(int i = 0; i < AMOUNT_MAX_DISPLAY_POS; i++)
+		blink_one(on_off, i);
+}
+void write_word_2_display(const char* word){
+	write_sentence(word);
+}
+
+display_info_t get_display_info(){
+	return info;
+}
+
+void selectors_on_off(bool sel0 , bool sel1, bool sel2){
+
 }

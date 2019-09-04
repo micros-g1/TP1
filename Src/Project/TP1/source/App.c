@@ -33,14 +33,15 @@ void systick_callback(void);
 /* Función que se llama 1 vez, al comienzo del programa */
 void App_Init (void)
 {
-	init_display();
+
+	systick_init();
+	systick_add_callback(systick_callback, 0);
+	display_init();
 	//write_char('F', 0);
 	//write_char('A', 1);
 	//write_char('I', 2);
 	//write_char('L', 3);
-	write_sentence("GIL");
-	//write_sentence("FA");
-    SysTick_Init(systick_callback);
+	write_sentence("FAIL");
 }
 
 /* Función que se llama constantemente en un ciclo infinito */
@@ -58,7 +59,8 @@ void App_Run (void)
 
 void systick_callback(void)
 {
-	static int counter = 0;
+	/*
+	 * static int counter = 0;
 	if(counter == 0){
 		//blink(true);
 		set_brightness(2);
@@ -70,10 +72,7 @@ void systick_callback(void)
 		write_sentence("CIL");
 		set_brightness(4);
 	}
-
-	counter++;
-
-	display_draw_callback();
+	*/
 }
 
 

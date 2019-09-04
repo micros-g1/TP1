@@ -29,13 +29,13 @@
 /*-------------------------------------------
  ----------GLOBAL_VARIABLES------------------
  -------------------------------------------*/
-static bool blinking = false;					//blinking (true) or not (false)
-static bool blink_cleared = false;				//status of the blinking (showing:true, not showing: false)
+//static bool blinking = false;					//blinking (true) or not (false)
+//static bool blink_cleared = false;				//status of the blinking (showing:true, not showing: false)
 
+static bool blinking[AMOUNT_MAX_DISPLAY_POS];
+static bool blink_cleared[AMOUNT_MAX_DISPLAY_POS];
 static int brightness = MAX_BRIGHT;			//brightness level, from MIN_BRIGHT to MAX_BRIGHT
 static int blink_counter_vel = SYSTICK_ISR_FREQUENCY_HZ/2;
-
-static bool display_on = true;			//display on:true, off: false.
 
 static unsigned char curr_displaying[AMOUNT_MAX_DISPLAY_POS];			//display buffer. Initialized at init_display()
 static char curr_displaying_photo[AMOUNT_MAX_DISPLAY_POS+1];			//display buffer at the moment get_currently_on_buffer_word was called. null terminated
@@ -123,7 +123,7 @@ static void swap_chars(unsigned char * sw1, char *sw2);
 *	OUTPUT:
 *		true when the display has blinked (nothing should be shown on the display).
 */
-static bool handle_blinking(void);
+static bool handle_blinking(int pos);
 /***********************************
 *********handle_brightness***************
 ************************************
@@ -141,7 +141,7 @@ static bool handle_brightness(void);
 
 static void draw_display(int pos){
 
-	if(!display_on || !handle_blinking() || !handle_brightness())
+	if( !handle_blinking(pos) || !handle_brightness())
 		draw_char(NULL_CHAR, pos);
 	else
 		draw_char(seven_seg_chars[(int)curr_displaying[pos]], pos);
@@ -176,7 +176,7 @@ void display_clear_all(){
 void display_clear_pos(int pos){
 	curr_displaying[pos] = NULL_CHAR;
 }
-void init_display(void){
+void display_init(void){
 	static bool initialized = false;
 
 	if(initialized) return;
@@ -193,13 +193,11 @@ void init_display(void){
 	gpioMode(PIN_DISPLAY_CHAR4, OUTPUT);
 	gpioMode(PIN_DISPLAY_CHAR5, OUTPUT);
 	gpioMode(PIN_DISPLAY_CHAR6, OUTPUT);
+	display_reset();
 
-	for(int i =0; i < AMOUNT_MAX_DISPLAY_POS; i++){
-		last_drawn_word[i] = NULL_CHAR;
-		curr_displaying[i] = NULL_CHAR;
-	}
-	last_drawn_word[AMOUNT_MAX_DISPLAY_POS] = NULL_TERMINATOR;
 	systick_init();
+	systick_add_callback(display_draw_callback, COUNTER_FREQ);
+
 	initialized = true;
 }
 
@@ -234,34 +232,30 @@ void set_brightness(int bright){
 	if( (bright < MAX_BRIGHT) && (bright >= MIN_BRIGHT) )
 		brightness = bright;
 }
-void blink(bool on_off){
-	/*in case blinking is turned off when curr_displaying is NULL_CHAR,
-	the original displaying data should be reloaded into curr_displaying before the
-	turning operation off can be performed*/
-	//if(!on_off && blinking && blink_cleared)
-	//	for(int i = 0; i < AMOUNT_MAX_DISPLAY_POS; i++)
-	//		curr_displaying[i] = blink_aux[i];
 
-	blinking = on_off;
-	blink_cleared = false;
+void blink_one(int pos, bool on_off){
 
-}
-bool is_blinking(void){
-	return blinking;
+	blinking[pos] = on_off;
+	blink_cleared[pos] = false;
 }
 
-static bool handle_blinking(void){
+bool is_blinking_one(int pos){
+	return blinking[pos];
+}
+
+static bool handle_blinking(int pos){
 	static int blink_counter = 0;
-	if(!blinking)
-		return true;
+
+	if(!blinking[pos]) return true;		//not currently blinking, so should not handle blinking.
 
 	if(blink_counter < blink_counter_vel)
-		blink_counter++;
+		blink_counter++;				//the time has not come for the blinker to blink
 	else{
 		blink_counter = 0;
-		blink_cleared = !blink_cleared;
+		blink_cleared[pos] = !blink_cleared[pos];
 	}
-	return !blink_cleared;
+
+	return !blink_cleared[pos];
 }
 
 void shift(direction dir, char to_insert){
@@ -280,7 +274,10 @@ static void swap_chars(unsigned char * sw1, char *sw2){
 }
 
 void display_on_off(bool on_off){
-	display_on = on_off;
+	if(!on_off)
+		systick_disable_callback(display_draw_callback);
+	else
+		systick_enable_callback(display_draw_callback);
 }
 
 static bool handle_brightness(void){
@@ -309,4 +306,17 @@ char * get_currently_curr_displaying_word(){
 		last_drawn_word_photo[i] = last_drawn_word[i];
 	last_drawn_word_photo[AMOUNT_MAX_DISPLAY_POS+1] = NULL_TERMINATOR;
 	return last_drawn_word_photo;
+}
+
+void display_reset(){
+	for(int i =0; i < AMOUNT_MAX_DISPLAY_POS; i++){
+		last_drawn_word[i] = NULL_CHAR;
+		curr_displaying[i] = NULL_CHAR;
+		blinking[i] = false;
+		blink_cleared[i] = false;
+	}
+	last_drawn_word[AMOUNT_MAX_DISPLAY_POS] = NULL_TERMINATOR;
+}
+void diode_one(bool on_off){
+
 }
