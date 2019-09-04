@@ -33,6 +33,7 @@ typedef struct {
     int counter;
     unsigned int reload;
     bool enabled;
+    callback_conf conf;
 } st_cb_data_t;
 
 /*-------------------------------------------
@@ -81,6 +82,8 @@ void SysTick_Handler(void) // DO NOT CHANGE THE NAME, overrides core_cm4.h weak 
             if (st_callbacks[i].counter == st_callbacks[i].reload) {
             	st_callbacks[i].func();
                 st_callbacks[i].counter = COUNTER_INIT;
+                if(st_callbacks[i].conf == SINGLE_SHOT)
+                	st_callbacks[i].enabled = false;
             }
         }
     }
@@ -88,7 +91,7 @@ void SysTick_Handler(void) // DO NOT CHANGE THE NAME, overrides core_cm4.h weak 
 
 
 
-void systick_add_callback(systick_callback_t cb, unsigned int reload)
+void systick_add_callback(systick_callback_t cb, unsigned int reload, callback_conf conf)
 {
 	if(cb != NULL)
 		for(int i =0; i < MAX_N_ST_CALLBACKS; i++)
@@ -97,6 +100,7 @@ void systick_add_callback(systick_callback_t cb, unsigned int reload)
 				st_callbacks[i].enabled = true;
 				st_callbacks[i].counter = COUNTER_INIT;
 				st_callbacks[i].reload = reload;
+				st_callbacks[i].conf = conf;
 				break;						//this break instruction is important here
 			}
 }
@@ -125,5 +129,28 @@ void reset_callback_data(st_cb_data_t* data){
 	data->func = NULL;
 	data->enabled = false;
 	data->counter = COUNTER_INIT;
+}
+
+bool has_callback(systick_callback_t callback){
+	bool has = false;
+	for(int i = 0; i < MAX_N_ST_CALLBACKS; i++)
+		if(( has = (st_callbacks[i].func == callback) ))
+			break;
+
+	return has;
+}
+
+callback_conf get_callback_conf(systick_callback_t callback){
+	callback_conf conf = PERIODIC;
+	for(int i = 0; i < MAX_N_ST_CALLBACKS; i++)
+		if(st_callbacks[i].func == callback)
+			conf = st_callbacks[i].conf;
+	return conf;
+}
+
+void set_callback_conf(systick_callback_t callback, callback_conf conf){
+	for(int i = 0; i < MAX_N_ST_CALLBACKS; i++)
+		if(st_callbacks[i].func == callback)
+			st_callbacks[i].conf = conf;
 }
 

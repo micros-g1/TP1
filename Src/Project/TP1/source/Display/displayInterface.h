@@ -9,7 +9,6 @@
 #define DISPLAY_DISPLAYINTERFACE_H_
 
 #include "general.h"
-#include <stdbool.h>
 
 typedef struct {
 	int number_of_pos;

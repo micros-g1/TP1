@@ -19,7 +19,7 @@
 
 
 
-/*******************************************************************************
+/******************************************************************************
  * FUNCTION PROTOTYPES FOR PRIVATE FUNCTIONS WITH FILE LEVEL SCOPE
  ******************************************************************************/
 void systick_callback(void);
@@ -35,13 +35,14 @@ void App_Init (void)
 {
 
 	systick_init();
-	systick_add_callback(systick_callback, 0);
+	systick_add_callback(systick_callback, 10000, SINGLE_SHOT);
 	display_init();
 	//write_char('F', 0);
 	//write_char('A', 1);
 	//write_char('I', 2);
 	//write_char('L', 3);
 	write_sentence("FAIL");
+
 }
 
 /* Función que se llama constantemente en un ciclo infinito */
@@ -59,20 +60,27 @@ void App_Run (void)
 
 void systick_callback(void)
 {
+	//static int counter = 0;
 	/*
 	 * static int counter = 0;
 	if(counter == 0){
-		//blink(true);
+
 		set_brightness(2);
 		counter ++;
 		//set_brightness(2);
-		//shift(LEFT, 'E');
+
 	}
 	if(counter>=10000){
 		write_sentence("CIL");
 		set_brightness(4);
 	}
 	*/
+	//blink(2,true);
+	//shift(LEFT, 'E');
+	//shift(RIGHT, 'E');
+	for(int i = 0; i < AMOUNT_MAX_DISPLAY_POS; i++)
+		set_brightness_one(i, MIN_BRIGHT+1);
+
 }
 
 

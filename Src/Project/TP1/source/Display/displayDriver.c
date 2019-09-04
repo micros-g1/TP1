@@ -15,7 +15,7 @@
  ----------------DEFINES---------------------
  -------------------------------------------*/
 //CALL_FREQ_HZ lower than 80U flickers! (with SYSTICK_ISR_FREQUENCY_HZ 1000U)
-#define CALL_FREQ_HZ 500U
+#define CALL_FREQ_HZ 4000U
 #define COUNTER_FREQ 	SYSTICK_ISR_FREQUENCY_HZ/CALL_FREQ_HZ-1
 #if SYSTICK_ISR_FREQUENCY_HZ % CALL_FREQ_HZ != 0
 #warning BLINK cannot implement this exact frequency. Using floor(SYSTICK_ISR_FREQUENCY_HZ/CALL_FREQ_HZ) instead.
@@ -34,14 +34,16 @@
 
 static bool blinking[AMOUNT_MAX_DISPLAY_POS];
 static bool blink_cleared[AMOUNT_MAX_DISPLAY_POS];
-static int brightness = MAX_BRIGHT;			//brightness level, from MIN_BRIGHT to MAX_BRIGHT
-static int blink_counter_vel = SYSTICK_ISR_FREQUENCY_HZ/2;
+static int brightness[AMOUNT_MAX_DISPLAY_POS];;			//brightness level, from MIN_BRIGHT to MAX_BRIGHT
+static int blink_counter_vel = CALL_FREQ_HZ/AMOUNT_MAX_DISPLAY_POS/2;	//half a second.
 
 static unsigned char curr_displaying[AMOUNT_MAX_DISPLAY_POS];			//display buffer. Initialized at init_display()
 static char curr_displaying_photo[AMOUNT_MAX_DISPLAY_POS+1];			//display buffer at the moment get_currently_on_buffer_word was called. null terminated
 
 static char last_drawn_word[AMOUNT_MAX_DISPLAY_POS]; //last drawn word Initialized at init_display().
 static char last_drawn_word_photo[AMOUNT_MAX_DISPLAY_POS + 1]; //last drawn word at the moment get_currently_curr_displaying_word was called. null terminated
+
+static bool curr_diodes[AMOUNT_MAX_DIODES_POS];
 
 //https://en.wikichip.org/wiki/seven-segment_display/representing_letters
 static const unsigned char seven_seg_chars[AMOUNT_POSSIBLE_CHAR]= {
@@ -129,19 +131,28 @@ static bool handle_blinking(int pos);
 ************************************
 * handle_brightness
 * 	INPUT:
+*		pos :
+*	OUTPUT:
+*		void.
+*/
+static bool handle_brightness(int pos);
+/***********************************
+*********handle_brightness***************
+************************************
+* handle_brightness
+* 	INPUT:
 *		void.
 *	OUTPUT:
 *		void.
 */
-static bool handle_brightness(void);
-
+static void draw_diode(int pos, bool on_off);
 /*-------------------------------------------
  ------------FUNCTION_IMPLEMENTATION---------
  -------------------------------------------*/
 
 static void draw_display(int pos){
 
-	if( !handle_blinking(pos) || !handle_brightness())
+	if( !handle_blinking(pos) || !handle_brightness(pos))
 		draw_char(NULL_CHAR, pos);
 	else
 		draw_char(seven_seg_chars[(int)curr_displaying[pos]], pos);
@@ -165,7 +176,14 @@ static void draw_char(unsigned char printable_char, int pos){
 
 	last_drawn_word[pos] = printable_char;
 }
+static void draw_diode(int pos, bool on_off){
 
+	//could optimize if necessary
+
+	gpioWrite (PIN_DIODE_0, pos & 0X1);
+	gpioWrite (PIN_DIODE_1, pos & 0X2);
+
+}
 void write_char(char c, int pos){
 	curr_displaying[pos] = c;
 }
@@ -193,25 +211,23 @@ void display_init(void){
 	gpioMode(PIN_DISPLAY_CHAR4, OUTPUT);
 	gpioMode(PIN_DISPLAY_CHAR5, OUTPUT);
 	gpioMode(PIN_DISPLAY_CHAR6, OUTPUT);
+
+	gpioMode(PIN_DIODE_0, OUTPUT);
+	gpioMode(PIN_DIODE_1, OUTPUT);
 	display_reset();
 
 	systick_init();
-	systick_add_callback(display_draw_callback, COUNTER_FREQ);
+	systick_add_callback(display_draw_callback, COUNTER_FREQ, PERIODIC);
 
 	initialized = true;
 }
 
 void display_draw_callback(){
-	static uint32_t counter = 0;
 	static int pos = 0;
 
-	// use counter for dividing systick frequency
-	if (counter == COUNTER_FREQ) {
-		draw_display(pos);
-		pos = (pos == AMOUNT_MAX_DISPLAY_POS-1) ? 0 : pos+1;
-	}
-	else
-		counter++;
+	draw_display(pos);
+	pos = (pos == AMOUNT_MAX_DISPLAY_POS-1) ? 0 : pos+1;
+
 }
 
 int write_sentence(const char* sentence){
@@ -228,13 +244,12 @@ int write_sentence(const char* sentence){
 }
 
 //brightness from MIN_BRIGHT to MAX_BRIGHT
-void set_brightness(int bright){
+void set_brightness_one(int pos, int bright){
 	if( (bright < MAX_BRIGHT) && (bright >= MIN_BRIGHT) )
-		brightness = bright;
+		brightness[pos] = bright;
 }
 
 void blink_one(int pos, bool on_off){
-
 	blinking[pos] = on_off;
 	blink_cleared[pos] = false;
 }
@@ -244,14 +259,14 @@ bool is_blinking_one(int pos){
 }
 
 static bool handle_blinking(int pos){
-	static int blink_counter = 0;
+	static int blink_counter[AMOUNT_MAX_DISPLAY_POS] = {0, 0, 0, 0};
 
 	if(!blinking[pos]) return true;		//not currently blinking, so should not handle blinking.
 
-	if(blink_counter < blink_counter_vel)
-		blink_counter++;				//the time has not come for the blinker to blink
+	if(blink_counter[pos] < blink_counter_vel)
+		blink_counter[pos]++;				//the time has not come for the blinker to blink
 	else{
-		blink_counter = 0;
+		blink_counter[pos] = 0;
 		blink_cleared[pos] = !blink_cleared[pos];
 	}
 
@@ -280,14 +295,14 @@ void display_on_off(bool on_off){
 		systick_enable_callback(display_draw_callback);
 }
 
-static bool handle_brightness(void){
-	static int bright_counter = 0;
+static bool handle_brightness(int pos){
+	static int bright_counter[AMOUNT_MAX_DISPLAY_POS] = {0, 0, 0, 0};
 
 	bool should_show = true;
-	if(brightness < MAX_BRIGHT)
-		if((bright_counter++) == brightness){
+	if(brightness[pos] < MAX_BRIGHT)
+		if((bright_counter[pos]++) == brightness[pos]){
 			should_show = false;
-			bright_counter = 0;
+			bright_counter[pos] = 0;
 		}
 	return should_show;
 }
@@ -314,9 +329,11 @@ void display_reset(){
 		curr_displaying[i] = NULL_CHAR;
 		blinking[i] = false;
 		blink_cleared[i] = false;
+		brightness[i] = MAX_BRIGHT;
 	}
 	last_drawn_word[AMOUNT_MAX_DISPLAY_POS] = NULL_TERMINATOR;
 }
-void diode_one(bool on_off){
+
+void write_diode(int pos, bool on_off){
 
 }

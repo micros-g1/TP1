@@ -23,7 +23,6 @@ static int marquee_buffer_curr_size = 0;
 static direction marquee_curr_dir;
 //static int marquee_curr_vel = 0;
 static display_info_t info;
-static display_event_t last_event;
 static inform_event_callback_t event_callback = NULL;
 /*-------------------------------------------
  ---------STATIC_FUNCTION_DECLARATION--------
@@ -97,8 +96,9 @@ static void marquee_callback(){
 		finishing_shift_counter = 0;
 		should_shift = false;
 		chars_written = 0;
-		last_event.id = MARQUEE_FINISHED;
-		event_callback(last_event);
+		display_event_t event;
+		event.id = MARQUEE_FINISHED;
+		event_callback(event);
 		systick_disable_callback(marquee_callback);
 	}
 }
@@ -123,7 +123,7 @@ bool get_is_blinking_any(){
 }
 void set_blinking_all(bool on_off){
 	for(int i = 0; i < AMOUNT_MAX_DISPLAY_POS; i++)
-		blink_one(on_off, i);
+		blink_one(i, on_off);
 }
 void write_word_2_display(const char* word){
 	write_sentence(word);
@@ -133,6 +133,4 @@ display_info_t get_display_info(){
 	return info;
 }
 
-void selectors_on_off(bool sel0 , bool sel1, bool sel2){
 
-}

@@ -49,6 +49,8 @@
 #define PIN_DISPLAY_CHAR5	PORTNUM2PIN(DISPLAY_PORT, 1)
 #define PIN_DISPLAY_CHAR6	PORTNUM2PIN(DISPLAY_PORT, 17)
 
+#define PIN_DIODE_0			PORTNUM2PIN(DISPLAY_PORT, 11)
+#define PIN_DIODE_1			PORTNUM2PIN(DISPLAY_PORT, 10)
 
 /*******************************************************************************
  ******************************************************************************/
