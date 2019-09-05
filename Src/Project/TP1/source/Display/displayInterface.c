@@ -143,7 +143,10 @@ void set_blinking_all(bool on_off){
 void write_word_2_display(const char* word){
 	write_sentence(word);
 }
-
+void write_char_2_display(char c, int pos){
+	if(pos < AMOUNT_MAX_DISPLAY_POS)
+		write_char(c, pos);
+}
 display_info_t get_display_info(){
 	return info;
 }
@@ -170,4 +173,23 @@ void clear_all_leds(){
 	for(int i =0; i < AMOUNT_MAX_DIODES_POS; i++)
 		write_led(i, false);
 }
-
+void write_to_led(int pos, bool on_off){
+	write_led(pos, on_off);
+}
+void set_blinking_leds_all(bool on_off){
+	for(int i =0; i < AMOUNT_MAX_DIODES_POS; i++)
+		blink_led(i, on_off);
+}
+bool get_is_blinking_leds_any(){
+	bool any = false;
+	for(int i =0; i < AMOUNT_MAX_DIODES_POS; i++)
+		if( (any = is_blinking_led_one(i)) )
+			break;
+	return any;
+}
+bool get_blinking_led_one(int pos){
+	return is_blinking_led_one(pos);
+}
+void set_blinking_led_one(int pos, bool on_off){
+	blink_led(pos, on_off);
+}

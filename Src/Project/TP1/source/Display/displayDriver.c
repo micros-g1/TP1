@@ -357,3 +357,6 @@ void write_led(int pos, bool on_off){
 void blink_led(int pos, bool on_off){
 	blink_one(pos+AMOUNT_MAX_DISPLAY_POS, on_off);
 }
+bool is_blinking_led_one(int pos){
+	return blinking[pos + AMOUNT_MAX_DISPLAY_POS];
+}

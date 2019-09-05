@@ -212,4 +212,6 @@ void blink_led(int pos, bool on_off);
 *	OUTPUT:
 *		void.*/
 void write_led(int pos, bool on_off);
+
+bool is_blinking_led_one(int pos);
 #endif /* DISPLAY_DISPLAYDRIVER_H_ */
