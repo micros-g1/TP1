@@ -36,6 +36,11 @@
 #define SW_ACTIVE       // ???
 #define SW_INPUT_TYPE   // ???
 
+// Rotary Encoder Pins
+#define RE_PIN_BUTTON_SIGNAL 	PORTNUM2PIN(PC, 17)
+#define RE_PIN_SIGNAL_A		PORTNUM2PIN(PC, 16)
+#define RE_PIN_SIGNAL_B     PORTNUM2PIN(PB, 9)
+
 
 #define DISPLAY_PORT		PC
 #define PIN_DISPLAY_ENC0	PORTNUM2PIN(DISPLAY_PORT, 3)

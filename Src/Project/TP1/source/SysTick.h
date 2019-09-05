@@ -22,7 +22,7 @@
  * ENUMERATIONS AND STRUCTURES AND TYPEDEFS
  ******************************************************************************/
 typedef void (*systick_callback_t)(void);
-typedef enum{SINGLE_SHOT, PERIODIC} callback_conf;
+typedef enum{SINGLE_SHOT, PERIODIC} callback_conf_t;
 
 /*******************************************************************************
  * VARIABLE PROTOTYPES WITH GLOBAL SCOPE
@@ -45,7 +45,7 @@ void systick_init();
  * @param reload : amount of times sysTick has to tick for the callback to be called.s
  * @param set_up : configuration option for the callback.
  */
-void systick_add_callback(systick_callback_t callback, unsigned int reload, callback_conf set_up);
+void systick_add_callback(systick_callback_t callback, unsigned int reload, callback_conf_t set_up);
 
 /**
  * @brief Enable callback so that it may be called when the reload limit is reached.
@@ -78,14 +78,14 @@ bool has_callback(systick_callback_t callback);
  * @param callback: callback to get the configuration from.
  * @return current configuration for the callback.
  */
-callback_conf get_callback_conf(systick_callback_t callback);
+callback_conf_t get_callback_conf(systick_callback_t callback);
 /**
  * @brief set a specific callback's configuration.
  * @param callback: callback for which the sysTick configuration will be set.
  * @param conf: configuration for the callback
  * @return current configuration for the callback.
  */
-void set_callback_conf(systick_callback_t callback, callback_conf conf);
+void set_callback_conf(systick_callback_t callback, callback_conf_t conf);
 /*******************************************************************************
  ******************************************************************************/
 

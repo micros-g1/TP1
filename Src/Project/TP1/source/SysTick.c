@@ -33,8 +33,9 @@ typedef struct {
     int counter;
     unsigned int reload;
     bool enabled;
-    callback_conf conf;
+    callback_conf_t conf;
 } st_cb_data_t;
+
 
 /*-------------------------------------------
  ----------GLOBAL_VARIABLES------------------
@@ -51,6 +52,7 @@ void reset_callback_data(st_cb_data_t* data);
 /*-------------------------------------------
  ------------FUNCTION_IMPLEMENTATION---------
  -------------------------------------------*/
+
 void systick_init ()
 {
 	static bool initialized = false;
@@ -62,7 +64,6 @@ void systick_init ()
 	SysTick->LOAD = FCLK/SYSTICK_ISR_FREQUENCY_HZ - 1; 	// load value = pulses per period - 1
 	SysTick->VAL=0x00;
 	SysTick->CTRL = SysTick_CTRL_CLKSOURCE_Msk| SysTick_CTRL_TICKINT_Msk | SysTick_CTRL_ENABLE_Msk;
-
 	for (int i = 0; i < MAX_N_ST_CALLBACKS; i++)
 		reset_callback_data(&st_callbacks[i]);
 
@@ -91,7 +92,7 @@ void SysTick_Handler(void){
 
 
 
-void systick_add_callback(systick_callback_t cb, unsigned int reload, callback_conf conf)
+void systick_add_callback(systick_callback_t cb, unsigned int reload, callback_conf_t conf)
 {
 	if(cb != NULL)
 		for(int i =0; i < MAX_N_ST_CALLBACKS; i++)
@@ -140,15 +141,15 @@ bool has_callback(systick_callback_t callback){
 	return has;
 }
 
-callback_conf get_callback_conf(systick_callback_t callback){
-	callback_conf conf = PERIODIC;
+callback_conf_t get_callback_conf(systick_callback_t callback){
+	callback_conf_t conf = PERIODIC;
 	for(int i = 0; i < MAX_N_ST_CALLBACKS; i++)
 		if(st_callbacks[i].func == callback)
 			conf = st_callbacks[i].conf;
 	return conf;
 }
 
-void set_callback_conf(systick_callback_t callback, callback_conf conf){
+void set_callback_conf(systick_callback_t callback, callback_conf_t conf){
 	for(int i = 0; i < MAX_N_ST_CALLBACKS; i++)
 		if(st_callbacks[i].func == callback)
 			st_callbacks[i].conf = conf;
