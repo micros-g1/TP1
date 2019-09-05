@@ -166,4 +166,8 @@ static void remove_last_not_null(){
 				break;
 			}
 }
+void clear_all_leds(){
+	for(int i =0; i < AMOUNT_MAX_DIODES_POS; i++)
+		write_led(i, false);
+}
 

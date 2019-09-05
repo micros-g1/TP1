@@ -84,7 +84,13 @@ void systick_callback(void)
 	//for(int i = 0; i < AMOUNT_MAX_DISPLAY_POS; i++)
 	//	set_brightness_one(i, MIN_BRIGHT+1);
 	//set_blinking_all(true);
-	marquee("HOLA CHAU", RIGHT);
+	//marquee("HOLA CHAU", RIGHT);
+	write_led(1, true);
+	write_led(0, true);
+	write_led(2, true);
+	blink_led(1, true);
+	for(int i =0; i <AMOUNT_MAX_DISPLAY_POS; i++)
+		blink_one(i, true);
 	//shift(LEFT, 'A');
 }
 

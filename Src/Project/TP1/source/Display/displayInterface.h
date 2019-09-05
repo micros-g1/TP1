@@ -35,13 +35,23 @@ void marquee(char* sentence, direction dir);
 /*****************************************
 *****************clear_all****************
 ******************************************
-* clear_all tells clears the entire display (does not include LEDS)
+* clear_all clears the entire display (does not include LEDS)
 * 	INPUT:
 *		void.
 *	OUTPUT:
 *		void.
 */
 void clear_all();
+/*****************************************
+*****************clear_all_leds****************
+******************************************
+* clear_all_leds clears the leds of the display
+* 	INPUT:
+*		void.
+*	OUTPUT:
+*		void.
+*/
+void clear_all_leds();
 /*****************************************
 *************write_word_2_display*********
 ******************************************
@@ -57,6 +67,7 @@ void write_word_2_display(const char* word);
 *************set_blinking_all*************
 ******************************************
 * set_blinking_all sets all positions of the display on the specified blinking state
+* (DOES NOT INCLUDE )
 * 	INPUT:
 * 		on_off : true for enabling blinking, false otherwise.
 *	OUTPUT:

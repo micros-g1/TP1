@@ -160,7 +160,6 @@ void set_brightness_one(int pos, int brightness);
 *		void.
 */
 void shift(direction dir, char to_insert);
-void write_to_diode(int diode, bool on_off);
 
 /*****************************************
 *******get_currently_displaying_word******
@@ -193,7 +192,24 @@ char* get_currently_curr_displaying_word();
 *	OUTPUT:
 *		the word that is currently on the display buffer.*/
 char* get_currently_on_buffer_word();
-
-
-void write_diode(int pos, bool on_off);
+/*****************************************
+*******blink_led******
+******************************************
+* blink_led enables or disables the blinking function of a specific led
+* 	INPUT:
+*		pos : position of the led.
+*		on_off : true if the blinking function should be enabled
+*	OUTPUT:
+*		void.*/
+void blink_led(int pos, bool on_off);
+/*****************************************
+********************write_led*************
+******************************************
+* write_led turns on or off a specific led.
+* 	INPUT:
+*		pos : position of the led.
+*		on_off : true to turn the led on.
+*	OUTPUT:
+*		void.*/
+void write_led(int pos, bool on_off);
 #endif /* DISPLAY_DISPLAYDRIVER_H_ */

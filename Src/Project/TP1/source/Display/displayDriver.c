@@ -156,14 +156,16 @@ static void draw_display(int pos){
 		if(pos < AMOUNT_MAX_DISPLAY_POS)
 			draw_char(NULL_CHAR, pos);
 		else
-			draw_diode(pos, false);
+			draw_diode(pos-AMOUNT_MAX_DISPLAY_POS, false);
 	}
 	else{
-		if(pos < AMOUNT_MAX_DISPLAY_POS)
+		if(pos < AMOUNT_MAX_DISPLAY_POS){
+			draw_diode(AMOUNT_MAX_DISPLAY_POS, false);
 			draw_char(seven_seg_chars[(int)curr_displaying[pos]], pos);
+		}
 		else{
 			draw_char(NULL_CHAR, AMOUNT_MAX_DISPLAY_POS-1);
-			draw_diode(pos-AMOUNT_MAX_DISPLAY_POS+1, (int)curr_displaying[pos]);
+			draw_diode(pos-AMOUNT_MAX_DISPLAY_POS, (int)curr_displaying[pos]);
 		}
 
 	}
@@ -189,9 +191,9 @@ static void draw_char(unsigned char printable_char, int pos){
 static void draw_diode(int pos, bool on_off){
 
 	//could optimize if necessary
-
-	gpioWrite (PIN_DIODE_0, pos & 0X1);
-	gpioWrite (PIN_DIODE_1, pos & 0X2);
+	pos++; // 1 2 3
+	gpioWrite (PIN_DIODE_0, on_off && (pos & 0X1));
+	gpioWrite (PIN_DIODE_1, on_off && (pos & 0X2));
 
 }
 void write_char(char c, int pos){
@@ -236,11 +238,7 @@ void display_draw_callback(){
 	static int pos = 0;
 
 	draw_display(pos);
-	if(pos == 6)
-		pos = 0;
-	else
-		pos++;
-	//pos = (pos == (AMOUNT_TOTAL_POS-1)) ? 0 : pos+1;
+	pos = (pos == (AMOUNT_TOTAL_POS-1)) ? 0 : pos+1;
 
 }
 
@@ -351,7 +349,11 @@ void display_reset(){
 	last_drawn_word[AMOUNT_MAX_DISPLAY_POS] = NULL_TERMINATOR;
 }
 
-void write_diode(int pos, bool on_off){
+void write_led(int pos, bool on_off){
 	if( pos < AMOUNT_MAX_DIODES_POS)
-		curr_displaying[pos + AMOUNT_MAX_DISPLAY_POS -1] = on_off;
+		curr_displaying[pos + AMOUNT_MAX_DISPLAY_POS] = on_off;
+}
+
+void blink_led(int pos, bool on_off){
+	blink_one(pos+AMOUNT_MAX_DISPLAY_POS, on_off);
 }
