@@ -122,7 +122,7 @@ void rotary_encoder_init()
 		tick_counter = 0;
 		//Initialize SysTick
 		systick_init();
-		systick_add_callback(rotary_encoder_ISR,RE_ISR_PERIOD_TICKS);
+		systick_add_callback(rotary_encoder_ISR,RE_ISR_PERIOD_TICKS,PERIODIC);
 		//Done.
 		rotary_encoder_initialized = true;
 	}
