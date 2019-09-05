@@ -14,7 +14,7 @@
  -------------------------------------------*/
 //number of positions the display has.
 #define AMOUNT_MAX_DISPLAY_POS		4
-#define AMOUNT_MAX_DIODES_POS		3
+
 //symbol equivalent to nothing showing on the display.
 #define NULL_CHAR	0X00
 #define MAX_BRIGHT	5
@@ -192,26 +192,5 @@ char* get_currently_curr_displaying_word();
 *	OUTPUT:
 *		the word that is currently on the display buffer.*/
 char* get_currently_on_buffer_word();
-/*****************************************
-*******blink_led******
-******************************************
-* blink_led enables or disables the blinking function of a specific led
-* 	INPUT:
-*		pos : position of the led.
-*		on_off : true if the blinking function should be enabled
-*	OUTPUT:
-*		void.*/
-void blink_led(int pos, bool on_off);
-/*****************************************
-********************write_led*************
-******************************************
-* write_led turns on or off a specific led.
-* 	INPUT:
-*		pos : position of the led.
-*		on_off : true to turn the led on.
-*	OUTPUT:
-*		void.*/
-void write_led(int pos, bool on_off);
 
-bool is_blinking_led_one(int pos);
 #endif /* DISPLAY_DISPLAYDRIVER_H_ */

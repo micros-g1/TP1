@@ -8,7 +8,6 @@
  * INCLUDE HEADER FILES
  ******************************************************************************/
 
-#include "Display/displayDriver.h"
 #include "Display/displayInterface.h"
 #include "interrupts.h"
 #include "SysTick.h"
@@ -37,13 +36,12 @@ void App_Init (void)
 
 	systick_init();
 	systick_add_callback(systick_callback, 10000, SINGLE_SHOT);
-	//display_init();
+	init_display_interface(NULL);
 	//write_char('F', 0);
-	//write_char('A', 1);
+	//write_char_2_display('A', 1);
 	//write_char('I', 2);
 	//write_char('L', 3);
-	init_display_interface(NULL);
-	write_sentence("BOCA");
+	write_word_2_display("BOCA");
 
 }
 
@@ -62,36 +60,12 @@ void App_Run (void)
 
 void systick_callback(void)
 {
-	//static int counter = 0;
-	/*
-	 * static int counter = 0;
-	if(counter == 0){
-
-		set_brightness(2);
-		counter ++;
-		//set_brightness(2);
-
-	}
-	if(counter>=10000){
-		write_sentence("CIL");
-		set_brightness(4);
-	}
-	*/
-
-	//blink_one(2,true);
-	//shift(LEFT, 'E');
-	//shift(RIGHT, 'E');
-	//for(int i = 0; i < AMOUNT_MAX_DISPLAY_POS; i++)
-	//	set_brightness_one(i, MIN_BRIGHT+1);
-	//set_blinking_all(true);
-	//marquee("HOLA CHAU", RIGHT);
-	write_led(1, true);
-	write_led(0, true);
-	write_led(2, true);
-	blink_led(1, true);
-	for(int i =0; i <AMOUNT_MAX_DISPLAY_POS; i++)
-		blink_one(i, true);
-	//shift(LEFT, 'A');
+	write_to_led(1, true);
+	write_to_led(0, true);
+	write_to_led(2, true);
+	for(int i = 0; i< 3; i++)
+		set_blinking_led_one(i, true);
+	set_blinking_all(true);
 }
 
 

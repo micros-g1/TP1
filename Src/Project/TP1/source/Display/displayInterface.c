@@ -8,6 +8,7 @@
 
 #include "displayInterface.h"
 #include "displayDriver.h"
+#include "leds.h"
 #include "SysTick.h"
 #include "stdlib.h"
 /*-------------------------------------------
@@ -48,6 +49,7 @@ void init_display_interface(inform_event_callback_t callback){
 
 	info.number_of_pos = AMOUNT_MAX_DISPLAY_POS;
 	if(initialized) return;
+	leds_init();
 	display_init();
 	clear_marquee_buffer();
 	set_inform_event_callback(callback);
