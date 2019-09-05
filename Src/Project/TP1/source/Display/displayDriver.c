@@ -163,7 +163,7 @@ static void draw_display(int pos){
 			draw_char(seven_seg_chars[(int)curr_displaying[pos]], pos);
 		else{
 			draw_char(NULL_CHAR, AMOUNT_MAX_DISPLAY_POS-1);
-			draw_diode(pos, (int)curr_displaying[pos]);
+			draw_diode(pos-AMOUNT_MAX_DISPLAY_POS+1, (int)curr_displaying[pos]);
 		}
 
 	}
@@ -352,6 +352,6 @@ void display_reset(){
 }
 
 void write_diode(int pos, bool on_off){
-	if( (pos >= AMOUNT_TOTAL_POS) && (pos < AMOUNT_MAX_DIODES_POS))
-		curr_displaying[pos] = on_off;
+	if( pos < AMOUNT_MAX_DIODES_POS)
+		curr_displaying[pos + AMOUNT_MAX_DISPLAY_POS -1] = on_off;
 }

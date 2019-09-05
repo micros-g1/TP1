@@ -7,6 +7,7 @@
 
 #ifndef GENERAL_H_
 #define GENERAL_H_
+#include <stdlib.h>
 #include <stdbool.h>
 
 typedef enum{LEFT, RIGHT} direction;

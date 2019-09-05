@@ -37,11 +37,12 @@ void App_Init (void)
 
 	systick_init();
 	systick_add_callback(systick_callback, 10000, SINGLE_SHOT);
-	display_init();
+	//display_init();
 	//write_char('F', 0);
 	//write_char('A', 1);
 	//write_char('I', 2);
 	//write_char('L', 3);
+	init_display_interface(NULL);
 	write_sentence("BOCA");
 
 }
@@ -80,9 +81,11 @@ void systick_callback(void)
 	//blink_one(2,true);
 	//shift(LEFT, 'E');
 	//shift(RIGHT, 'E');
-	for(int i = 0; i < AMOUNT_MAX_DISPLAY_POS; i++)
-		set_brightness_one(i, MIN_BRIGHT+1);
-	marquee("BOCA", RIGHT);
+	//for(int i = 0; i < AMOUNT_MAX_DISPLAY_POS; i++)
+	//	set_brightness_one(i, MIN_BRIGHT+1);
+	//set_blinking_all(true);
+	marquee("HOLA CHAU", RIGHT);
+	//shift(LEFT, 'A');
 }
 
 
