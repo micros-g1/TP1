@@ -8,11 +8,6 @@
 #ifndef ROTARY_ENCODER_H_
 #define ROTARY_ENCODER_H_
 
-//Pins used by Rotary Encoder
-#define RE_PIN_BUTTON_SIGNAL 	0
-#define RE_PIN_SIGNAL_A		0
-#define RE_PIN_SIGNAL_B		0
-
 //Rotary Encoder Event
 typedef enum {RE_LEFT,RE_RIGHT,RE_SHORT_CLICK,RE_LONG_CLICK_1,RE_LONG_CLICK_2,RE_KEY_LEFT,RE_KEY_RIGHT,RE_NO_EVENT} re_event_t;
 //Description of events:
