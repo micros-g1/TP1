@@ -15,7 +15,7 @@
  ----------------DEFINES---------------------
  -------------------------------------------*/
 //CALL_FREQ_HZ lower than 80U flickers! (with SYSTICK_ISR_FREQUENCY_HZ 1000U)
-#define CALL_FREQ_HZ 4000U
+#define CALL_FREQ_HZ 6000U
 #define COUNTER_FREQ 	SYSTICK_ISR_FREQUENCY_HZ/CALL_FREQ_HZ-1
 #if SYSTICK_ISR_FREQUENCY_HZ % CALL_FREQ_HZ != 0
 #warning BLINK cannot implement this exact frequency. Using floor(SYSTICK_ISR_FREQUENCY_HZ/CALL_FREQ_HZ) instead.
@@ -24,26 +24,26 @@
 #define NULL_TERMINATOR 0 //for strings
 #define AMOUNT_SEGS	7
 #define AMOUNT_POSSIBLE_CHAR	128
-
 #define SHIFT_BUFFER_LENGTH		20
+#define AMOUNT_TOTAL_POS		AMOUNT_MAX_DISPLAY_POS + AMOUNT_MAX_DIODES_POS
+
 /*-------------------------------------------
  ----------GLOBAL_VARIABLES------------------
  -------------------------------------------*/
 //static bool blinking = false;					//blinking (true) or not (false)
 //static bool blink_cleared = false;				//status of the blinking (showing:true, not showing: false)
 
-static bool blinking[AMOUNT_MAX_DISPLAY_POS];
-static bool blink_cleared[AMOUNT_MAX_DISPLAY_POS];
-static int brightness[AMOUNT_MAX_DISPLAY_POS];;			//brightness level, from MIN_BRIGHT to MAX_BRIGHT
+static bool blinking[AMOUNT_TOTAL_POS];
+static bool blink_cleared[AMOUNT_TOTAL_POS];
+static int brightness[AMOUNT_TOTAL_POS];			//brightness level, from MIN_BRIGHT to MAX_BRIGHT
 static int blink_counter_vel = CALL_FREQ_HZ/AMOUNT_MAX_DISPLAY_POS/2;	//half a second.
 
-static unsigned char curr_displaying[AMOUNT_MAX_DISPLAY_POS];			//display buffer. Initialized at init_display()
+static unsigned char curr_displaying[AMOUNT_TOTAL_POS];			//display buffer. Initialized at init_display()
 static char curr_displaying_photo[AMOUNT_MAX_DISPLAY_POS+1];			//display buffer at the moment get_currently_on_buffer_word was called. null terminated
 
 static char last_drawn_word[AMOUNT_MAX_DISPLAY_POS]; //last drawn word Initialized at init_display().
 static char last_drawn_word_photo[AMOUNT_MAX_DISPLAY_POS + 1]; //last drawn word at the moment get_currently_curr_displaying_word was called. null terminated
 
-static bool curr_diodes[AMOUNT_MAX_DIODES_POS];
 
 //https://en.wikichip.org/wiki/seven-segment_display/representing_letters
 static const unsigned char seven_seg_chars[AMOUNT_POSSIBLE_CHAR]= {
@@ -60,7 +60,7 @@ static const unsigned char seven_seg_chars[AMOUNT_POSSIBLE_CHAR]= {
 /*  0     1     2     3     4     5     6     7     8     9     :     ;     */
 	0x7E, 0x30, 0x6D, 0x79, 0x33, 0x5B, 0x5F, 0x70, 0x7F, 0x7B, 0x00, 0x00,
 /*  <     =     >     ?     @     A     B     C     D     E     F     G     */
-	0x00, 0x00, 0x00, 0x00, 0x00, 0x77, 0x00, 0x4E, 0x00, 0x4F, 0x47, 0x5E,
+	0x00, 0x00, 0x00, 0x00, 0x00, 0x77, 0x7F, 0x4E, 0x00, 0x4F, 0x47, 0x5E,
 /*  H     I     J     K     L     M     N     O     P     Q     R     S     */
 	0x37, 0x06, 0x3C, 0x00, 0x0E, 0x00, 0x00, 0x7E, 0x67, 0x00, 0x00, 0x5B,
 /*  T     U     V     W     X     Y     Z     [     \     ]     ^     _     */
@@ -152,11 +152,21 @@ static void draw_diode(int pos, bool on_off);
 
 static void draw_display(int pos){
 
-	if( !handle_blinking(pos) || !handle_brightness(pos))
-		draw_char(NULL_CHAR, pos);
-	else
-		draw_char(seven_seg_chars[(int)curr_displaying[pos]], pos);
+	if( !handle_blinking(pos) || !handle_brightness(pos)){
+		if(pos < AMOUNT_MAX_DISPLAY_POS)
+			draw_char(NULL_CHAR, pos);
+		else
+			draw_diode(pos, false);
+	}
+	else{
+		if(pos < AMOUNT_MAX_DISPLAY_POS)
+			draw_char(seven_seg_chars[(int)curr_displaying[pos]], pos);
+		else{
+			draw_char(NULL_CHAR, AMOUNT_MAX_DISPLAY_POS-1);
+			draw_diode(pos, (int)curr_displaying[pos]);
+		}
 
+	}
 }
 
 static void draw_char(unsigned char printable_char, int pos){
@@ -188,7 +198,7 @@ void write_char(char c, int pos){
 	curr_displaying[pos] = c;
 }
 void display_clear_all(){
-	for(int pos =0; pos < AMOUNT_MAX_DISPLAY_POS; pos++)
+	for(int pos = 0; pos < AMOUNT_TOTAL_POS; pos++)
 		curr_displaying[pos] = NULL_CHAR;
 }
 void display_clear_pos(int pos){
@@ -226,7 +236,11 @@ void display_draw_callback(){
 	static int pos = 0;
 
 	draw_display(pos);
-	pos = (pos == AMOUNT_MAX_DISPLAY_POS-1) ? 0 : pos+1;
+	if(pos == 6)
+		pos = 0;
+	else
+		pos++;
+	//pos = (pos == (AMOUNT_TOTAL_POS-1)) ? 0 : pos+1;
 
 }
 
@@ -259,7 +273,7 @@ bool is_blinking_one(int pos){
 }
 
 static bool handle_blinking(int pos){
-	static int blink_counter[AMOUNT_MAX_DISPLAY_POS] = {0, 0, 0, 0};
+	static int blink_counter[AMOUNT_TOTAL_POS] = {0,0,0,0,0,0,0};
 
 	if(!blinking[pos]) return true;		//not currently blinking, so should not handle blinking.
 
@@ -296,7 +310,7 @@ void display_on_off(bool on_off){
 }
 
 static bool handle_brightness(int pos){
-	static int bright_counter[AMOUNT_MAX_DISPLAY_POS] = {0, 0, 0, 0};
+	static int bright_counter[AMOUNT_TOTAL_POS] = {0, 0, 0, 0, 0, 0, 0};
 
 	bool should_show = true;
 	if(brightness[pos] < MAX_BRIGHT)
@@ -324,16 +338,20 @@ char * get_currently_curr_displaying_word(){
 }
 
 void display_reset(){
-	for(int i =0; i < AMOUNT_MAX_DISPLAY_POS; i++){
-		last_drawn_word[i] = NULL_CHAR;
+
+	for(int i = 0; i < AMOUNT_TOTAL_POS; i++){
 		curr_displaying[i] = NULL_CHAR;
 		blinking[i] = false;
 		blink_cleared[i] = false;
 		brightness[i] = MAX_BRIGHT;
 	}
+	for(int i =0; i < AMOUNT_MAX_DISPLAY_POS; i++)
+		last_drawn_word[i] = curr_displaying[i];
+
 	last_drawn_word[AMOUNT_MAX_DISPLAY_POS] = NULL_TERMINATOR;
 }
 
 void write_diode(int pos, bool on_off){
-
+	if( (pos >= AMOUNT_TOTAL_POS) && (pos < AMOUNT_MAX_DIODES_POS))
+		curr_displaying[pos] = on_off;
 }

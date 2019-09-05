@@ -9,6 +9,7 @@
  ******************************************************************************/
 
 #include "Display/displayDriver.h"
+#include "Display/displayInterface.h"
 #include "interrupts.h"
 #include "SysTick.h"
 #include "general.h"
@@ -41,7 +42,7 @@ void App_Init (void)
 	//write_char('A', 1);
 	//write_char('I', 2);
 	//write_char('L', 3);
-	write_sentence("FAIL");
+	write_sentence("BOCA");
 
 }
 
@@ -75,12 +76,13 @@ void systick_callback(void)
 		set_brightness(4);
 	}
 	*/
-	//blink(2,true);
+
+	//blink_one(2,true);
 	//shift(LEFT, 'E');
 	//shift(RIGHT, 'E');
 	for(int i = 0; i < AMOUNT_MAX_DISPLAY_POS; i++)
 		set_brightness_one(i, MIN_BRIGHT+1);
-
+	marquee("BOCA", RIGHT);
 }
 
 

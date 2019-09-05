@@ -43,5 +43,4 @@ bool get_is_blinking(int pos);
 *		void
 */
 void init_display_interface(inform_event_callback_t callback);
-void selectors_on_off(bool sel0 , bool sel1, bool sel2);
 #endif /* DISPLAY_DISPLAYINTERFACE_H_ */

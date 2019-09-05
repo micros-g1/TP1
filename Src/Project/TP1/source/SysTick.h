@@ -14,7 +14,7 @@
 /*******************************************************************************
  * CONSTANT AND MACRO DEFINITIONS USING #DEFINE
  ******************************************************************************/
-#define SYSTICK_ISR_FREQUENCY_HZ 8000U
+#define SYSTICK_ISR_FREQUENCY_HZ 12000U
 //maximum amout of callbacks that can be added to sysTick
 #define MAX_N_ST_CALLBACKS 20
 

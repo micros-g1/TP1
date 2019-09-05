@@ -160,7 +160,7 @@ void set_brightness_one(int pos, int brightness);
 *		void.
 */
 void shift(direction dir, char to_insert);
-
+void write_to_diode(int diode, bool on_off);
 
 /*****************************************
 *******get_currently_displaying_word******

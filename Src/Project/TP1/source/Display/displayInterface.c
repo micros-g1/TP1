@@ -44,7 +44,7 @@ void init_display_interface(inform_event_callback_t callback){
 	clear_marquee_buffer();
 	set_inform_event_callback(callback);
 	systick_init();
-	//systick_add_callback(marquee_callback, 100);
+	systick_add_callback(marquee_callback, 10000, PERIODIC);
 	systick_disable_callback(marquee_callback);
 	initialized = true;
 }

@@ -69,8 +69,8 @@ void systick_init ()
 	initialized = true;
 }
 
-void SysTick_Handler(void) // DO NOT CHANGE THE NAME, overrides core_cm4.h weak definition
-{
+// DO NOT CHANGE THE NAME, overrides core_cm4.h weak definition
+void SysTick_Handler(void){
 	/* for SysTick, clearing the interrupt flag is not necessary
 	* it is not an omission!*/
     for (int i = 0; i < MAX_N_ST_CALLBACKS; i++) {
