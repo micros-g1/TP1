@@ -154,4 +154,3 @@ void set_callback_conf(systick_callback_t callback, callback_conf_t conf){
 		if(st_callbacks[i].func == callback)
 			st_callbacks[i].conf = conf;
 }
-
