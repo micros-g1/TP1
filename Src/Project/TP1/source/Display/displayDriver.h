@@ -21,9 +21,9 @@
 #define MIN_BRIGHT	0
 
 /*****************************************
-*************display_init*****************
+*************display_dr_init**************
 ******************************************
-* display_init initializes the display.
+* display_dr_init initializes the display.
 * The function has no effect whatsoever if the display
 * is already initialized (safe init)
 * 	INPUT:
@@ -31,7 +31,7 @@
 *	OUTPUT:
 *		void
 */
-void display_init();
+void display_dr_init();
 /*****************************************
 ************display_on_off****************
 ******************************************
@@ -43,22 +43,22 @@ void display_init();
 *	OUTPUT:
 *		void.
 */
-void display_on_off(bool on_off);
+void display_dr_on_off(bool on_off);
 /*****************************************
-*************display_reset****************
+*************display_dr_reset****************
 ******************************************
-* display_reset resets the display buffer,
-* disables blinking, and sets brightnes to maximum.
+* display_dr_reset resets the display buffer,
+* disables blinking, and sets brightness to maximum.
 * 	INPUT:
 *		void.
 *	OUTPUT:
 *		void.
 */
-void display_reset();
+void display_dr_reset();
 /***********************************
-*********is_blinking_one************
+******display_dr_is_blinking_one****
 ************************************
-* is_blinking_one lets the user know whether the blinking function is enabled or not
+* display_dr_is_blinking_one lets the user know whether the blinking function is enabled or not
 * (for one specific position of the display). Blinking has a specific frequency set!
 * 	INPUT:
 *		void.
@@ -66,11 +66,11 @@ void display_reset();
 *		true when the blinking option is enabled for the specific position.
 *		false when the position has its blinking option disabled.
 */
-bool is_blinking_one(int pos);
+bool display_dr_is_blinking_one(int pos);
 /***********************************
-*********blink_one****************
+*********display_dr_blink_one****************
 ************************************
-* blink_one enables or disables the blinking function
+* display_dr_blink_one enables or disables the blinking function
 * for one specific position of the display.
 * 	INPUT:
 * 		pos : position of the display for whcich the blink will be enabled or disabled.
@@ -78,11 +78,11 @@ bool is_blinking_one(int pos);
 *	OUTPUT:
 *		void.
 */
-void blink_one(int pos, bool on_off);
-/***********************************
-*********write_sentence****************
-************************************
-* write_sentence writes to the display buffer the first
+void display_dr_blink_one(int pos, bool on_off);
+/***************************************
+*********display_dr_write_sentence******
+****************************************
+* display_dr_write_sentence writes to the display buffer the first
 * AMOUNT_MAX_DISPLAY_POS symbols of the parameter.
 * 	INPUT:
 *		sentence: pointer to the sentence to be written (should be null terminated).
@@ -90,11 +90,11 @@ void blink_one(int pos, bool on_off);
 *		number of symbols belonging to sentence that were written to the display buffer.
 *		always <= AMOUNT_MAX_DISPLAY_POS
 */
-int write_sentence(const char* sentence);
+int display_dr_write_sentence(const char* sentence);
 /***********************************
-*********write_char****************
+*********display_dr_write_char******
 ************************************
-* write_char writes to the display buffer a given symbol in
+* display_dr_write_char writes to the display buffer a given symbol in
 * a given position of the display.
 * 	INPUT:
 *		c : symbol to be written
@@ -102,43 +102,32 @@ int write_sentence(const char* sentence);
 *	OUTPUT:
 *		void.
 */
-void write_char(char c, int pos);
-/***********************************
-*********display_draw_callback******
-************************************
-* display_draw_callback callback to be called when
-* the display should draw/show the contents of its buffer.
-* each function calls handles only one position of the display at a time.
-* 	INPUT:
-*		void.
-*	OUTPUT:
-*		void.
-*/
-void display_draw_callback();
+void display_dr_write_char(char c, int pos);
+
 /***********************************
 *********display_clear_all**********
 ************************************
-* display_clear_all clears the display buffer.
+* display_dr_clear_all clears the display buffer.
 * 	INPUT:
 *		void.
 *	OUTPUT:
 *		void.
 */
-void display_clear_all();
+void display_dr_clear_all();
 /*****************************************
-*********display_clear_pos****************
+*********display_dr_clear_pos*************
 ******************************************
-* display_clear_pos clears a given position of the display's buffer (nothing will be shown when it is redrawn).
+* display_dr_clear_pos clears a given position of the display's buffer (nothing will be shown when it is redrawn).
 * 	INPUT:
 *		pos : position that will be cleared.
 *	OUTPUT:
 *		void.
 */
-void display_clear_pos(int pos);
+void display_dr_clear_pos(int pos);
 /*****************************************
-*********display_set_brightness_one*******
+*********display_dr_set_brightness_one*******
 ******************************************
-* display_set_brightness_one sets the brightness of a specific
+* display_dr_set_brightness_one sets the brightness of a specific
 * position of the display to a given level.
 * 	INPUT:
 * 		pos : position of the display for which brightness will be updated.
@@ -147,21 +136,21 @@ void display_clear_pos(int pos);
 *	OUTPUT:
 *		void.
 */
-void display_set_brightness_one(int pos, int brightness);
+void display_dr_set_brightness_one(int pos, int brightness);
 /*****************************************
-*********display_get_brightness_one*******
+*********display_dr_get_brightness_one****
 ******************************************
-* display_get_brightness_one get the brightness level of a specific position of the display
+* display_dr_get_brightness_one get the brightness level of a specific position of the display
 * 	INPUT:
 * 		pos : position of the display.
 *	OUTPUT:
 *		brightness level.
 */
-int display_get_brightness_one(int pos);
+int display_dr_get_brightness_one(int pos);
 /*****************************************
-******************shift*******************
+******************display_dr_shift********
 ******************************************
-* shift shifts the sentence that is currently displaying on the
+* display_dr_shift shifts the sentence that is currently displaying on the
 * display according to the direction indicated, and inserting a given symbol
 * on the position that would be left blank (left position for right direction and viceversa).
 * 	INPUT:
@@ -170,12 +159,12 @@ int display_get_brightness_one(int pos);
 *	OUTPUT:
 *		void.
 */
-void shift(direction_t dir, char to_insert);
+void display_dr_shift(direction_t dir, char to_insert);
 
-/*****************************************
-*******get_currently_displaying_word******
-******************************************
-* get_currently_displaying_word returns a string (null terminated word!!!)
+/*********************************************************
+*******display_dr_get_currently_curr_displaying_word******
+**********************************************************
+* display_dr_get_currently_curr_displaying_word returns a string (null terminated word!!!)
 * with the word that is currently being displayed.
 * This word does not necessarily coincide with the buffered word (such is the case when blinking is enabled
 * or when the display has not been updated yet with the new input).
@@ -187,11 +176,11 @@ void shift(direction_t dir, char to_insert);
 *	OUTPUT:
 *		the word that is currently being displayed.
 */
-char* get_currently_curr_displaying_word();
-/*****************************************
-*******get_currently_on_buffer_word******
-******************************************
-* get_currently_on_buffer_word returns a string (null terminated word!!!)
+char* display_dr_get_currently_curr_displaying_word();
+/***************************************************
+*******display_dr_get_currently_on_buffer_word******
+****************************************************
+* display_dr_get_currently_on_buffer_word returns a string (null terminated word!!!)
 * with the word contained by the display buffer. This word will be the
 * next word to be displayed when the drawing function is called (when not blinking),
 * but does not necessarily coincide with the word being shown on the display.
@@ -202,6 +191,6 @@ char* get_currently_curr_displaying_word();
 *		void.
 *	OUTPUT:
 *		the word that is currently on the display buffer.*/
-char* get_currently_on_buffer_word();
+char* display_dr_get_currently_on_buffer_word();
 
 #endif /* DISPLAY_DISPLAYDRIVER_H_ */

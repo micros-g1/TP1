@@ -30,7 +30,7 @@
 void enable_callback(void);
 void clock_callback(void);
 void systick_callback(void);
-void m_finished(display_event_t ev);
+void m_finished(void);
 void rotary_encoder_callback(re_event_t ev);
 
 /*******************************************************************************
@@ -47,7 +47,7 @@ void App_Init (void)
 	rotary_encoder_init();
 	rotary_encoder_set_callback(rotary_encoder_callback);
 	systick_add_callback(systick_callback, 10000, SINGLE_SHOT);
-	init_display_interface(m_finished);
+	display_init_interface(m_finished);
 }
 
 /* Función que se llama constantemente en un ciclo infinito */
@@ -65,25 +65,25 @@ void rotary_encoder_callback(re_event_t ev)
 	switch(ev)
 	{
 		case RE_LEFT:
-			write_char_2_display('1', 0);
+			display_write_char('1', 0);
 			break;
 		case RE_RIGHT:
-			write_char_2_display('2', 0);
+			display_write_char('2', 0);
 			break;
 		case RE_KEY_LEFT:
-			write_char_2_display('3', 0);
+			display_write_char('3', 0);
 			break;
 		case RE_KEY_RIGHT:
-			write_char_2_display('4', 0);
+			display_write_char('4', 0);
 			break;
 		case RE_SHORT_CLICK:
-			write_char_2_display('5', 0);
+			display_write_char('5', 0);
 			break;
 		case RE_LONG_CLICK_1:
-			write_char_2_display('6', 0);
+			display_write_char('6', 0);
 			break;
 		case RE_LONG_CLICK_2:
-			write_char_2_display('7', 0);
+			display_write_char('7', 0);
 			break;
 		default:
 			break;
@@ -98,19 +98,18 @@ void rotary_encoder_callback(re_event_t ev)
 
 void systick_callback(void)
 {
-	write_to_led(1, true);
-	write_to_led(0, true);
-	write_to_led(2, true);
+	display_write_to_led(1, true);
+	display_write_to_led(0, true);
+	display_write_to_led(2, true);
 	for(int i = 0; i< 3; i++)
-		set_blinking_led_one(i, true);
-	set_blinking_all(false);
-	marquee("123456", RIGHT);
+		display_set_blinking_led_one(i, true);
+	display_set_blinking_all(false);
+	display_marquee("123456", RIGHT);
 }
 
-void m_finished(display_event_t ev)
+void m_finished()
 {
-	if(ev.id == MARQUEE_FINISHED)
-		write_char_2_display('A', 1);
+	display_write_char('A', 1);
 }
 
 

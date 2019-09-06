@@ -12,42 +12,63 @@
 #define AMOUNT_MAX_DIODES_POS		3
 #define MAX_BRIGHT_LED	5
 #define MIN_BRIGHT_LED	0
-void leds_init();
-void leds_reset();
+/*****************************************
+*************led_dr_init******************
+******************************************
+* led_dr_init initializes the led's driver.
+* The function has no effect whatsoever if the display
+* is already initialized (safe init)
+* 	INPUT:
+*		void.
+*	OUTPUT:
+*		void
+*/
+void led_dr_init();
+/*****************************************
+*************led_dr_reset****************
+******************************************
+* led_dr_reset resets the led buffer,
+* disables blinking, and sets brightness to maximum.
+* 	INPUT:
+*		void.
+*	OUTPUT:
+*		void.
+*/
+void led_dr_reset();
 
 /*****************************************
-*******blink_led******
+**************led_dr_blink****************
 ******************************************
-* blink_led enables or disables the blinking function of a specific led
+* led_dr_blink enables or disables the blinking function of a specific led
 * 	INPUT:
 *		pos : position of the led.
 *		on_off : true if the blinking function should be enabled
 *	OUTPUT:
 *		void.*/
-void blink_led(int pos, bool on_off);
+void led_dr_blink(int pos, bool on_off);
 /*****************************************
-********************write_led*************
+*****************led_dr_write*************
 ******************************************
-* write_led turns on or off a specific led.
+* led_dr_write turns on or off a specific led.
 * 	INPUT:
 *		pos : position of the led.
 *		on_off : true to turn the led on.
 *	OUTPUT:
 *		void.*/
-void write_led(int pos, bool on_off);
+void led_dr_write(int pos, bool on_off);
 /*****************************************
-**************is_blinking_led_one*********
+***********led_dr_is_blinking_one*********
 ******************************************
-* is_blinking_led_one tells the user if a specific led is currently blinking enabled.
+* led_dr_is_blinking_one tells the user if a specific led is currently blinking enabled.
 * 	INPUT:
 *		pos : position of the led.
 *	OUTPUT:
 *		true if the led is currently blinking enabled.*/
-bool is_blinking_led_one(int pos);
+bool led_dr_is_blinking_one(int pos);
 /*****************************************
-*********led_set_brightness_one*******************
+*********led_dr_set_brightness_one********
 ******************************************
-* led_set_brightness_one sets the brightness of a specific led to a given level.
+* led_dr_set_brightness_one sets the brightness of a specific led to a given level.
 * 	INPUT:
 * 		pos : led for which brightness will be updated.
 *		brightness : level of brightness, between MIN_BRIGHT_LED and MIN_BRIGHT_LED.
@@ -55,11 +76,11 @@ bool is_blinking_led_one(int pos);
 *	OUTPUT:
 *		void.
 */
-void led_set_brightness_one(int pos, int bright);
+void led_dr_set_brightness_one(int pos, int bright);
 /*****************************************
-*********shift_leds*******************
+*********led_dr_shift*********************
 ******************************************
-* shift_leds shifts the leds values according to the direction indicated
+* led_dr_shift shifts the leds values according to the direction indicated
 * and inserting a new value on the position that would be left blank.
 * 	INPUT:
 *		dir : direction for the shift.
@@ -67,17 +88,26 @@ void led_set_brightness_one(int pos, int bright);
 *	OUTPUT:
 *		void.
 */
-void shift_leds(direction_t dir, bool to_insert);
+void led_dr_shift(direction_t dir, bool to_insert);
 /*****************************************
-*********leds_on_off*******************
+*********led_dr_on_off*******************
 ******************************************
-* leds_on_off turns the leds off
+* led_dr_on_off turns the leds off
 * 	INPUT:
 *		on_off : leds off.
 *	OUTPUT:
 *		void.
 */
-void leds_on_off(bool on_off);
-
-int led_get_brightness_one(int pos);
+void led_dr_on_off(bool on_off);
+/*****************************************
+*********led_dr_get_brightness_one********
+******************************************
+* led_dr_get_brightness_one gets the brightness level of a specific led.
+* If the position given is inexistent, the default return value is MIN_BRIGHT_LED
+* 	INPUT:
+*		pos : number of led to get the current brightness level from.
+*	OUTPUT:
+*		void.
+*/
+int led_dr_get_brightness_one(int pos);
 #endif /* DISPLAY_LEDS_H_ */

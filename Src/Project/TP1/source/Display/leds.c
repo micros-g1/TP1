@@ -59,18 +59,18 @@ static void draw_diode(int pos, bool on_off){
 	gpioWrite (PIN_DIODE_1, on_off && (pos & 0X2));
 
 }
-void write_led(int pos, bool on_off){
+void led_dr_write(int pos, bool on_off){
 	if( pos < AMOUNT_MAX_DIODES_POS)
 		curr_displaying[pos] = on_off;
 }
-void leds_init(){
+void led_dr_init(){
 	static bool initialized = false;
 
 	if(initialized) return;
 
 	gpioMode(PIN_DIODE_0, OUTPUT);
 	gpioMode(PIN_DIODE_1, OUTPUT);
-	leds_reset();
+	led_dr_reset();
 
 	systick_init();
 	systick_add_callback(led_draw_callback, COUNTER_FREQ, PERIODIC);
@@ -78,13 +78,13 @@ void leds_init(){
 	initialized = true;
 }
 
-void leds_reset(){
+void led_dr_reset(){
 
 	for(int i = 0; i < AMOUNT_MAX_DIODES_POS; i++){
 		curr_displaying[i] = false;
 		blinking[i] = false;
 		blink_cleared[i] = false;
-		brightness[i] = MAX_BRIGHT;
+		brightness[i] = MAX_BRIGHT_LED;
 	}
 }
 
@@ -97,15 +97,15 @@ static void led_draw_callback(){
 }
 
 //brightness from MIN_BRIGHT_LED to MAX_BRIGHT_LED
-void led_set_brightness_one(int pos, int bright){
+void led_dr_set_brightness_one(int pos, int bright){
 	if( (bright < MAX_BRIGHT_LED) && (bright >= MIN_BRIGHT_LED) )
 		brightness[pos] = bright;
 }
-void blink_led(int pos, bool on_off){
+void led_dr_blink(int pos, bool on_off){
 	blinking[pos] = on_off;
 	blink_cleared[pos] = false;
 }
-bool is_blinking_led_one(int pos){
+bool led_dr_is_blinking_one(int pos){
 	return blinking[pos];
 }
 
@@ -123,7 +123,7 @@ static bool handle_blinking(int pos){
 
 	return !blink_cleared[pos];
 }
-void shift_leds(direction_t dir, bool to_insert){
+void led_dr_shift(direction_t dir, bool to_insert){
 	if(dir == LEFT)
 		for(int i = AMOUNT_MAX_DIODES_POS-1; i >= 0; i--)
 			swap_bools(&curr_displaying[i], &to_insert);
@@ -136,7 +136,7 @@ static void swap_bools(bool * sw1, bool *sw2){
 	*sw1 = *sw2;
 	*sw2 = aux;
 }
-void leds_on_off(bool on_off){
+void led_dr_on_off(bool on_off){
 	if(!on_off)
 		systick_disable_callback(led_draw_callback);
 	else
@@ -154,8 +154,11 @@ static bool handle_brightness(int pos){
 	return should_show;
 }
 
-int led_get_brightness_one(int pos){
-	return brightness[pos];
+int led_dr_get_brightness_one(int pos){
+	if(pos < AMOUNT_MAX_DIODES_POS)
+		return brightness[pos];
+	else
+		return MIN_BRIGHT_LED;
 }
 
 #endif /* DISPLAY_LEDS_C_ */

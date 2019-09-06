@@ -74,7 +74,18 @@ static const unsigned int char_pins[AMOUNT_SEGS] = {PIN_DISPLAY_CHAR0 ,PIN_DISPL
 /*-------------------------------------------
  ----------STATIC_FUNCTION_DECLARATION-------
  -------------------------------------------*/
-
+/***********************************
+*********display_dr_draw_callback******
+************************************
+* display_dr_draw_callback callback to be called when
+* the display should draw/show the contents of its buffer.
+* each function calls handles only one position of the display at a time.
+* 	INPUT:
+*		void.
+*	OUTPUT:
+*		void.
+*/
+static void display_dr_draw_callback();
 /***********************************
 *********draw_display***************
 ************************************
@@ -163,17 +174,17 @@ static void draw_char(unsigned char printable_char, int pos){
 	last_drawn_word[pos] = printable_char;
 }
 
-void write_char(char c, int pos){
+void display_dr_write_char(char c, int pos){
 	curr_displaying[pos] = c;
 }
-void display_clear_all(){
+void display_dr_clear_all(){
 	for(int pos = 0; pos < AMOUNT_MAX_DISPLAY_POS; pos++)
 		curr_displaying[pos] = NULL_CHAR;
 }
-void display_clear_pos(int pos){
+void display_dr_clear_pos(int pos){
 	curr_displaying[pos] = NULL_CHAR;
 }
-void display_init(void){
+void display_dr_init(void){
 	static bool initialized = false;
 
 	if(initialized) return;
@@ -193,15 +204,15 @@ void display_init(void){
 
 	gpioMode(PIN_DIODE_0, OUTPUT);
 	gpioMode(PIN_DIODE_1, OUTPUT);
-	display_reset();
+	display_dr_reset();
 
 	systick_init();
-	systick_add_callback(display_draw_callback, COUNTER_FREQ, PERIODIC);
+	systick_add_callback(display_dr_draw_callback, COUNTER_FREQ, PERIODIC);
 
 	initialized = true;
 }
 
-void display_reset(){
+void display_dr_reset(){
 
 	for(int i = 0; i < AMOUNT_MAX_DISPLAY_POS; i++){
 		curr_displaying[i] = NULL_CHAR;
@@ -213,7 +224,7 @@ void display_reset(){
 	last_drawn_word[AMOUNT_MAX_DISPLAY_POS] = NULL_TERMINATOR;
 }
 
-void display_draw_callback(){
+void display_dr_draw_callback(){
 	static int pos = 0;
 
 	draw_display(pos);
@@ -221,7 +232,7 @@ void display_draw_callback(){
 
 }
 
-int write_sentence(const char* sentence){
+int display_dr_write_sentence(const char* sentence){
 	int i = 0;
 	for( ; i < AMOUNT_MAX_DISPLAY_POS; i++)
 		if(sentence[i] != 0)
@@ -235,19 +246,19 @@ int write_sentence(const char* sentence){
 }
 
 //brightness from MIN_BRIGHT to MAX_BRIGHT
-void display_set_brightness_one(int pos, int bright){
+void display_dr_set_brightness_one(int pos, int bright){
 	if( (bright < MAX_BRIGHT) && (bright >= MIN_BRIGHT) )
 		brightness[pos] = bright;
 }
-int display_get_brightness_one(int pos){
+int display_dr_get_brightness_one(int pos){
 	return brightness[pos];
 }
-void blink_one(int pos, bool on_off){
+void display_dr_blink_one(int pos, bool on_off){
 	blinking[pos] = on_off;
 	blink_cleared[pos] = false;
 }
 
-bool is_blinking_one(int pos){
+bool display_dr_is_blinking_one(int pos){
 	return blinking[pos];
 }
 
@@ -266,7 +277,7 @@ static bool handle_blinking(int pos){
 	return !blink_cleared[pos];
 }
 
-void shift(direction_t dir, char to_insert){
+void display_dr_shift(direction_t dir, char to_insert){
 	if(dir == LEFT)
 		for(int i = AMOUNT_MAX_DISPLAY_POS-1; i >= 0; i--)
 			swap_chars(&curr_displaying[i], &to_insert);
@@ -281,11 +292,11 @@ static void swap_chars(unsigned char * sw1, char *sw2){
 	*sw2 = aux;
 }
 
-void display_on_off(bool on_off){
+void display_dr_on_off(bool on_off){
 	if(!on_off)
-		systick_disable_callback(display_draw_callback);
+		systick_disable_callback(display_dr_draw_callback);
 	else
-		systick_enable_callback(display_draw_callback);
+		systick_enable_callback(display_dr_draw_callback);
 }
 
 static bool handle_brightness(int pos){
@@ -300,7 +311,7 @@ static bool handle_brightness(int pos){
 	return should_show;
 }
 
-char * get_currently_on_buffer_word(){
+char * display_dr_get_currently_on_buffer_word(){
 	//should disable interrupts!!!
 	for(int i = 0; i < AMOUNT_MAX_DISPLAY_POS; i++)
 		curr_displaying_photo[i] = curr_displaying[i];
@@ -308,7 +319,7 @@ char * get_currently_on_buffer_word(){
 	return curr_displaying_photo;
 }
 
-char * get_currently_curr_displaying_word(){
+char * display_dr_get_currently_curr_displaying_word(){
 	//should disable interrupts!!!
 	for(int i = 0; i < AMOUNT_MAX_DISPLAY_POS; i++)
 		last_drawn_word_photo[i] = last_drawn_word[i];
