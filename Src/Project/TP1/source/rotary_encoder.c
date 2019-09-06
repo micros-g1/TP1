@@ -14,7 +14,7 @@
 
 //This driver has an ISR called by an SysTick Callback
 //Number of SysTicks per ISR CALL
-#define RE_ISR_PERIOD_TICKS 10
+#define RE_ISR_PERIOD_TICKS 8
 //Callback
 static void rotary_encoder_ISR();
 
@@ -68,7 +68,7 @@ typedef enum {RE_IDLE_S,RE_PRESS_1_S,RE_PRESS_2_S,RE_PRESS_3_S,RE_KEYMODE_S,RE_T
 
 //Time T -> Timer will generate event RE_LL_TIMEOUT
 //Timeout will be generated after RE_TIMEOUT_ISR_TICKS executions of the ISR
-#define RE_TIMEOUT_ISR_TICKS	50
+#define RE_TIMEOUT_ISR_TICKS	500
 
 //3 Sources of (low-level) events: "Button","Rotation","Timeout"
 //Any (non RE_LL_NO_EVENT) event from "Button" or "Rotation" will override a "Timeout" event
