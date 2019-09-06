@@ -136,9 +136,10 @@ void display_clear_all();
 */
 void display_clear_pos(int pos);
 /*****************************************
-*********set_brightness_one*******************
+*********display_set_brightness_one*******
 ******************************************
-* set_brightness_one sets the brightness of a specific position of the display to a given level.
+* display_set_brightness_one sets the brightness of a specific
+* position of the display to a given level.
 * 	INPUT:
 * 		pos : position of the display for which brightness will be updated.
 *		brightness : level of brightness, between MIN_BRIGHT and MAX_BRIGHT.
@@ -146,7 +147,17 @@ void display_clear_pos(int pos);
 *	OUTPUT:
 *		void.
 */
-void set_brightness_one(int pos, int brightness);
+void display_set_brightness_one(int pos, int brightness);
+/*****************************************
+*********display_get_brightness_one*******
+******************************************
+* display_get_brightness_one get the brightness level of a specific position of the display
+* 	INPUT:
+* 		pos : position of the display.
+*	OUTPUT:
+*		brightness level.
+*/
+int display_get_brightness_one(int pos);
 /*****************************************
 ******************shift*******************
 ******************************************
@@ -159,7 +170,7 @@ void set_brightness_one(int pos, int brightness);
 *	OUTPUT:
 *		void.
 */
-void shift(direction dir, char to_insert);
+void shift(direction_t dir, char to_insert);
 
 /*****************************************
 *******get_currently_displaying_word******

@@ -21,7 +21,7 @@
  -------------------------------------------*/
 static char marquee_buffer[MARQUEE_BUFFER_SIZE];
 static int marquee_buffer_curr_size = 0;
-static direction marquee_curr_dir;
+static direction_t marquee_curr_dir;
 //static int marquee_curr_vel = 0;
 static display_info_t info;
 static inform_event_callback_t event_callback = NULL;
@@ -59,7 +59,7 @@ void init_display_interface(inform_event_callback_t callback){
 	initialized = true;
 }
 
-void marquee(char* sentence, direction dir){
+void marquee(char* sentence, direction_t dir){
 	//FALTA TEMA TIEMPOOOOS!!!
 	clear_marquee_buffer();
 	set_marquee_buffer(sentence);
@@ -194,4 +194,37 @@ bool get_blinking_led_one(int pos){
 }
 void set_blinking_led_one(int pos, bool on_off){
 	blink_led(pos, on_off);
+}
+void display_set_brightness_one_up_down(int pos, direction_t dir){
+	if(dir == UP)
+		display_set_brightness_one_pos(pos, display_get_brightness_one(pos) + 1);
+	else if(dir == DOWN)
+		display_set_brightness_one_pos(pos, display_get_brightness_one(pos) - 1);
+}
+
+void display_set_brightnes_led(int pos, int brightness){
+	led_set_brightness_one(pos, brightness);
+}
+void display_set_brightness_leds(int brightness){
+	for(int i =0; i < AMOUNT_MAX_DIODES_POS; i++)
+		led_set_brightness_one(i, brightness);
+}
+void display_set_brightness_led_up_down(int pos, direction_t dir){
+	if(dir == UP)
+		led_set_brightness_one(pos, led_get_brightness_one(pos) + 1);
+	else if(dir == DOWN)
+		led_set_brightness_one(pos, led_get_brightness_one(pos) - 1);
+}
+void display_set_brightness_leds_up_down(direction_t dir){
+	for (int i =0 ; i < AMOUNT_MAX_DIODES_POS; i++)
+		display_set_brightness_led_up_down(i, dir);
+}
+void display_set_brightness_up_down(direction_t dir){
+
+	for (int i =0 ; i < AMOUNT_MAX_DISPLAY_POS; i++)
+		display_set_brightness_one_up_down(i,dir);
+
+}
+void display_set_brightness_one_pos(int pos, int brightness){
+	display_set_brightness_one(pos, brightness);
 }

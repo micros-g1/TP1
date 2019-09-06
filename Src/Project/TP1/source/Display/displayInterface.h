@@ -31,7 +31,7 @@ typedef void (*inform_event_callback_t)(display_event_t ev);
 *	OUTPUT:
 *		void.
 */
-void marquee(char* sentence, direction dir);
+void marquee(char* sentence, direction_t dir);
 /*****************************************
 *****************clear_all****************
 ******************************************
@@ -183,4 +183,83 @@ void set_blinking_leds_all(bool on_off);
 *	OUTPUT:
 *		void.*/
 void write_to_led(int pos, bool on_off);
+
+/*******************************************
+*****display_set_brightness_one_up_down*****
+********************************************
+* display_set_brightness_one_up_down sets the brightness level up or down of
+* a specific position of the display.
+* can be called even when current brightness is at its limits!! (has no effect in that case)
+* 	INPUT:
+* 		pos : position of the display that will change its brightness
+*		dir : UP or DOWN.
+*	OUTPUT:
+*		void.*/
+void display_set_brightness_one_up_down(int pos, direction_t dir);
+/*******************************************
+*****display_set_brightness_up_down*****
+********************************************
+* display_set_brightness_up_down sets the brightness level up or down of
+* the whole display (DOES NOT INCLUDE LEDS!!)
+* can be called even when current brightness is at its limits!! (has no effect in that case)
+* 	INPUT:
+*		dir : UP or DOWN.
+*	OUTPUT:
+*		void.*/
+void display_set_brightness_up_down(direction_t dir);
+/*******************************************
+*****display_set_brightness_one_pos*****
+********************************************
+* display_set_brightness_one_pos sets the brightness of a specific position of the display
+* (DOES NOT INCLUDE LEDS!!)
+* can be called even with brighteness higher or lower that MAX_BRIGHT/MIN_BRIGHT!! (has no effect in that case)
+* 	INPUT:
+* 		pos : position of the display that will change its brightness
+*		brightness : level of brightness to be set.
+*	OUTPUT:
+*		void.*/
+void display_set_brightness_one_pos(int pos, int brightness);
+/*******************************************
+*****display_set_brightnes_led**************
+********************************************
+* display_set_brightnes_led sets the brightness level of a specific led
+* can be called even with brighteness higher or lower that MAX_BRIGHT/MIN_BRIGHT!! (has no effect in that case)
+* 	INPUT:
+* 		pos : number of led to be set.
+*		brightness : level of brightness to be set.
+*	OUTPUT:
+*		void.*/
+void display_set_brightnes_led(int pos, int brightness);
+/*******************************************
+*****display_set_brightness_leds**************
+********************************************
+* display_set_brightness_leds sets the brightness level for all leds
+* can be called even with brighteness higher or lower that MAX_BRIGHT/MIN_BRIGHT!! (has no effect in that case)
+* 	INPUT:
+*		brightness : level of brightness to be set.
+*	OUTPUT:
+*		void.*/
+void display_set_brightness_leds(int brightness);
+/*******************************************
+*****display_set_brightness_led_up_down**************
+********************************************
+* display_set_brightness_led_up_down sets the brightness level of a specific led up or down
+* can be called even when current brightness is at its limits!! (has no effect in that case)
+* 	INPUT:
+*		pos : number of the led to be set.
+*		dir : UP or DOWN.
+*	OUTPUT:
+*		void.*/
+void display_set_brightness_led_up_down(int pos, direction_t dir);
+/*******************************************
+*****display_set_brightness_leds_up_down****
+********************************************
+* display_set_brightness_led_up_down sets the brightness level for all leds up or down
+* can be called even when current brightness is at its limits!! (has no effect in that case)
+* 	INPUT:
+*		dir : UP or DOWN.
+*	OUTPUT:
+*		void.*/
+void display_set_brightness_leds_up_down(direction_t dir);
+
 #endif /* DISPLAY_DISPLAYINTERFACE_H_ */

@@ -45,9 +45,9 @@ void write_led(int pos, bool on_off);
 *		true if the led is currently blinking enabled.*/
 bool is_blinking_led_one(int pos);
 /*****************************************
-*********set_brightness_led_one*******************
+*********led_set_brightness_one*******************
 ******************************************
-* set_brightness_one sets the brightness of a specific led to a given level.
+* led_set_brightness_one sets the brightness of a specific led to a given level.
 * 	INPUT:
 * 		pos : led for which brightness will be updated.
 *		brightness : level of brightness, between MIN_BRIGHT_LED and MIN_BRIGHT_LED.
@@ -55,7 +55,7 @@ bool is_blinking_led_one(int pos);
 *	OUTPUT:
 *		void.
 */
-void set_brightness_led_one(int pos, int bright);
+void led_set_brightness_one(int pos, int bright);
 /*****************************************
 *********shift_leds*******************
 ******************************************
@@ -67,7 +67,7 @@ void set_brightness_led_one(int pos, int bright);
 *	OUTPUT:
 *		void.
 */
-void shift_leds(direction dir, bool to_insert);
+void shift_leds(direction_t dir, bool to_insert);
 /*****************************************
 *********leds_on_off*******************
 ******************************************
@@ -79,4 +79,5 @@ void shift_leds(direction dir, bool to_insert);
 */
 void leds_on_off(bool on_off);
 
+int led_get_brightness_one(int pos);
 #endif /* DISPLAY_LEDS_H_ */

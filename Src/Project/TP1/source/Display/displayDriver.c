@@ -235,11 +235,13 @@ int write_sentence(const char* sentence){
 }
 
 //brightness from MIN_BRIGHT to MAX_BRIGHT
-void set_brightness_one(int pos, int bright){
+void display_set_brightness_one(int pos, int bright){
 	if( (bright < MAX_BRIGHT) && (bright >= MIN_BRIGHT) )
 		brightness[pos] = bright;
 }
-
+int display_get_brightness_one(int pos){
+	return brightness[pos];
+}
 void blink_one(int pos, bool on_off){
 	blinking[pos] = on_off;
 	blink_cleared[pos] = false;
@@ -264,7 +266,7 @@ static bool handle_blinking(int pos){
 	return !blink_cleared[pos];
 }
 
-void shift(direction dir, char to_insert){
+void shift(direction_t dir, char to_insert){
 	if(dir == LEFT)
 		for(int i = AMOUNT_MAX_DISPLAY_POS-1; i >= 0; i--)
 			swap_chars(&curr_displaying[i], &to_insert);
