@@ -9,6 +9,7 @@
 #define GENERAL_H_
 #include <stdlib.h>
 #include <stdbool.h>
-
 typedef enum{LEFT, RIGHT, UP, DOWN} direction_t;
+
+
 #endif /* GENERAL_H_ */

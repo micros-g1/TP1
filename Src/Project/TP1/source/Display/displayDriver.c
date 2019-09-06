@@ -277,8 +277,8 @@ static bool handle_blinking(int pos){
 	return !blink_cleared[pos];
 }
 
-void display_dr_shift(direction_t dir, char to_insert){
-	if(dir == LEFT)
+void display_dr_shift(direction_display_t dir, char to_insert){
+	if(dir == DISPLAY_LEFT)
 		for(int i = AMOUNT_MAX_DISPLAY_POS-1; i >= 0; i--)
 			swap_chars(&curr_displaying[i], &to_insert);
 	else

@@ -123,8 +123,8 @@ static bool handle_blinking(int pos){
 
 	return !blink_cleared[pos];
 }
-void led_dr_shift(direction_t dir, bool to_insert){
-	if(dir == LEFT)
+void led_dr_shift(direction_led_t dir, bool to_insert){
+	if(dir == LED_LEFT)
 		for(int i = AMOUNT_MAX_DIODES_POS-1; i >= 0; i--)
 			swap_bools(&curr_displaying[i], &to_insert);
 	else

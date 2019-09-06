@@ -9,6 +9,8 @@
 #define DISPLAY_LEDS_H_
 
 #include "general.h"
+
+typedef enum{LED_LEFT, LED_RIGHT, LED_UP, LED_DOWN} direction_led_t;
 #define AMOUNT_MAX_DIODES_POS		3
 #define MAX_BRIGHT_LED	5
 #define MIN_BRIGHT_LED	0
@@ -88,7 +90,7 @@ void led_dr_set_brightness_one(int pos, int bright);
 *	OUTPUT:
 *		void.
 */
-void led_dr_shift(direction_t dir, bool to_insert);
+void led_dr_shift(direction_led_t dir, bool to_insert);
 /*****************************************
 *********led_dr_on_off*******************
 ******************************************

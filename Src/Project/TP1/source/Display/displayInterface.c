@@ -21,7 +21,7 @@
  -------------------------------------------*/
 static char marquee_buffer[MARQUEE_BUFFER_SIZE];
 static int marquee_buffer_curr_size = 0;
-static direction_t marquee_curr_dir;
+static direction_display_t marquee_curr_dir;
 //static int marquee_curr_vel = 0;
 static display_info_t info;
 static inform_event_callback_t event_callback = NULL;
@@ -67,7 +67,7 @@ void display_marquee(char* sentence, direction_t dir){
 	//FALTA TEMA TIEMPOOOOS!!!
 	clear_marquee_buffer();
 	set_marquee_buffer(sentence);
-	marquee_curr_dir = dir;
+	marquee_curr_dir = (direction_display_t) dir;
 	//marquee_curr_vel = vel;
 	//set vel for sysTick!!!
 	systick_enable_callback(marquee_callback);
@@ -104,17 +104,17 @@ static void marquee_callback(){
 	char aux = NULL_CHAR;
 
 	if(!should_shift){
-		if(marquee_curr_dir == LEFT)
+		if(marquee_curr_dir == DISPLAY_LEFT)
 			chars_written = display_dr_write_sentence(marquee_buffer);
 		else
 			display_clear_all();
 		should_shift = true;
 	}
-	else if((marquee_curr_dir == LEFT) && marquee_buffer[chars_written] != NULL_CHAR){
+	else if((marquee_curr_dir == DISPLAY_LEFT) && marquee_buffer[chars_written] != NULL_CHAR){
 		display_dr_shift(marquee_curr_dir, marquee_buffer[chars_written]);
 		chars_written++;
 	}
-	else if((marquee_curr_dir == RIGHT) && ((aux = look_for_last_not_null()) != NULL_CHAR) ){
+	else if((marquee_curr_dir == DISPLAY_RIGHT) && ((aux = look_for_last_not_null()) != NULL_CHAR) ){
 		remove_last_not_null();
 		display_dr_shift(marquee_curr_dir, aux);
 	}
