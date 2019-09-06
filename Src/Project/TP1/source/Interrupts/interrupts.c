@@ -5,9 +5,9 @@
  *      Author: Tomas, Lisandro, Rocio, Gonzalo
  */
 //#include "gpio.h"
+#include <Interrupts/interrupts.h>
 #include "MK64F12.h"
 #include <stdint.h>
-#include "interrupts.h"
 
 
 static void enable_interrupt_pins(int port_num, int pin_num);

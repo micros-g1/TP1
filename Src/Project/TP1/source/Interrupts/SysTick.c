@@ -3,7 +3,7 @@
  * @brief SysTick driver implementation
  * @author 22.99 Group 1: Alvarez, Gonzalez, Parra, Reina
  */
-#include "SysTick.h"
+#include <Interrupts/SysTick.h>
 #include "MK64F12.h"
 #include <stdint.h>
 #include <stdbool.h>
@@ -132,7 +132,7 @@ void reset_callback_data(st_cb_data_t* data){
 	data->counter = COUNTER_INIT;
 }
 
-bool has_callback(systick_callback_t callback){
+bool systick_has_callback(systick_callback_t callback){
 	bool has = false;
 	for(int i = 0; i < MAX_N_ST_CALLBACKS; i++)
 		if(( has = (st_callbacks[i].func == callback) ))
@@ -141,7 +141,7 @@ bool has_callback(systick_callback_t callback){
 	return has;
 }
 
-callback_conf_t get_callback_conf(systick_callback_t callback){
+callback_conf_t systick_get_callback_conf(systick_callback_t callback){
 	callback_conf_t conf = PERIODIC;
 	for(int i = 0; i < MAX_N_ST_CALLBACKS; i++)
 		if(st_callbacks[i].func == callback)
@@ -149,7 +149,7 @@ callback_conf_t get_callback_conf(systick_callback_t callback){
 	return conf;
 }
 
-void set_callback_conf(systick_callback_t callback, callback_conf_t conf){
+void systick_set_calback_conf(systick_callback_t callback, callback_conf_t conf){
 	for(int i = 0; i < MAX_N_ST_CALLBACKS; i++)
 		if(st_callbacks[i].func == callback)
 			st_callbacks[i].conf = conf;

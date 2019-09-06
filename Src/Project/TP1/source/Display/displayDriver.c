@@ -5,10 +5,10 @@
  *      Author: Tomas
  */
 
+#include <Interrupts/SysTick.h>
 #include "displayDriver.h"
 #include "gpio.h"
 #include "MK64F12.h"
-#include "SysTick.h"
 #include "board.h"
 
 /*-------------------------------------------

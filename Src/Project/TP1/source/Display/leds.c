@@ -7,10 +7,10 @@
 
 #ifndef DISPLAY_LEDS_C_
 #define DISPLAY_LEDS_C_
+#include <Interrupts/SysTick.h>
 #include "leds.h"
 #include "gpio.h"
 #include "MK64F12.h"
-#include "SysTick.h"
 #include "board.h"
 /*-------------------------------------------
  ----------------DEFINES---------------------

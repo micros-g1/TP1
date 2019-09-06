@@ -6,10 +6,10 @@
  */
 
 
+#include <Interrupts/SysTick.h>
 #include "displayInterface.h"
 #include "displayDriver.h"
 #include "leds.h"
-#include "SysTick.h"
 #include "stdlib.h"
 /*-------------------------------------------
  ----------------DEFINES---------------------

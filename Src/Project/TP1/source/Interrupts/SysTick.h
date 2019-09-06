@@ -72,20 +72,20 @@ void systick_delete_callback(systick_callback_t callback);
  * @param callback: callback to check.
  * @return true if the callback was added to sysTick.
  */
-bool has_callback(systick_callback_t callback);
+bool systick_has_callback(systick_callback_t callback);
 /**
  * @brief get a specific callaback's configuration.
  * @param callback: callback to get the configuration from.
  * @return current configuration for the callback.
  */
-callback_conf_t get_callback_conf(systick_callback_t callback);
+callback_conf_t systick_get_callback_conf(systick_callback_t callback);
 /**
  * @brief set a specific callback's configuration.
  * @param callback: callback for which the sysTick configuration will be set.
  * @param conf: configuration for the callback
  * @return current configuration for the callback.
  */
-void set_callback_conf(systick_callback_t callback, callback_conf_t conf);
+void systick_set_callback_conf(systick_callback_t callback, callback_conf_t conf);
 /*******************************************************************************
  ******************************************************************************/
 

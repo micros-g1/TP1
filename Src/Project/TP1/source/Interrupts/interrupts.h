@@ -5,8 +5,8 @@
  *      Author: Tomas
  */
 
-#ifndef INTERRUPTS_H_
-#define INTERRUPTS_H_
+#ifndef INTERRUPTS_INTERRUPTS_H_
+#define INTERRUPTS_INTERRUPTS_H_
 #include "gpio.h"
 
 // Digital values
@@ -40,4 +40,4 @@ typedef void (*pinIrqFun_t)(void);
  */
 void gpioIRQ (pin_t pin, uint8_t irqMode, pinIrqFun_t irqFun);
 void interrupts_init();
-#endif /* INTERRUPTS_H_ */
+#endif /* INTERRUPTS_INTERRUPTS_H_ */

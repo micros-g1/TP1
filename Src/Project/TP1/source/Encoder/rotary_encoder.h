@@ -5,8 +5,8 @@
  *      Author: grein
  */
 
-#ifndef ROTARY_ENCODER_H_
-#define ROTARY_ENCODER_H_
+#ifndef ENCODER_ROTARY_ENCODER_H_
+#define ENCODER_ROTARY_ENCODER_H_
 
 //Rotary Encoder Event
 typedef enum {RE_LEFT,RE_RIGHT,RE_SHORT_CLICK,RE_LONG_CLICK_1,RE_LONG_CLICK_2,RE_KEY_LEFT,RE_KEY_RIGHT,RE_NO_EVENT} re_event_t;
@@ -37,4 +37,4 @@ void rotary_encoder_init();
 //Set Rotary Encoder Callback (will not be called with RE_NO_EVENT)
 void rotary_encoder_set_callback(rotary_encoder_callback_t callback);
 
-#endif /* ROTARY_ENCODER_H_ */
+#endif /* ENCODER_ROTARY_ENCODER_H_ */

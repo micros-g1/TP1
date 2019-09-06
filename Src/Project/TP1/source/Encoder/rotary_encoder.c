@@ -5,10 +5,10 @@
  *      Author: grein
  */
 
+#include <Encoder/rotary_encoder.h>
+#include <Interrupts/SysTick.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include "rotary_encoder.h"
-#include "SysTick.h"
 #include "gpio.h"
 #include "board.h"
 
