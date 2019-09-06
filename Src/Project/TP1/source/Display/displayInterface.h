@@ -14,6 +14,7 @@ typedef struct {
 	int number_of_pos;
 }display_info_t;
 
+typedef enum{LEFT, RIGHT, UP, DOWN} direction_t;
 
 typedef void (*inform_event_callback_t)(void);
 
