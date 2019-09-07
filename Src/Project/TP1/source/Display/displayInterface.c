@@ -10,6 +10,7 @@
 #include "displayInterface.h"
 #include "displayDriver.h"
 #include "leds.h"
+#include "freedom_leds.h"
 #include "stdlib.h"
 /*-------------------------------------------
  ----------------DEFINES---------------------
@@ -53,8 +54,10 @@ void display_init_interface(inform_event_callback_t callback){
 
 	info.number_of_pos = AMOUNT_MAX_DISPLAY_POS;
 	if(initialized) return;
+	frdm_led_dr_init();
 	led_dr_init();
 	display_dr_init();
+
 	clear_marquee_buffer();
 	set_inform_event_callback(callback);
 	systick_init();
@@ -237,4 +240,45 @@ void display_set_brightness_up_down(direction_t dir){
 }
 void display_set_brightness_one_pos(int pos, int brightness){
 	display_dr_set_brightness_one(pos, brightness);
+}
+
+void display_write_or_marquee(char * sentence, direction_t dir){
+	int i =0;
+	for( ; ; i++)
+		if(sentence[i] == NULL_CHAR)
+			break;
+	if(i >= AMOUNT_MAX_DISPLAY_POS)
+		display_marquee(sentence, dir);
+	else
+		display_dr_write_sentence(sentence);
+}
+
+void display_set_brightness_frdm_led_up_down(direction_t dir){
+	if(dir == UP)
+		frdm_led_dr_set_brightness(frdm_led_dr_get_brightness() + 1);
+	else if(dir == DOWN)
+		frdm_led_dr_set_brightness(frdm_led_dr_get_brightness() - 1);
+}
+void display_frdm_led_reset(){
+	frdm_led_dr_reset();
+}
+
+void display_frdm_led_blink(bool on_off){
+	frdm_led_dr_blink(on_off);
+}
+
+void display_frdm_led_write(bool on_off){
+	frdm_led_dr_write(on_off);
+}
+
+bool display_frdm_led_is_blinking(){
+	return frdm_led_dr_is_blinking();
+}
+
+void display_frdm_led_set_color(color_t color){
+	frdm_led_dr_set_color((frdm_led_colors_t)color);
+}
+
+void display_set_brightness_frdm_led(int brightness){
+	frdm_led_dr_set_brightness(brightness);
 }

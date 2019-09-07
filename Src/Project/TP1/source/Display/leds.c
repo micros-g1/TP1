@@ -146,7 +146,7 @@ static bool handle_brightness(int pos){
 	static int bright_counter[AMOUNT_MAX_DIODES_POS] = {false, false, false};
 
 	bool should_show = true;
-	if(brightness[pos] < MAX_BRIGHT)
+	if(brightness[pos] < MAX_BRIGHT_LED)
 		if((bright_counter[pos]++) == brightness[pos]){
 			should_show = false;
 			bright_counter[pos] = 0;
