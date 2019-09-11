@@ -12,6 +12,7 @@
 #include "database.h"
 #include <string.h>
 #include <stdlib.h>
+#include <ctype.h>
 
 
 /*******************************************************************************
@@ -36,13 +37,11 @@ typedef struct {
 static database_metadata_t metadata;
 static user_t database[MAX_USER_N];
 
-static char last_queried_id[ID_LEN+1]; // reduce need for iteration
+// reduce need for iteration when quering multiple times for the same user
 static unsigned char last_queried_user;
 
-static char cards[CARD_MAX_LEN+1][MAX_USER_N];
-static char pins[PIN_MAX_LEN+1][MAX_USER_N];
-static uint32_t max_lens[N_VALIDATORS];
-static uint32_t min_lens[N_VALIDATORS];
+static char cards[CARD_LEN+1][MAX_USER_N]; // leave one space for terminator
+static char pins[PIN_LEN+1][MAX_USER_N];
 
 
 /*******************************************************************************
@@ -54,30 +53,30 @@ static uint32_t min_lens[N_VALIDATORS];
  * @param id: user id, 0 terminated
  * @return Index for user in database. MAX_USER_N if not found
  */
-uint32_t query(char * id);
+uint32_t query(id_type_t id_type, char * id);
 
 /**
  * @brief Validate access. Same functionality as "u_validate"
  * @param u: user
- * @param v: access code to check
+ * @param password: access code to check
  * @return true if user is not blocked and validator matches, false otherwise
  */
-bool check_validator(user_t u, id_validator_t v);
+bool check_password(user_t * u, char * password);
 
 /**
  * @brief Change validator for user. Same functionality as "u_change_validator".
  * @param u: user
- * @param v: new validator
+ * @param password: new validator
  * @return Exit success
  */
-bool update_validator(user_t u, id_validator_t v);
+bool update_password(user_t * u, char * password);
 
 /**
  * @brief Converts id string to id number
  * @param id: user id, 0 terminated
  * @return id number. MAX_ID_NUMBER+1 if input not valid
  */
-unsigned int id_to_num(char * id);
+bool is_id_valid(id_type_t id_type, char * id);
 
 
 /*******************************************************************************
@@ -90,8 +89,6 @@ void u_init()
     metadata.blocked =  0;
     metadata.admins =   1;
 
-    memset(last_queried_id, '0', sizeof(last_queried_id));
-    last_queried_id[ID_LEN] = 0;
     last_queried_user = 0;
 
     unsigned int i, j;
@@ -100,45 +97,47 @@ void u_init()
         database[i].blocked = false;
         database[i].admin = false;
         database[i].index = i;
+        database[i].n_tries = 0;
 
-        for (j = 0; j < N_VALIDATORS; j++) {
-            database[i].validators[j].type = j;
+        for (j = 0; j < N_IDS; j++) {
+            database[i].ids[j].type = j;
         }
-        database[i].validators[FIVE_DIGIT_PIN].data = pins[i];
+        database[i].ids[EIGHT_DIGIT_PIN].data = pins[i];
         pins[i][0] = 0;
-        database[i].validators[MAGNETIC_CARD].data = cards[i];
+        database[i].ids[MAGNETIC_CARD].data = cards[i];
         cards[i][0] = 0;
     }
 
-    max_lens[FIVE_DIGIT_PIN] = PIN_MAX_LEN;
-    min_lens[FIVE_DIGIT_PIN] = PIN_MIN_LEN;
-
-    max_lens[MAGNETIC_CARD] = CARD_MAX_LEN;
-    min_lens[MAGNETIC_CARD] = CARD_MIN_LEN;
-
-    database[0].id = 0;  // default admin data
-    database[0].blocked = false;
+    strcpy(database[0].ids[EIGHT_DIGIT_PIN].data, "00000000");  // default admin data
     database[0].admin = true;
     database[0].free = false;
-    strcpy(database[0].validators[FIVE_DIGIT_PIN].data, "0000");
+    strcpy(database[0].password, "0000");
 }
 
 
-bool u_validate(char * id, id_validator_t validator)
+bool u_validate(id_type_t id_type, char * id, char * password)
 {
     bool valid = false;
-    uint32_t index = query(id);
+    uint32_t index = query(id_type, id);
 
     if (index < MAX_USER_N && !database[index].blocked) {
-        valid = check_validator(database[index], validator);
+        valid = check_password(&database[index], password);
+
+        if (valid) {
+            database[index].n_tries = 0;
+        }
+        else {
+            database[index].n_tries++;
+        }
     }
 
     return valid;
 }
 
 
-void u_block(char * id) {
-    uint32_t index = query(id);
+void u_block(id_type_t id_type, char * id)
+{
+    uint32_t index = query(id_type, id);
 
     if (index < MAX_USER_N && !database[index].blocked) {
         database[index].blocked = true;
@@ -147,20 +146,21 @@ void u_block(char * id) {
 }
 
 
-void u_unblock(char * id)
+void u_unblock(id_type_t id_type, char * id)
 {
-    uint32_t index = query(id);
+    uint32_t index = query(id_type, id);
 
     if (index < MAX_USER_N && database[index].blocked) {
         database[index].blocked = false;
         metadata.blocked--;
+        database[index].n_tries = 0;
     }
 }
 
 
-void u_make_admin(char * id)
+void u_make_admin(id_type_t id_type, char * id)
 {
-    uint32_t index = query(id);
+    uint32_t index = query(id_type, id);
 
     if (index < MAX_USER_N && !database[index].admin) {
         database[index].admin = true;
@@ -169,52 +169,61 @@ void u_make_admin(char * id)
 }
 
 
-bool u_remove_as_admin(char * id)
+bool u_remove_as_admin(id_type_t id_type, char * id)
 {
     bool success = false;
+
     if (metadata.admins > 1) {
-        uint32_t index = query(id);
+        uint32_t index = query(id_type, id);
 
         if (index < MAX_USER_N && database[index].admin) {
             database[index].admin = false;
             metadata.admins--;
+            success = true;
         }
-    }
-}
-
-
-bool u_change_validator(char * id, id_validator_t validator)
-{
-    bool success = false;
-    uint32_t index = query(id);
-    if (index < MAX_USER_N) {
-        success = update_validator(database[index], validator);
     }
 
     return success;
 }
 
 
-bool u_add(char * id, id_validator_t validator)
+bool u_change_password(id_type_t id_type, char * id, char * password)
+{
+    bool success = false;
+    uint32_t index = query(id_type, id);
+    if (index < MAX_USER_N) {
+        success = update_password(&database[index], password);
+    }
+
+    return success;
+}
+
+
+bool u_add(id_type_t id_type, char * id, char * password)
 {
     bool success = false;
     if (metadata.n_users < MAX_USER_N) {
         // room for new user available
-        unsigned int id_number = id_to_num(id);
-        if (id_number <= MAX_ID_NUM) {
+
+        if (is_id_valid(id_type, id)) {
             // valid id received
-            if (query(id) ==  MAX_USER_N) {
+
+            if (query(id_type, id) ==  MAX_USER_N) {
                 // id not repeated
-                unsigned int i = 0, end = false;
+
+                unsigned int i = 0;
+                bool end = false;
                 while (i < MAX_USER_N && !end) {
                     if (database[i].free) {
-                        end = true;
-                        if (update_validator(database[i], validator)) {
-                            // valid validator received. new user clear
+                        end = true; // free spot found!
+                        if (update_password(&database[i], password)) {
+                            // valid password received. new user clear
                             database[i].free = false;
                             database[i].admin = false;
                             database[i].blocked = false;
-                            database[i].id = id_number;
+                            database[i].n_tries = 0;
+                            strcpy(database[i].ids[id_type].data, id);
+
 
                             metadata.n_users++;
                             success = true;
@@ -229,11 +238,24 @@ bool u_add(char * id, id_validator_t validator)
     return success;
 }
 
-
-void u_remove(char * id)
+bool u_new_id(id_type_t id_type, char * id, id_type_t new_id_type, char * new_id)
 {
-    uint32_t index = query(id);
-    if (index < MAX_USER_N && !(database[index].admin && metadata.admins == 1)) {
+    bool valid = false;
+    uint32_t index = query(id_type, id);
+    if (index < MAX_USER_N && is_id_valid(new_id_type, new_id)) {
+        strcpy(database[index].ids[new_id_type].data, new_id);
+        valid = true;
+    }
+
+    return valid;
+}
+
+
+
+void u_remove(id_type_t id_type, char * id)
+{
+    uint32_t index = query(id_type, id);
+    if (index < MAX_USER_N && !(database[index].admin && metadata.admins == 1)) { // cant remove last remaining admin!
         database[index].free = true;
         if (database[index].blocked) {
             metadata.blocked--;
@@ -244,6 +266,16 @@ void u_remove(char * id)
         metadata.n_users--;
     }
 }
+
+
+void u_reset_n_tries(id_type_t id_type, char * id)
+{
+    uint32_t index = query(id_type, id);
+    if (index < MAX_USER_N) {
+        database[index].n_tries = 0;
+    }
+}
+
 
 /*******************************************************************************
  * GETTERS AND SIMPLE CHECKS
@@ -267,10 +299,10 @@ uint32_t u_n_blocked()
 }
 
 
-bool u_is_admin(char * id)
+bool u_is_admin(id_type_t id_type, char * id)
 {
     bool ans = false;
-    uint32_t index = query(id);
+    uint32_t index = query(id_type, id);
     if (index < MAX_USER_N) {
         ans = database[index].admin;
     }
@@ -278,10 +310,10 @@ bool u_is_admin(char * id)
 }
 
 
-bool u_is_blocked(char * id)
+bool u_is_blocked(id_type_t id_type, char * id)
 {
     bool ans = false;
-    uint32_t index = query(id);
+    uint32_t index = query(id_type, id);
     if (index < MAX_USER_N) {
         ans = database[index].blocked;
     }
@@ -289,40 +321,49 @@ bool u_is_blocked(char * id)
 }
 
 
-bool u_exists(char * id)
+bool u_exists(id_type_t id_type, char * id)
 {
-    uint32_t index = query(id);
+    uint32_t index = query(id_type, id);
     return index < MAX_USER_N;
 }
 
+
+uint32_t u_get_n_tries(id_type_t id_type, char * id)
+{
+    uint32_t ans = UINT32_MAX;
+    uint32_t index = query(id_type, id);
+    if (index < MAX_USER_N) {
+        ans = database[index].n_tries;
+    }
+    return ans;
+}
 
 /*******************************************************************************
  * AUXILIARY FUNCTIONS
  ******************************************************************************/
 
-uint32_t query(char * id)
+uint32_t query(id_type_t id_type, char * id)
 {
     uint32_t index = MAX_USER_N;
-    if (id != NULL && strlen(id) == ID_LEN) {
-        unsigned int id_number = id_to_num(id);
-        if (id_number <= MAX_ID_NUM) {
-            // valid id number
-            if (strcmp(id, last_queried_id) == 0 && last_queried_user < MAX_USER_N &&
-                !database[last_queried_user].free
-                && database[last_queried_user].id == id_number) {
-                index = last_queried_user; // same result as last query
-            } else {
-                last_queried_user = index;
-                // new query, or last query result no longer valid
-                unsigned int i = 0;
-                while (i < MAX_USER_N && index == MAX_USER_N) {
-                    if (!database[i].free && database[i].id == id_number) {
-                        // user found
-                        index = last_queried_user = i;
-                        strcpy(last_queried_id, id);
-                    }
-                    i++;
+    if (is_id_valid(id_type, id)) {
+        // pin is right lenght and consists solely of numbers
+
+        // first we check if this is last query's result is still valid
+        if (last_queried_user < MAX_USER_N  // was last query valid?
+                && !database[last_queried_user].free  // is the user still there? (maybe last query was remove)
+                && strcmp(id, database[last_queried_user].ids[id_type].data) == 0 ) { // is this the same query?
+            index = last_queried_user; // same result as last query
+        } else {
+            // new query, or last query result no longer valid
+            last_queried_user = MAX_USER_N; // in case i dont find the user: no last queried user
+
+            unsigned int i = 0;
+            while (i < MAX_USER_N && index == MAX_USER_N) {
+                if (!database[i].free && strcmp(database[i].ids[id_type].data, id) == 0) {
+                    // user found
+                    index = last_queried_user = i;
                 }
+                i++;
             }
         }
     }
@@ -331,37 +372,57 @@ uint32_t query(char * id)
 }
 
 
-unsigned int id_to_num(char * id)
+bool is_id_valid(id_type_t id_type, char * id)
 {
-    unsigned int number = MAX_ID_NUM + 1;
+    bool valid = false;
 
-    if (id != NULL && strlen(id) == ID_LEN) {
-        char * str_end; // convert id number
-        long id_number = strtol(id, &str_end, 0);
-        if (*str_end == '\0' && id_number <= MAX_ID_NUM) {
-            // valid number
-            number = id_number;
+    if (id != NULL) {
+        switch (id_type) {
+            case EIGHT_DIGIT_PIN: {
+                if (strlen(id) == PIN_LEN) {
+                    unsigned int i = 0;
+                    valid = true;
+                    while (i < EIGHT_DIGIT_PIN && valid) {
+                        valid = isdigit(id[i++]);
+                    }
+                }
+            } break;
+
+            case MAGNETIC_CARD: {
+                valid = (strlen(id) <= CARD_LEN);
+            } break;
+
+            default: {
+            } break;
+
         }
     }
 
-    return number;
+    return valid;
 }
 
 
-bool check_validator(user_t u, id_validator_t v) {
-    char * check =  u.validators[v.type].data;
-    return v.data != NULL && strcmp(check, v.data) == 0;
+bool check_password(user_t * u, char * password)
+{
+    return password != NULL && strcmp(password, u->password) == 0;
 }
 
 
-bool update_validator(user_t u, id_validator_t v)
+bool update_password(user_t * u, char * password)
 {
     bool success = false;
-    if (v.data != NULL && u.validators[v.type].data != NULL) {
-        unsigned int len = strlen(v.data);
-        if (len >= min_lens[v.type] && len <= max_lens[v.type]) {
-            strcpy(u.validators[v.type].data, v.data);
+    if (password != NULL) {
+        unsigned int len = strlen(password);
+        if (len >= PASSWORD_MIN_LEN && len <= PASSWORD_MAX_LEN) {
+            unsigned int i = 0;
             success = true;
+            while (i < len && success) {
+                success = isdigit(password[i++]);
+            }
+
+            if (success) {
+                strcpy(u->password, password);
+            }
         }
     }
     return success;

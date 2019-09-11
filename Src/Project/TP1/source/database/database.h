@@ -20,35 +20,35 @@
 
 #define MAX_USER_N  32
 
-#define ID_LEN      8    // only valid ID len
 #define MAX_ID_NUM  99999999
 
 
 // valid length ranges for validator string, by type
-#define PIN_MIN_LEN 4
-#define PIN_MAX_LEN 5
+#define PASSWORD_MIN_LEN 4
+#define PASSWORD_MAX_LEN 5
 
-#define CARD_LEN        37
-#define CARD_MIN_LEN    CARD_LEN
-#define CARD_MAX_LEN    CARD_LEN
+#define CARD_LEN        37 // only valid card len
+#define PIN_LEN      8    // only valid pin ID len
 
 /*******************************************************************************
  * ENUMERATIONS AND STRUCTURES AND TYPEDEFS
  ******************************************************************************/
-typedef enum {MAGNETIC_CARD,    FIVE_DIGIT_PIN, N_VALIDATORS} id_validator_type_t;
+typedef enum {MAGNETIC_CARD,    EIGHT_DIGIT_PIN, N_IDS} id_type_t;
 
 typedef struct {
-    id_validator_type_t type;
+    id_type_t type;
     char * data; // string, 0 terminated
-} id_validator_t;
+} id_t;
+
 
 typedef struct {    // id left as whole int for efficiency, two ints would be necessary either way
-    uint32_t id;            // 2^26-1=67,108,864; 2^27-1=134,217,727 -> 27 bits necessary for 8 digit id
+    char password [PASSWORD_MAX_LEN];  // 2^26-1=67,108,864; 2^27-1=134,217,727 -> 27 bits necessary for 8 digit id
     uint8_t admin : 1;     // booleans
     uint8_t blocked : 1;
     uint8_t free : 1;      // true if valid user
-    uint8_t index : 5;     // 5 bits necessary for 31 users
-    id_validator_t validators[N_VALIDATORS];
+    uint8_t index : 5;     // 5 bits necessary for 32 users
+    uint8_t n_tries;
+    id_t ids[N_IDS];
 } user_t;
 
 
@@ -70,7 +70,7 @@ void u_init();
  * @param id: user id, 0 terminated
  * @return true if user exists
  */
-bool u_exists(char * id);
+bool u_exists(id_type_t id_type, char * id);
 
 /**
  * @brief Validates access
@@ -78,46 +78,50 @@ bool u_exists(char * id);
  * @param validator: access code given
  * @return true if user is not blocked and validator matches, false otherwise
  */
-bool u_validate(char * id, id_validator_t validator);
+
+bool u_validate(id_type_t id_type, char * id, char * password);
 
 /**
  * @brief Block user from accessing
  * @param id: user id, 0 terminated
  */
-void u_block(char * id);
+void u_block(id_type_t id_type, char * id);
 
 /**
  * @brief Allow user access
  * @param id: user id, 0 terminated
  */
-void u_unblock(char * id);
+void u_unblock(id_type_t id_type, char * id);
 
 /**
  * @brief Give user admin privileges
  * @param id: user id, 0 terminated
  */
-void u_make_admin(char * id);
+void u_make_admin(id_type_t id_type, char * id);
 
 /**
  * @brief Remove admin privileges from user
  * @param id: user id, 0 terminated
  * @return operation success. Will fail if user does not exists or is the sole admin
  */
-bool u_remove_as_admin(char * id);
+bool u_remove_as_admin(id_type_t id_type, char * id);
 
 /**
  * @brief Checks whether user has admin privileges
  * @param id: user id, 0 terminated
  * @return true if user has admin privileges
  */
-bool u_is_admin(char * id);
+bool u_is_admin(id_type_t id_type, char * id);
 
 /**
  * @brief Checks whether user is blocked
  * @param id: user id, 0 terminated
  * @return true if user is blocked
  */
-bool u_is_blocked(char * id);
+bool u_is_blocked(id_type_t id_type, char * id);
+
+uint32_t u_get_n_tries(id_type_t id_type, char * id);
+void u_reset_n_tries(id_type_t id_type, char * id);
 
 /**
  * @brief Change or add specific validator for user
@@ -125,7 +129,7 @@ bool u_is_blocked(char * id);
  * @param validator: new validator
  * @return exit success
  */
-bool u_change_validator(char * id, id_validator_t validator);
+bool u_change_password(id_type_t id_type, char * id, char * password);
 
 /**
  * @brief Total number of users currently in the database, including blocked users and admins
@@ -151,15 +155,17 @@ uint32_t u_n_blocked();
  * @param validator: access validator associated to new user
  * @return Operation success. Will fail if ID is already in use
  */
-bool u_add(char * id, id_validator_t validator);
+bool u_add(id_type_t id_type, char * id, char * password);
 
+
+bool u_new_id(id_type_t id_type, char * id, id_type_t new_id_type, char * new_id);
 /**
  * @brief Delete user
  * @param id: user id, 0 terminated
  */
-void u_remove(char * id);
+void u_remove(id_type_t id_type, char * id);
 /*******************************************************************************
  ******************************************************************************/
 
-
+uint8_t u_get_tries(id_type_t id_type, char * id);
 #endif //SOURCE_DATABASE_H

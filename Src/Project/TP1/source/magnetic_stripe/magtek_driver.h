@@ -22,7 +22,7 @@
 /*******************************************************************************
  * ENUMERATIONS AND STRUCTURES AND TYPEDEFS
  ******************************************************************************/
-
+typedef void(*on_new_card_t)(char*);
 /*******************************************************************************
  * VARIABLE PROTOTYPES WITH GLOBAL SCOPE
  ******************************************************************************/
@@ -35,10 +35,20 @@
  * @brief Initialize magnetic stripe reading
  * @return Initialization succeed
  */
-bool mt_init();
+
+#define MT_DEBUG
+
+#ifdef MT_DEBUG
+extern bool datapin;
+extern bool enablepin;
+#endif
+
+
+bool mt_init(on_new_card_t callback);
 
 void mt_enable_callback();
 void mt_clock_callback();
+void mt_periodic(void);
 
 
 
