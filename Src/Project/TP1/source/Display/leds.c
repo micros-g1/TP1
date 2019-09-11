@@ -110,7 +110,7 @@ bool led_dr_is_blinking_one(int pos){
 }
 
 static bool handle_blinking(int pos){
-	static int blink_counter[AMOUNT_MAX_DIODES_POS] = {false, false, false};
+	static int blink_counter[AMOUNT_MAX_DIODES_POS] = {0, 0, 0};
 
 	if(!blinking[pos]) return true;		//not currently blinking, so should not handle blinking.
 

@@ -253,32 +253,29 @@ void display_write_or_marquee(char * sentence, direction_t dir){
 		display_dr_write_sentence(sentence);
 }
 
-void display_set_brightness_frdm_led_up_down(direction_t dir){
+void display_set_brightness_frdm_led_up_down(color_t color, direction_t dir){
 	if(dir == UP)
-		frdm_led_dr_set_brightness(frdm_led_dr_get_brightness() + 1);
+		frdm_led_dr_set_brightness(color, frdm_led_dr_get_brightness(color) + 1);
 	else if(dir == DOWN)
-		frdm_led_dr_set_brightness(frdm_led_dr_get_brightness() - 1);
+		frdm_led_dr_set_brightness(color, frdm_led_dr_get_brightness(color) - 1);
 }
 void display_frdm_led_reset(){
 	frdm_led_dr_reset();
 }
 
-void display_frdm_led_blink(bool on_off){
-	frdm_led_dr_blink(on_off);
+void display_frdm_led_blink(color_t color, bool on_off){
+	frdm_led_dr_blink(color, on_off);
 }
 
-void display_frdm_led_write(bool on_off){
-	frdm_led_dr_write(on_off);
+void display_frdm_led_write(color_t color, bool on_off){
+	frdm_led_dr_write(color, on_off);
 }
 
-bool display_frdm_led_is_blinking(){
-	return frdm_led_dr_is_blinking();
+bool display_frdm_led_is_blinking(color_t color){
+	return frdm_led_dr_is_blinking(color);
 }
 
-void display_frdm_led_set_color(color_t color){
-	frdm_led_dr_set_color((frdm_led_colors_t)color);
-}
 
-void display_set_brightness_frdm_led(int brightness){
-	frdm_led_dr_set_brightness(brightness);
+void display_set_brightness_frdm_led(color_t color, int brightness){
+	frdm_led_dr_set_brightness(color, brightness);
 }
