@@ -5,8 +5,8 @@
  *      Author: Tomas
  */
 
-#ifndef DISPLAY_DISPLAYDRIVER_H_
-#define DISPLAY_DISPLAYDRIVER_H_
+#ifndef DISPLAY_DISPLAY_DRIVER_H_
+#define DISPLAY_DISPLAY_DRIVER_H_
 
 #include "general.h"
 /*-------------------------------------------
@@ -195,4 +195,4 @@ char* display_dr_get_currently_curr_displaying_word();
 *		the word that is currently on the display buffer.*/
 char* display_dr_get_currently_on_buffer_word();
 
-#endif /* DISPLAY_DISPLAYDRIVER_H_ */
+#endif /* DISPLAY_DISPLAY_DRIVER_H_ */

@@ -11,8 +11,8 @@
 /*******************************************************************************
  * INCLUDE HEADER FILES
  ******************************************************************************/
+#include <Magnetic_stripe/mt_evqueue.h>
 #include <stdbool.h>
-#include "mt_evqueue.h"
 
 /*******************************************************************************
  * CONSTANT AND MACRO DEFINITIONS USING #DEFINE

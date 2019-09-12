@@ -11,6 +11,4 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-typedef enum{LEFT, RIGHT} direction;
-
 #endif /* GENERAL_H_ */

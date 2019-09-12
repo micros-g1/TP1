@@ -4,15 +4,15 @@
   @author   22.99 2019 Group 1: Alvarez, Gonzalez, Parra, Reina
  ******************************************************************************/
 
-#include "magtek_driver.h"
-#include "magnetic_stripe.h"
-#include "interrupts.h"
-#include "magtek_driver_fsm.h"
+#include <Interrupts/interrupts.h>
+#include <Magnetic_stripe/magnetic_stripe.h>
+#include <Magnetic_stripe/magtek_driver.h>
+#include <Magnetic_stripe/magtek_driver_fsm.h>
 #include <stdlib.h>
 #ifdef MT_DEBUG
 #include <stdio.h>
 #endif
-#include "SysTick.h"
+#include <Interrupts/SysTick.h>
 
 #define MT_SYSTICK 0
 
@@ -68,7 +68,7 @@ void mt_init(mt_callback_t callback)
     gpioIRQ(MT_CLOCKPIN, GPIO_IRQ_MODE_FALLING_EDGE, mt_clock_callback);
 #endif
     cb = callback;
-    systick_add_callback(mt_periodic, 100);
+    systick_add_callback(mt_periodic, 100,PERIODIC);
     // TODO proper initialization of systick
     event_queue_flush();
     card_buffer[0] = 0;

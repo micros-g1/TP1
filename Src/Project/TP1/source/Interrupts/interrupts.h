@@ -7,7 +7,7 @@
 
 #ifndef INTERRUPTS_INTERRUPTS_H_
 #define INTERRUPTS_INTERRUPTS_H_
-#include "gpio.h"
+#include <gpio.h>
 
 // Digital values
 #ifndef LOW

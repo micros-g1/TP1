@@ -4,10 +4,10 @@
  *  Created on: 7 sep. 2019
  *      Author: Tomas
  */
+#include <gpio.h>
 #include "freedom_leds.h"
 #include <Interrupts/SysTick.h>
 #include "leds.h"
-#include "gpio.h"
 #include "MK64F12.h"
 #include "board.h"
 

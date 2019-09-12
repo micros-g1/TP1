@@ -7,9 +7,9 @@
 
 #ifndef DISPLAY_LEDS_C_
 #define DISPLAY_LEDS_C_
+#include <gpio.h>
 #include <Interrupts/SysTick.h>
 #include "leds.h"
-#include "gpio.h"
 #include "MK64F12.h"
 #include "board.h"
 /*-------------------------------------------

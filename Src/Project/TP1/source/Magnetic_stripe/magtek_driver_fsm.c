@@ -2,7 +2,7 @@
 // Created by Rocío Parra on 9/4/2019.
 //
 
-#include "magtek_driver_fsm.h"
+#include <Magnetic_stripe/magtek_driver_fsm.h>
 #include <stdint.h>
 
 #define CARD_SIZE   40

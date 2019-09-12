@@ -2,7 +2,8 @@
 // Created by Rocío Parra on 9/9/2019.
 //
 
-#include "mt_evqueue.h"
+#include <Magnetic_stripe/mt_evqueue.h>
+#include "hardware.h"
 
 //Event queue Variables
 static volatile mt_ev_t event_queue[EV_QUEUE_MAX_LENGTH];	//Circular queue

@@ -5,11 +5,11 @@
  *      Author: grein
  */
 
-#include <Encoder/rotary_encoder.h>
+#include <gpio.h>
 #include <Interrupts/SysTick.h>
+#include <Rotary_encoder/rotary_encoder.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include "gpio.h"
 #include "board.h"
 
 //This driver has an ISR called by an SysTick Callback
@@ -98,9 +98,7 @@ static const re_event_t  rotary_encoder_generated_event[RE_TOTAL_STATES][RE_LL_T
 };
 
 //Variables
-static unsigned int tick_counter;
 static rotary_encoder_callback_t rotary_encoder_callback;
-static bool rotary_encoder_initialized = false;
 static bool previous_button_signal;
 static bool previous_rotation_idle;
 static re_state_t re_state;
@@ -108,6 +106,7 @@ static re_state_t re_state;
 //Initialize Rotary Encoder
 void rotary_encoder_init()
 {
+	static bool rotary_encoder_initialized = false;
 	if(!rotary_encoder_initialized)
 	{
 		//Initialize GPIO
@@ -119,7 +118,6 @@ void rotary_encoder_init()
 		previous_button_signal = true;	//Assume button is not pressed
 		re_state = RE_IDLE_S;		//Assume rotary encoder rotation is IDLE
 		previous_rotation_idle = true;
-		tick_counter = 0;
 		//Initialize SysTick
 		systick_init();
 		systick_add_callback(rotary_encoder_ISR,RE_ISR_PERIOD_TICKS,PERIODIC);
@@ -136,6 +134,7 @@ void rotary_encoder_set_callback(rotary_encoder_callback_t callback)
 
 static void rotary_encoder_ISR()
 {
+	static unsigned int tick_counter = 0;
 	//Low Level Event
 	re_ll_event_t ev_ll = RE_LL_NO_EVENT;
 	//High Level Event (for callback)

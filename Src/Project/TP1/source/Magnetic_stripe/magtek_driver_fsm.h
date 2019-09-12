@@ -6,7 +6,7 @@
 #define SOURCE_MAGTEK_DRIVER_FSM_H
 
 
-#include "mt_evqueue.h"
+#include <Magnetic_stripe/mt_evqueue.h>
 
 
 typedef enum {MT_IDLE, MT_WAITING_SS, MT_READING_DATA, MT_READING_LRC, MT_N_STATES} mt_state_t;

@@ -9,13 +9,13 @@
  ******************************************************************************/
 
 
-#include <Encoder/rotary_encoder.h>
+#include <Display/display_interface.h>
+#include <gpio.h>
 #include <Interrupts/interrupts.h>
 #include <Interrupts/SysTick.h>
+#include <Rotary_encoder/rotary_encoder.h>
 #include "board.h"
 #include "general.h"
-#include "gpio.h"
-#include "Display/displayInterface.h"
 
 /*******************************************************************************
  * CONSTANT AND MACRO DEFINITIONS USING #DEFINE

@@ -5,17 +5,20 @@
  *      Author: Tomas
  */
 
-#ifndef DISPLAY_DISPLAYINTERFACE_H_
-#define DISPLAY_DISPLAYINTERFACE_H_
+#ifndef DISPLAY_DISPLAY_INTERFACE_H_
+#define DISPLAY_DISPLAY_INTERFACE_H_
 
 #include "general.h"
 
+//struct that contains relevant information corresponding to the dislay submodules
 typedef struct {
 	int number_of_pos;
 }display_info_t;
 
 typedef enum{LEFT, RIGHT, UP, DOWN} direction_t;
 typedef enum{RED, GREEN, BLUE}color_t;
+
+//callback to call when a new display event (marquee event) has come.
 typedef void (*inform_event_callback_t)(void);
 
 
@@ -350,4 +353,4 @@ void display_set_brightness_frdm_led_up_down(color_t color, direction_t dir);
 *	OUTPUT:
 *		void.*/
 void display_set_brightness_frdm_led(color_t color, int brightness);
-#endif /* DISPLAY_DISPLAYINTERFACE_H_ */
+#endif /* DISPLAY_DISPLAY_INTERFACE_H_ */

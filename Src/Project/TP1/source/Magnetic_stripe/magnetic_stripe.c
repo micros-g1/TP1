@@ -4,10 +4,10 @@
   @author   22.99 2019 Group 1: Alvarez, Gonzalez, Parra, Reina
  ******************************************************************************/
 
-#include "magnetic_stripe.h"
+#include <Magnetic_stripe/magnetic_stripe.h>
+#include <Magnetic_stripe/magtek_driver.h>
 #include <stdint.h>
 #include <stdio.h>
-#include "magtek_driver.h"
 
 static ms_callback_t higher_callback;
 

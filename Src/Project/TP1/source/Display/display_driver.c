@@ -5,9 +5,9 @@
  *      Author: Tomas
  */
 
+#include <Display/display_driver.h>
+#include <gpio.h>
 #include <Interrupts/SysTick.h>
-#include "displayDriver.h"
-#include "gpio.h"
 #include "MK64F12.h"
 #include "board.h"
 
