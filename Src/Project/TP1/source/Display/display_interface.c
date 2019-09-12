@@ -60,7 +60,7 @@ void display_init_interface(display_marquee_event_callback_t callback){
 	clear_marquee_buffer();
 	set_inform_event_callback(callback);
 	systick_init();
-	systick_add_callback(marquee_callback, SYSTICK_ISR_FREQUENCY_HZ, PERIODIC);
+	systick_add_callback(marquee_callback, SYSTICK_ISR_FREQUENCY_HZ/4, PERIODIC);
 	systick_disable_callback(marquee_callback);
 	initialized = true;
 }
@@ -81,7 +81,7 @@ void display_stop_marquee(){
 }
 
 static void clear_marquee_buffer(){
-	for(int i = 0; i < AMOUNT_MAX_DISPLAY_POS; i++)
+	for(int i = 0; i < MARQUEE_BUFFER_SIZE; i++)
 		marquee_buffer[i] = NULL_CHAR;
 }
 
