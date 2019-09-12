@@ -10,16 +10,13 @@
 
 #include "general.h"
 
-//struct that contains relevant information corresponding to the dislay submodules
-typedef struct {
-	int number_of_pos;
-}display_info_t;
 
-typedef enum{LEFT, RIGHT, UP, DOWN} direction_t;
-typedef enum{RED, GREEN, BLUE}color_t;
-
+//directions, for shifting and controlling brightness
+typedef enum{DISPLAY_INT_LEFT, DISPLAY_INT_RIGHT, DISPLAY_INT_UP, DISPLAY_INT_DOWN} display_direction_t;
+//freedom led colors
+typedef enum{RED, GREEN, BLUE}display_color_t;
 //callback to call when a new display event (marquee event) has come.
-typedef void (*inform_event_callback_t)(void);
+typedef void (*display_marquee_event_callback_t)(void);
 
 
 /*****************************************
@@ -33,7 +30,9 @@ typedef void (*inform_event_callback_t)(void);
 *	OUTPUT:
 *		void.
 */
-void display_marquee(char* sentence, direction_t dir);
+void display_marquee(char* sentence, display_direction_t dir);
+
+
 /*****************************************
 ***********display_write_or_marquee*******
 ******************************************
@@ -47,7 +46,8 @@ void display_marquee(char* sentence, direction_t dir);
 *	OUTPUT:
 *		void.
 */
-void display_write_or_marquee(char * sentence, direction_t dir);
+void display_write_or_marquee(char * sentence, display_direction_t dir);
+
 
 /********************************************************
 ************display_stop_marquee*************************
@@ -59,6 +59,8 @@ void display_write_or_marquee(char * sentence, direction_t dir);
 *		void.
 */
 void display_stop_marquee();
+
+
 /*****************************************
 *****************clear_all****************
 ******************************************
@@ -69,6 +71,8 @@ void display_stop_marquee();
 *		void.
 */
 void display_clear_all();
+
+
 /*****************************************
 ***********display_clear_all_leds*********
 ******************************************
@@ -79,6 +83,7 @@ void display_clear_all();
 *		void.
 */
 void display_clear_all_leds();
+
 
 /*****************************************
 *************display_write_word***********
@@ -91,6 +96,8 @@ void display_clear_all_leds();
 *		void.
 */
 void display_write_word(const char* word);
+
+
 /*****************************************
 *************display_write_char***********
 ******************************************
@@ -102,6 +109,8 @@ void display_write_word(const char* word);
 *		void.
 */
 void display_write_char(char c, int pos);
+
+
 /*****************************************
 *************display_set_blinking_all*****
 ******************************************
@@ -113,6 +122,8 @@ void display_write_char(char c, int pos);
 *		void.
 */
 void display_set_blinking_all(bool on_off);
+
+
 /*****************************************
 *******display_get_is_blinking_any********
 ******************************************
@@ -124,6 +135,8 @@ void display_set_blinking_all(bool on_off);
 *		true if at least one position is currently blinking enabled.
 */
 bool display_get_is_blinking_any();
+
+
 /*****************************************
 **********display_set_blinking_one********
 ******************************************
@@ -136,6 +149,8 @@ bool display_get_is_blinking_any();
 *		void
 */
 void display_set_blinking_one(bool on_off, int pos);
+
+
 /*****************************************
 **************display_get_is_blinking*****
 ******************************************
@@ -147,6 +162,8 @@ void display_set_blinking_one(bool on_off, int pos);
 *		true if the position is currently blinking enabled.
 */
 bool display_get_is_blinking(int pos);
+
+
 /*****************************************
 *******display_init_interface*************
 ******************************************
@@ -158,7 +175,9 @@ bool display_get_is_blinking(int pos);
 *	OUTPUT:
 *		void
 */
-void display_init_interface(inform_event_callback_t callback);
+void display_init_interface(display_marquee_event_callback_t callback);
+
+
 /*************************************************
 **************display_get_blinking_led_one********
 **************************************************
@@ -169,6 +188,8 @@ void display_init_interface(inform_event_callback_t callback);
 *		true if at the position is currently blinking enabled.
 */
 bool display_get_blinking_led_one(int pos);
+
+
 /*****************************************
 *************display_set_blinking_led_one*************
 ******************************************
@@ -181,6 +202,8 @@ bool display_get_blinking_led_one(int pos);
 *		void
 */
 void display_set_blinking_led_one(int pos, bool on_off);
+
+
 /*****************************************
 ***********display_get_is_blinking_leds_any*******
 ******************************************
@@ -191,6 +214,8 @@ void display_set_blinking_led_one(int pos, bool on_off);
 *		true if at least one led is currently blinking
 */
 bool display_get_is_blinking_leds_any();
+
+
 /*************************************************
 *********display_set_blinking_leds_all************
 **************************************************
@@ -201,6 +226,8 @@ bool display_get_is_blinking_leds_any();
 *		void.
 */
 void display_set_blinking_leds_all(bool on_off);
+
+
 /*****************************************
 *************display_write_to_led*********
 ******************************************
@@ -211,6 +238,8 @@ void display_set_blinking_leds_all(bool on_off);
 *	OUTPUT:
 *		void.*/
 void display_write_to_led(int pos, bool on_off);
+
+
 /*******************************************
 *****display_set_brightness_one_up_down*****
 ********************************************
@@ -222,7 +251,9 @@ void display_write_to_led(int pos, bool on_off);
 *		dir : UP or DOWN.
 *	OUTPUT:
 *		void.*/
-void display_set_brightness_one_up_down(int pos, direction_t dir);
+void display_set_brightness_one_up_down(int pos, display_direction_t dir);
+
+
 /*******************************************
 *****display_set_brightness_up_down*****
 ********************************************
@@ -233,7 +264,9 @@ void display_set_brightness_one_up_down(int pos, direction_t dir);
 *		dir : UP or DOWN.
 *	OUTPUT:
 *		void.*/
-void display_set_brightness_up_down(direction_t dir);
+void display_set_brightness_up_down(display_direction_t dir);
+
+
 /*******************************************
 *****display_set_brightness_one_pos*****
 ********************************************
@@ -246,6 +279,8 @@ void display_set_brightness_up_down(direction_t dir);
 *	OUTPUT:
 *		void.*/
 void display_set_brightness_one_pos(int pos, int brightness);
+
+
 /*******************************************
 *****display_set_brightnes_led**************
 ********************************************
@@ -257,6 +292,8 @@ void display_set_brightness_one_pos(int pos, int brightness);
 *	OUTPUT:
 *		void.*/
 void display_set_brightnes_led(int pos, int brightness);
+
+
 /*******************************************
 *****display_set_brightness_leds**************
 ********************************************
@@ -267,6 +304,8 @@ void display_set_brightnes_led(int pos, int brightness);
 *	OUTPUT:
 *		void.*/
 void display_set_brightness_leds(int brightness);
+
+
 /*******************************************
 *****display_set_brightness_led_up_down**************
 ********************************************
@@ -277,7 +316,9 @@ void display_set_brightness_leds(int brightness);
 *		dir : UP or DOWN.
 *	OUTPUT:
 *		void.*/
-void display_set_brightness_led_up_down(int pos, direction_t dir);
+void display_set_brightness_led_up_down(int pos, display_direction_t dir);
+
+
 /*******************************************
 *****display_set_brightness_leds_up_down****
 ********************************************
@@ -287,8 +328,7 @@ void display_set_brightness_led_up_down(int pos, direction_t dir);
 *		dir : UP or DOWN.
 *	OUTPUT:
 *		void.*/
-void display_set_brightness_leds_up_down(direction_t dir);
-
+void display_set_brightness_leds_up_down(display_direction_t dir);
 
 
 /*****************************************
@@ -302,6 +342,8 @@ void display_set_brightness_leds_up_down(direction_t dir);
 *		void.
 */
 void display_frdm_led_reset();
+
+
 /*****************************************
 **************display_frdm_led_blink******
 ******************************************
@@ -311,7 +353,9 @@ void display_frdm_led_reset();
 *		on_off : true if the blinking function should be enabled
 *	OUTPUT:
 *		void.*/
-void display_frdm_led_blink(color_t color, bool on_off);
+void display_frdm_led_blink(display_color_t color, bool on_off);
+
+
 /*****************************************
 **************display_frdm_led_write******
 ******************************************
@@ -321,7 +365,9 @@ void display_frdm_led_blink(color_t color, bool on_off);
 *		on_off : true to turn the led on.
 *	OUTPUT:
 *		void.*/
-void display_frdm_led_write(color_t color, bool on_off);
+void display_frdm_led_write(display_color_t color, bool on_off);
+
+
 /*****************************************
 ***********display_frdm_led_is_blinking***
 ******************************************
@@ -330,7 +376,8 @@ void display_frdm_led_write(color_t color, bool on_off);
 *		color : color to ask if is blinking.
 *	OUTPUT:
 *		true if the led is currently blinking enabled.*/
-bool display_frdm_led_is_blinking(color_t color);
+bool display_frdm_led_is_blinking(display_color_t color);
+
 
 /*******************************************
 ***display_set_brightness_frdm_led_up_down**
@@ -341,7 +388,8 @@ bool display_frdm_led_is_blinking(color_t color);
 *		dir : UP or DOWN.
 *	OUTPUT:
 *		void.*/
-void display_set_brightness_frdm_led_up_down(color_t color, direction_t dir);
+void display_set_brightness_frdm_led_up_down(display_color_t color, display_direction_t dir);
+
 
 /*******************************************
 *****display_set_brightness_frdm_led**************
@@ -352,5 +400,7 @@ void display_set_brightness_frdm_led_up_down(color_t color, direction_t dir);
 *		brightness : level of brightness to be set.
 *	OUTPUT:
 *		void.*/
-void display_set_brightness_frdm_led(color_t color, int brightness);
+void display_set_brightness_frdm_led(display_color_t color, int brightness);
+
+
 #endif /* DISPLAY_DISPLAY_INTERFACE_H_ */

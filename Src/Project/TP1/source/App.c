@@ -104,7 +104,7 @@ void systick_callback(void)
 	for(int i = 0; i< 3; i++)
 		display_set_blinking_led_one(i, true);
 	display_set_blinking_all(false);
-	display_marquee("123456", RIGHT);
+	display_marquee("123456", DISPLAY_INT_RIGHT);
 }
 
 void m_finished()
