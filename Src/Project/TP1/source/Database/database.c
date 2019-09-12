@@ -11,7 +11,7 @@
 
 #include <string.h>
 #include <stdlib.h>
-#include <ctype.h>
+//#include <ctype.h>
 #include <Database/database.h>
 
 
@@ -389,7 +389,8 @@ bool is_id_valid(id_type_t id_type, char * id)
                     unsigned int i = 0;
                     valid = true;
                     while (i < EIGHT_DIGIT_PIN && valid) {
-                        valid = isdigit(id[i++]);
+                    	i++;
+                    	valid = (id[i] >= '0' && id[i] <='9') ? 1 : 0;
                     }
                 }
             } break;
@@ -423,7 +424,8 @@ bool update_password(user_t * u, char * password)
             unsigned int i = 0;
             success = true;
             while (i < len && success) {
-                success = isdigit(password[i++]);
+            	i++;
+				success = (password[i] >= '0' && password[i] <='9') ? 1 : 0;
             }
 
             if (success) {

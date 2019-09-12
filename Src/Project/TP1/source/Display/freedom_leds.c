@@ -70,10 +70,13 @@ static void draw_frdm_led(frdm_led_colors_t color, bool on_off){
 	switch (color){
 		case FRDM_RED:
 			gpioWrite(PIN_LED_RED, on_off);
+			break;
 		case FRDM_GREEN:
 			gpioWrite(PIN_LED_GREEN, on_off);
+			break;
 		case FRDM_BLUE:
 			gpioWrite(PIN_LED_BLUE, on_off);
+			break;
 	}
 }
 void frdm_led_dr_reset(){

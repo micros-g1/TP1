@@ -8,19 +8,15 @@
  * INCLUDE HEADER FILES
  ******************************************************************************/
 
-
-#include <Display/display_interface.h>
-#include <gpio.h>
-#include <Interrupts/interrupts.h>
-#include <Interrupts/SysTick.h>
-#include <Rotary_encoder/rotary_encoder.h>
-#include "board.h"
-#include "general.h"
+#include "Display/display_interface.h"
+#include "Rotary_encoder/rotary_encoder.h"
+#include "Database/database.h"
+#include "fsm.h"
+#include "events.h"
 
 /*******************************************************************************
  * CONSTANT AND MACRO DEFINITIONS USING #DEFINE
  ******************************************************************************/
-
 
 
 
@@ -33,6 +29,9 @@ void systick_callback(void);
 void m_finished(void);
 void rotary_encoder_callback(re_event_t ev);
 
+fsm_state_t * state;
+fsm_event_t event;
+
 /*******************************************************************************
  *******************************************************************************
                         GLOBAL FUNCTION DEFINITIONS
@@ -42,19 +41,32 @@ void rotary_encoder_callback(re_event_t ev);
 /* Función que se llama 1 vez, al comienzo del programa */
 void App_Init (void)
 {
-
-	systick_init();
 	rotary_encoder_init();
 	rotary_encoder_set_callback(rotary_encoder_callback);
-	systick_add_callback(systick_callback, 10000, SINGLE_SHOT);
 	display_init_interface(m_finished);
+	u_init();
+
+
+	display_write_to_led(1, true);
+	display_write_to_led(0, true);
+	display_write_to_led(2, true);
+
+	display_write_char(' ', 0);
+	display_write_char(' ', 1);
+	display_write_char(' ', 2);
+	display_write_char(' ', 3);
+
+	init_event_queue();
+	state = fsm_get_init_state();
 }
 
 /* Función que se llama constantemente en un ciclo infinito */
-
 void App_Run (void)
 {
-	while(1);
+	if(is_there_event()){
+		pop_event(&event);
+		state = fsm_run(state, event);
+	}
 }
 
 char* ev_name[] = {"RE_LL_LEFT","RE_LL_RIGHT","RE_LL_BUTTON_DOWN","RE_LL_BUTTON_UP","RE_LL_TIMEOUT","RE_LL_NO_EVENT","RE_LL_TOTAL_EVENTS"};
@@ -62,32 +74,48 @@ char* ev_name[] = {"RE_LL_LEFT","RE_LL_RIGHT","RE_LL_BUTTON_DOWN","RE_LL_BUTTON_
 
 void rotary_encoder_callback(re_event_t ev)
 {
+	fsm_event_t new_event;
+	new_event.args = NULL;
+	bool ev_flag = false;
 	switch(ev)
 	{
 		case RE_LEFT:
-			display_write_char('1', 0);
+			new_event.code = DOWN_EV;
+			ev_flag = true;
 			break;
 		case RE_RIGHT:
-			display_write_char('2', 0);
+			new_event.code = UP_EV;
+			ev_flag = true;
 			break;
 		case RE_KEY_LEFT:
-			display_write_char('3', 0);
+			ev_flag = false;
+			new_event.code = BRIGHT_DOWN_EV;
+			display_set_brightness_up_down(DISPLAY_INT_DOWN);
 			break;
 		case RE_KEY_RIGHT:
-			display_write_char('4', 0);
+			ev_flag = false;
+			new_event.code = BRIGHT_UP_EV;
+			display_set_brightness_up_down(DISPLAY_INT_UP);
 			break;
 		case RE_SHORT_CLICK:
-			display_write_char('5', 0);
+			ev_flag = true;
+			new_event.code = ENTER_EV;
 			break;
 		case RE_LONG_CLICK_1:
-			display_write_char('6', 0);
+			ev_flag = true;
+			new_event.code = BACK_EV;
 			break;
 		case RE_LONG_CLICK_2:
-			display_write_char('7', 0);
+			ev_flag = true;
+			new_event.code = CANCEL_EV;
 			break;
 		default:
+			new_event.code = NO_EV;
+			ev_flag = true;
 			break;
 	}
+	if(new_event.code != NO_EV && ev_flag)
+		push_event(new_event);
 }
 
 /*******************************************************************************
@@ -98,20 +126,23 @@ void rotary_encoder_callback(re_event_t ev)
 
 void systick_callback(void)
 {
+
 	display_write_to_led(1, true);
 	display_write_to_led(0, true);
 	display_write_to_led(2, true);
 	for(int i = 0; i< 3; i++)
 		display_set_blinking_led_one(i, true);
 	display_set_blinking_all(false);
-	display_marquee("123456", DISPLAY_INT_RIGHT);
+	display_marquee("123456", DISPLAY_INT_LEFT);
+
 }
 
 void m_finished()
 {
-	display_write_char('A', 1);
+	fsm_event_t ev;
+	ev.code = MARQUEE_END_EV;
+	push_event(ev);
 }
-
 
 
 /*******************************************************************************
