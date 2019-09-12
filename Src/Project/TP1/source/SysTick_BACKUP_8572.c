@@ -36,7 +36,10 @@ typedef struct {
     callback_conf_t conf;
 } st_cb_data_t;
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> master
 /*-------------------------------------------
  ----------GLOBAL_VARIABLES------------------
  -------------------------------------------*/
@@ -52,7 +55,10 @@ void reset_callback_data(st_cb_data_t* data);
 /*-------------------------------------------
  ------------FUNCTION_IMPLEMENTATION---------
  -------------------------------------------*/
+<<<<<<< HEAD
 
+=======
+>>>>>>> master
 void systick_init ()
 {
 	static bool initialized = false;
@@ -67,11 +73,22 @@ void systick_init ()
 	for (int i = 0; i < MAX_N_ST_CALLBACKS; i++)
 		reset_callback_data(&st_callbacks[i]);
 
+<<<<<<< HEAD
 	initialized = true;
 }
 
 // DO NOT CHANGE THE NAME, overrides core_cm4.h weak definition
 void SysTick_Handler(void){
+=======
+	for (int i = 0; i < MAX_N_ST_CALLBACKS; i++)
+		reset_callback_data(&st_callbacks[i]);
+
+	initialized = true;
+}
+
+void SysTick_Handler(void) // DO NOT CHANGE THE NAME, overrides core_cm4.h weak definition
+{
+>>>>>>> master
 	/* for SysTick, clearing the interrupt flag is not necessary
 	* it is not an omission!*/
     for (int i = 0; i < MAX_N_ST_CALLBACKS; i++) {
@@ -83,8 +100,11 @@ void SysTick_Handler(void){
             if (st_callbacks[i].counter == st_callbacks[i].reload) {
             	st_callbacks[i].func();
                 st_callbacks[i].counter = COUNTER_INIT;
+<<<<<<< HEAD
                 if(st_callbacks[i].conf == SINGLE_SHOT)
                 	st_callbacks[i].enabled = false;
+=======
+>>>>>>> master
             }
         }
     }
@@ -92,7 +112,11 @@ void SysTick_Handler(void){
 
 
 
+<<<<<<< HEAD
 void systick_add_callback(systick_callback_t cb, unsigned int reload, callback_conf_t conf)
+=======
+void systick_add_callback(systick_callback_t cb, unsigned int reload)
+>>>>>>> master
 {
 	if(cb != NULL)
 		for(int i =0; i < MAX_N_ST_CALLBACKS; i++)
@@ -101,7 +125,10 @@ void systick_add_callback(systick_callback_t cb, unsigned int reload, callback_c
 				st_callbacks[i].enabled = true;
 				st_callbacks[i].counter = COUNTER_INIT;
 				st_callbacks[i].reload = reload;
+<<<<<<< HEAD
 				st_callbacks[i].conf = conf;
+=======
+>>>>>>> master
 				break;						//this break instruction is important here
 			}
 }
@@ -130,6 +157,7 @@ void reset_callback_data(st_cb_data_t* data){
 	data->func = NULL;
 	data->enabled = false;
 	data->counter = COUNTER_INIT;
+<<<<<<< HEAD
 }
 
 bool has_callback(systick_callback_t callback){
@@ -154,3 +182,8 @@ void set_callback_conf(systick_callback_t callback, callback_conf_t conf){
 		if(st_callbacks[i].func == callback)
 			st_callbacks[i].conf = conf;
 }
+
+=======
+}
+
+>>>>>>> master
