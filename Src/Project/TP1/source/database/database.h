@@ -27,7 +27,7 @@
 #define PASSWORD_MIN_LEN 4
 #define PASSWORD_MAX_LEN 5
 
-#define CARD_LEN        37 // only valid card len
+#define CARD_LEN        40// only valid card len
 #define PIN_LEN      8    // only valid pin ID len
 
 /*******************************************************************************

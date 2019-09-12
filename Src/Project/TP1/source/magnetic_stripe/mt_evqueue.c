@@ -25,17 +25,17 @@ void event_queue_wait_for_event(mt_ev_t* ev)
 //Flush event queue
 void event_queue_flush()
 {
-    //hw_DisableInterrupts();
+    hw_DisableInterrupts();
     //Must set these three variables to zero before continuing...
     queue_length = in_offset = out_offset = 0;
-    //hw_EnableInterrupts();
+    hw_EnableInterrupts();
 }
 
 //Add event to event queue
 bool event_queue_add_event(mt_ev_t ev)
 {
     bool ret_val = false;
-    //hw_DisableInterrupts();
+    hw_DisableInterrupts();
     //Only one event source can add an event to the queue at a given time
     if(queue_length != EV_QUEUE_MAX_LENGTH)
     {
@@ -45,9 +45,30 @@ bool event_queue_add_event(mt_ev_t ev)
         queue_length++;
         ret_val = true;
     }
-    //hw_EnableInterrupts();
+    hw_EnableInterrupts();
     return ret_val;
 }
+
+
+//Add event to event queue
+bool event_queue_add_event_front(mt_ev_t ev)
+{
+    bool ret_val = false;
+    hw_DisableInterrupts();
+    //Only one event source can add an event to the queue at a given time
+    if(queue_length != EV_QUEUE_MAX_LENGTH)
+    {
+    	if(out_offset == 0)
+    		out_offset = EV_QUEUE_MAX_LENGTH;
+    	out_offset--;
+        event_queue[out_offset] = ev;
+        queue_length++;
+        ret_val = true;
+    }
+    hw_EnableInterrupts();
+    return ret_val;
+}
+
 
 //Get current queue length
 unsigned int event_queue_get_length()
@@ -59,13 +80,20 @@ unsigned int event_queue_get_length()
 
 mt_ev_t event_queue_pop_front()
 {
+	mt_ev_t ev;
+	ev.type = MT_N_EVS;
+
     if (queue_length) {
         queue_length--;
-        return event_queue[out_offset++];
+
+        ev = event_queue[out_offset++];
+        if(out_offset == EV_QUEUE_MAX_LENGTH) {
+        	out_offset = 0;
+        }
+        //DEBUG
+        if(queue_length == EV_QUEUE_MAX_LENGTH)
+        	queue_length = EV_QUEUE_MAX_LENGTH+1;
     }
-    else {
-        mt_ev_t no_event;
-        no_event.type = MT_N_EVS;
-        return no_event;
-    }
+
+    return ev;
 }

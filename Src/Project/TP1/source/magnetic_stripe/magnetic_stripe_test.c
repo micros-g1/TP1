@@ -3,12 +3,8 @@
 //
 
 
-#define MS_TEST 0
 
-
-
-
-#if MS_TEST == 1
+#ifdef MT_DEBUG
 
 #include <string.h>
 #include <stdio.h>

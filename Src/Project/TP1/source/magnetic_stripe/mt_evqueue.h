@@ -16,10 +16,10 @@
 #include <stdbool.h>
 
 //Possible Events
-typedef enum {MT_START, MT_STOP, MT_SS, MT_ES, MT_DATA, MT_N_EVS, MT_SUCCESS} mt_ev_id_t;
+typedef enum {MT_START, MT_STOP, MT_SS, MT_ES, MT_DATA, MT_SUCCESS, MT_N_EVS} mt_ev_id_t;
 
 //Total number of events that event queue can hold
-#define EV_QUEUE_MAX_LENGTH	20
+#define EV_QUEUE_MAX_LENGTH	1000
 
 //Event structure
 typedef struct {
@@ -34,6 +34,8 @@ void event_queue_wait_for_event(mt_ev_t* ev);
 void event_queue_flush();
 //Add event to event queue. True if event queue was not full.
 bool event_queue_add_event(mt_ev_t ev);
+bool event_queue_add_event_front(mt_ev_t ev);
+
 //Get current queue length.
 mt_ev_t event_queue_pop_front();
 unsigned int event_queue_get_length();

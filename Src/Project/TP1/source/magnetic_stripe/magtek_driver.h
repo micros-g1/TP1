@@ -22,7 +22,7 @@
 /*******************************************************************************
  * ENUMERATIONS AND STRUCTURES AND TYPEDEFS
  ******************************************************************************/
-typedef void(*on_new_card_t)(char*);
+typedef void(*mt_callback_t)(char*);
 /*******************************************************************************
  * VARIABLE PROTOTYPES WITH GLOBAL SCOPE
  ******************************************************************************/
@@ -36,7 +36,7 @@ typedef void(*on_new_card_t)(char*);
  * @return Initialization succeed
  */
 
-#define MT_DEBUG
+//#define MT_DEBUG
 
 #ifdef MT_DEBUG
 extern bool datapin;
@@ -44,7 +44,7 @@ extern bool enablepin;
 #endif
 
 
-bool mt_init(on_new_card_t callback);
+void mt_init(mt_callback_t callback);
 
 void mt_enable_callback();
 void mt_clock_callback();

@@ -24,6 +24,20 @@
  * ENUMERATIONS AND STRUCTURES AND TYPEDEFS
  ******************************************************************************/
 
+
+// SUCCESS: valid card passed
+// FAIL: card was detected but data was not valid
+typedef enum {MS_SUCCESS, MS_FAIL, MS_N_EVS} ms_ev_type_t;
+
+typedef struct {
+    ms_ev_type_t type;
+    char * data; // only relevant in success
+} ms_ev_t;
+
+typedef void(*ms_callback_t)(ms_ev_t);
+
+
+
 /*******************************************************************************
  * VARIABLE PROTOTYPES WITH GLOBAL SCOPE
  ******************************************************************************/
@@ -36,7 +50,7 @@
  * @brief Initialize magnetic stripe reading
  * @return Initialization succeed
  */
-bool ms_init();
+void ms_init(ms_callback_t callback);
 
 /*******************************************************************************
  ******************************************************************************/

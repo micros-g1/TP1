@@ -36,6 +36,7 @@ typedef struct {
  ******************************************************************************/
 static database_metadata_t metadata;
 static user_t database[MAX_USER_N];
+static bool is_init = false;
 
 // reduce need for iteration when quering multiple times for the same user
 static unsigned char last_queried_user;
@@ -85,6 +86,10 @@ bool is_id_valid(id_type_t id_type, char * id);
 
 void u_init()
 {
+    if (is_init)
+        return;
+    is_init = true;
+
     metadata.n_users = 1; // initialize with one default admin user
     metadata.blocked =  0;
     metadata.admins =   1;
@@ -112,6 +117,7 @@ void u_init()
     database[0].admin = true;
     database[0].free = false;
     strcpy(database[0].password, "0000");
+
 }
 
 

@@ -9,18 +9,30 @@
 #include <stdio.h>
 #include "magtek_driver.h"
 
+static ms_callback_t higher_callback;
 
-void callback (char * c) { ; }
+void lower_callback(char * card);
 
-static uint8_t currword;
 
-bool ms_init()
+void ms_init(ms_callback_t callback)
 {
-    mt_init(callback);
-	// port config
-	currword = 0;
+    higher_callback = callback;
+    mt_init(lower_callback);
 }
 
 
 
+void lower_callback (char * card)
+{
+    ms_ev_t ev;
+    ev.data = card;
+    if (card != NULL) {
+        ev.type = MS_SUCCESS;
+    }
+    else {
+        ev.type = MS_FAIL;
+    }
+
+    higher_callback(ev);
+}
 
