@@ -1,0 +1,60 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage[left=2cm,right=2cm,top=2cm,bottom=2cm]{geometry}
+\author{Tomás González Orlando}
+\begin{document}
+
+
+\section{Manual de Uso}
+
+El presente escrito pretende ser una guía de usuario para el control de acceso de puerta hecho por el grupo 1 en el trabajo práctico.
+\subsection{Idea general del producto}
+El control de acceso tendrá el control sobre una puerta con traba magnética de manera tal que sólo aquellas personas habilitadas a ingresar por dicha puerta podrán hacerlo. \par
+Para reconocer a las personas permitidas, se les concederá a las mismas un ID de ingreso y una tarjeta magnética de identificación, ambas asociadas al mismo PIN de seguridad para verificar su identidad. \par
+Se presenta a continuación las distintas personalidades permitidas dentro del sistema, con sus respectivas características, habilidades y funcionalidades:\par
+
+\subsection{Usuario}
+El usuario es la persona básica del sistema. Cada usuario tendrá asociado su ID de ingreso y su tarjeta de identificación junto con el PIN de las mismas. A su vez, el usuario contará con las siguientes facultades dentro del sistema:
+\begin{itemize}
+\item \textbf{Cambio de PIN propio: } Podrá cambiar en todo momento su PIN de seguridad.
+\item \textbf{Acceso por la puerta: } Podrá acceder por la puerta de control luego de haberse identificado como persona permitida y no bloqueada (para más información sobre el bloqueo, ver la subsección Reglas generales de acceso), al haber ingresado su ID y su PIN de seguridad.
+\end{itemize}
+
+
+\subsection{Administrador}
+Por default, el usuario administrador tiene el ID: 00000000. \par
+Podrá haber más de un usuario administrador en el sistema, pero no menos de uno.\par
+El mismo, además de poseer todas las facultades de un usuario normal, cuenta además con ciertas habilidades adicionales, a saber:
+
+\begin{itemize}
+\item \textbf{Borrado de ID's ajenos: } Podrá eliminar a otros usuarios de la lista de ID's permitidos o reconocidos por sistema. El administrador podrá eliminar a otros administradores del sistema.
+\item \textbf{Agregado de ID's: } Podrá crear ID's con ingreso permitido.
+
+\end{itemize}
+
+\subsection{Pasos de acceso, interacción con el usuario}
+En cualquier momento del intento de acceso se podrá pasar la tarjeta por el lector de tarjetas, lo cual autoriza el acceso inmediatamente.\par
+El control de acceso se encuentra con el display apagado en su estado inicial/de reposo. Luego de un período de inactividad determinado, el control de acceso volverá al estado de reposo desde cualquier estado en el que se encuentre.\par
+Para salir del estado de reposo, el usuario deberá dar un click corto en el encoder, luego de lo cual el display mostrará una pantalla llena de ceros y se deberá proceder a ingresar el ID (de ocho dígitos) del usuario que solicita el acceso. \par
+Para el ingreso del ID, el dígito que se está completando estará parpadeando constantemente. El usuario podrá girar el encoder para elegir el número del dígito correspondiente y con un click corto podrá pasar a completar el siguiente dígito de su ID. Si se equivocó en el número, podrá mantener apretado al encoder para borrar el dígito anterior y volver a completarlo de la misma forma que se lo completó en el paso anterior. \par
+Una vez completado el octavo (último) dígito del ID, una marquesina mostrará el ID completo para que el usuario lo confirme con un click corto. En caso de haberse equivocado, el usuario podrá hacer un click largo para volver a completar su ID.\par
+Una vez confirmado el ID, si existe el usuario, se procede a completar el PIN. Inicialmente la pantalla estará completa con 'P', el primero de estos caracteres parpadeando. Se puede completar el PIN de cuatro o cinco dígitos de la misma manera que el ID, con la excepción de que el único carácter que se puede visualizar es el que se está completando, y el resto de los que ya se han completado aparecerán con el carácter 'P' en vez. \par
+Si al estar completando el PIN uno quiere volver a ingresar el ID, lo podrá hacer con un click largo al estar completando el primer carácter. Si en cambio, el usuario realiza un click todavía más largo (sin importar cuál carácter se esté completando), el mismo podrá volver a completar el ID. El PIN no será mostrado luego de completado.\par
+Dado que el PIN puede ser de cuatro o cinco dígitos, si el mismo es de cuatro dígitos, deberá completarse con un carácter nulo el quinto dígito. \par
+Si el PIN es correcto, la puerta se abrirá. De lo contrario, hay dos opciones: o el usuario está bloqueado, o el PIN es incorrecto. Si el usuario está bloqueado, se volverá al estado inicial y se olvida el ID ingresado. Si el PIN es incorrecto, el usuario será notificado y deberá volver a ingresar su PIN, para el cual tendrá tres intentos totales (contando al primero), luego de los cuales será bloqueado.\par
+
+\subsection{Modo configuración}
+En el estado inicial/de reposo, si se mantiene un click largo, los leds auxiliares del display comenzarán a parpadear, lo cual indica al usuario que se encuentra en el modo configuración.\par
+Luego de ingresado el ID y el PIN correcto, el control de acceso detectará si el usuario es un administrador o un usuario normal y desplegará un menú de opciones con las facultades propias de la personalidad correspondiente (ver Administrador y Usuario).\par
+Si se entra en modo configuración y se pasa la tarjeta sin haber ingresado el ID todavía, esta permite ingresar al menú de opciones directamente:
+\begin{itemize}
+\item \textbf{Cambio de PIN propio: } Se ingresa el número de PIN actual y se escribe el nuevo PIN.
+\item \textbf{Borrado de ID's ajenos: } Se elige el ID a borrar entre la lista, usando el encoder. Si el mismo borrado es válido (no se está borrando al único Admin restante), se borra el id de los disponibles, por lo que el mismo ya no será reconocido.
+\item \textbf{Agregado de ID's: } Se ingresa el nuevo ID, se pasa la tarjeta correspondiente y luego se ingresa el nuevo PIN.
+\end{itemize}
+\end{document}
