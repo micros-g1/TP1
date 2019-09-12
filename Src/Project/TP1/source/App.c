@@ -12,6 +12,7 @@
 #include "board.h"
 #include "gpio.h"
 #include "SysTick.h"
+#include "magnetic_stripe/magnetic_stripe.h"
 
 /*******************************************************************************
  * CONSTANT AND MACRO DEFINITIONS USING #DEFINE
@@ -35,11 +36,14 @@ void clock_callback(void);
  *******************************************************************************
  ******************************************************************************/
 
+void ms_callback(ms_ev_t);
+
 /* Función que se llama 1 vez, al comienzo del programa */
 void App_Init (void)
 {
 	interrupts_init();
-
+	systick_init();
+	ms_init(ms_callback);
 }
 
 /* Función que se llama constantemente en un ciclo infinito */
@@ -48,6 +52,17 @@ void App_Run (void)
 	while(1);
 }
 
+
+void ms_callback(ms_ev_t ev)
+{
+	volatile static bool i = false;
+	if (ev.type == MS_SUCCESS) {
+		i = true;
+	}
+	else {
+		i = false;
+	}
+}
 
 /*******************************************************************************
  *******************************************************************************
