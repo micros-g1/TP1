@@ -20,6 +20,8 @@
 #define MAX_BRIGHT	5
 #define MIN_BRIGHT	0
 
+typedef enum{DISPLAY_LEFT, DISPLAY_RIGHT, DISPLAY_UP, DISPLAY_DOWN} direction_display_t;
+
 /*****************************************
 *************display_dr_init**************
 ******************************************
@@ -159,7 +161,7 @@ int display_dr_get_brightness_one(int pos);
 *	OUTPUT:
 *		void.
 */
-void display_dr_shift(direction_t dir, char to_insert);
+void display_dr_shift(direction_display_t dir, char to_insert);
 
 /*********************************************************
 *******display_dr_get_currently_curr_displaying_word******

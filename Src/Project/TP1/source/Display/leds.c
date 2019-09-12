@@ -7,10 +7,10 @@
 
 #ifndef DISPLAY_LEDS_C_
 #define DISPLAY_LEDS_C_
+#include <Interrupts/SysTick.h>
 #include "leds.h"
 #include "gpio.h"
 #include "MK64F12.h"
-#include "SysTick.h"
 #include "board.h"
 /*-------------------------------------------
  ----------------DEFINES---------------------
@@ -110,7 +110,7 @@ bool led_dr_is_blinking_one(int pos){
 }
 
 static bool handle_blinking(int pos){
-	static int blink_counter[AMOUNT_MAX_DIODES_POS] = {false, false, false};
+	static int blink_counter[AMOUNT_MAX_DIODES_POS] = {0, 0, 0};
 
 	if(!blinking[pos]) return true;		//not currently blinking, so should not handle blinking.
 
@@ -123,8 +123,8 @@ static bool handle_blinking(int pos){
 
 	return !blink_cleared[pos];
 }
-void led_dr_shift(direction_t dir, bool to_insert){
-	if(dir == LEFT)
+void led_dr_shift(direction_led_t dir, bool to_insert){
+	if(dir == LED_LEFT)
 		for(int i = AMOUNT_MAX_DIODES_POS-1; i >= 0; i--)
 			swap_bools(&curr_displaying[i], &to_insert);
 	else
@@ -146,7 +146,7 @@ static bool handle_brightness(int pos){
 	static int bright_counter[AMOUNT_MAX_DIODES_POS] = {false, false, false};
 
 	bool should_show = true;
-	if(brightness[pos] < MAX_BRIGHT)
+	if(brightness[pos] < MAX_BRIGHT_LED)
 		if((bright_counter[pos]++) == brightness[pos]){
 			should_show = false;
 			bright_counter[pos] = 0;

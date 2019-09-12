@@ -14,7 +14,8 @@ typedef struct {
 	int number_of_pos;
 }display_info_t;
 
-
+typedef enum{LEFT, RIGHT, UP, DOWN} direction_t;
+typedef enum{RED, GREEN, BLUE}color_t;
 typedef void (*inform_event_callback_t)(void);
 
 
@@ -30,6 +31,21 @@ typedef void (*inform_event_callback_t)(void);
 *		void.
 */
 void display_marquee(char* sentence, direction_t dir);
+/*****************************************
+***********display_write_or_marquee*******
+******************************************
+* display_marquee starts the marquee of a sentence if the sentence doesn't fit the display.
+* To stop the marquee, display_stop_marquee() should be called.
+* If the sentence does fit the display, then the whole sentence is shown on the display
+* without enabling a marquee.
+* 	INPUT:
+*		sentence : null terminated string to be shown on the display.
+*		dir : direction of the marquee in case the marquee option should be enabled
+*	OUTPUT:
+*		void.
+*/
+void display_write_or_marquee(char * sentence, direction_t dir);
+
 /********************************************************
 ************display_stop_marquee*************************
 *********************************************************
@@ -60,6 +76,7 @@ void display_clear_all();
 *		void.
 */
 void display_clear_all_leds();
+
 /*****************************************
 *************display_write_word***********
 ******************************************
@@ -270,4 +287,67 @@ void display_set_brightness_led_up_down(int pos, direction_t dir);
 void display_set_brightness_leds_up_down(direction_t dir);
 
 
+
+/*****************************************
+*************display_frdm_led_reset*******
+******************************************
+* display_frdm_led_reset resets the led buffer.
+* disables blinking, and sets brightness to maximum.
+* 	INPUT:
+*		void.
+*	OUTPUT:
+*		void.
+*/
+void display_frdm_led_reset();
+/*****************************************
+**************display_frdm_led_blink******
+******************************************
+* display_frdm_led_blink enables or disables the blinking function for the freedom led
+* 	INPUT:
+* 		color : color to blink
+*		on_off : true if the blinking function should be enabled
+*	OUTPUT:
+*		void.*/
+void display_frdm_led_blink(color_t color, bool on_off);
+/*****************************************
+**************display_frdm_led_write******
+******************************************
+* display_frdm_led_write turns on or off the freedom led.
+* 	INPUT:
+* 		color : color to write.
+*		on_off : true to turn the led on.
+*	OUTPUT:
+*		void.*/
+void display_frdm_led_write(color_t color, bool on_off);
+/*****************************************
+***********display_frdm_led_is_blinking***
+******************************************
+* display_frdm_led_is_blinking tells the user if the freedom led is currently blinking enabled.
+* 	INPUT:
+*		color : color to ask if is blinking.
+*	OUTPUT:
+*		true if the led is currently blinking enabled.*/
+bool display_frdm_led_is_blinking(color_t color);
+
+/*******************************************
+***display_set_brightness_frdm_led_up_down**
+********************************************
+* display_set_brightness_frdm_led_up_down sets the brightness level for the freedom led up or down
+* can be called even when current brightness is at its limits!! (has no effect in that case)
+* 	INPUT:
+*		dir : UP or DOWN.
+*	OUTPUT:
+*		void.*/
+void display_set_brightness_frdm_led_up_down(color_t color, direction_t dir);
+
+/*******************************************
+*****display_set_brightness_frdm_led**************
+********************************************
+* display_set_brightness_frdm_led sets the brightness level for the freedom led
+* can be called even with brighteness higher or lower that MAX_BRIGHT/MIN_BRIGHT!! (has no effect in that case)
+* 	INPUT:
+*		brightness : level of brightness to be set.
+*	OUTPUT:
+*		void.*/
+void display_set_brightness_frdm_led(color_t color, int brightness);
 #endif /* DISPLAY_DISPLAYINTERFACE_H_ */

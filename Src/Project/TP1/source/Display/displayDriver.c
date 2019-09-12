@@ -5,10 +5,10 @@
  *      Author: Tomas
  */
 
+#include <Interrupts/SysTick.h>
 #include "displayDriver.h"
 #include "gpio.h"
 #include "MK64F12.h"
-#include "SysTick.h"
 #include "board.h"
 
 /*-------------------------------------------
@@ -226,9 +226,13 @@ void display_dr_reset(){
 
 void display_dr_draw_callback(){
 	static int pos = 0;
-
+	//first, clear display in order to prevent bleeding
+	draw_char(NULL_CHAR, pos);
+	//now, increment char pointer
+	pos = (pos == AMOUNT_MAX_DISPLAY_POS-1) ? 0 : pos + 1;
+	//finally, draw display
 	draw_display(pos);
-	pos = (pos == (AMOUNT_MAX_DISPLAY_POS-1)) ? 0 : pos+1;
+	//pos = (pos == (AMOUNT_MAX_DISPLAY_POS-1)) ? 0 : pos+1;
 
 }
 
@@ -277,8 +281,8 @@ static bool handle_blinking(int pos){
 	return !blink_cleared[pos];
 }
 
-void display_dr_shift(direction_t dir, char to_insert){
-	if(dir == LEFT)
+void display_dr_shift(direction_display_t dir, char to_insert){
+	if(dir == DISPLAY_LEFT)
 		for(int i = AMOUNT_MAX_DISPLAY_POS-1; i >= 0; i--)
 			swap_chars(&curr_displaying[i], &to_insert);
 	else

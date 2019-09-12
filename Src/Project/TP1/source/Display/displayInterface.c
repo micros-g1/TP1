@@ -6,10 +6,11 @@
  */
 
 
+#include <Interrupts/SysTick.h>
 #include "displayInterface.h"
 #include "displayDriver.h"
 #include "leds.h"
-#include "SysTick.h"
+#include "freedom_leds.h"
 #include "stdlib.h"
 /*-------------------------------------------
  ----------------DEFINES---------------------
@@ -21,7 +22,7 @@
  -------------------------------------------*/
 static char marquee_buffer[MARQUEE_BUFFER_SIZE];
 static int marquee_buffer_curr_size = 0;
-static direction_t marquee_curr_dir;
+static direction_display_t marquee_curr_dir;
 //static int marquee_curr_vel = 0;
 static display_info_t info;
 static inform_event_callback_t event_callback = NULL;
@@ -53,8 +54,10 @@ void display_init_interface(inform_event_callback_t callback){
 
 	info.number_of_pos = AMOUNT_MAX_DISPLAY_POS;
 	if(initialized) return;
+	frdm_led_dr_init();
 	led_dr_init();
 	display_dr_init();
+
 	clear_marquee_buffer();
 	set_inform_event_callback(callback);
 	systick_init();
@@ -67,7 +70,7 @@ void display_marquee(char* sentence, direction_t dir){
 	//FALTA TEMA TIEMPOOOOS!!!
 	clear_marquee_buffer();
 	set_marquee_buffer(sentence);
-	marquee_curr_dir = dir;
+	marquee_curr_dir = (direction_display_t) dir;
 	//marquee_curr_vel = vel;
 	//set vel for sysTick!!!
 	systick_enable_callback(marquee_callback);
@@ -104,17 +107,17 @@ static void marquee_callback(){
 	char aux = NULL_CHAR;
 
 	if(!should_shift){
-		if(marquee_curr_dir == LEFT)
+		if(marquee_curr_dir == DISPLAY_LEFT)
 			chars_written = display_dr_write_sentence(marquee_buffer);
 		else
 			display_clear_all();
 		should_shift = true;
 	}
-	else if((marquee_curr_dir == LEFT) && marquee_buffer[chars_written] != NULL_CHAR){
+	else if((marquee_curr_dir == DISPLAY_LEFT) && marquee_buffer[chars_written] != NULL_CHAR){
 		display_dr_shift(marquee_curr_dir, marquee_buffer[chars_written]);
 		chars_written++;
 	}
-	else if((marquee_curr_dir == RIGHT) && ((aux = look_for_last_not_null()) != NULL_CHAR) ){
+	else if((marquee_curr_dir == DISPLAY_RIGHT) && ((aux = look_for_last_not_null()) != NULL_CHAR) ){
 		remove_last_not_null();
 		display_dr_shift(marquee_curr_dir, aux);
 	}
@@ -237,4 +240,42 @@ void display_set_brightness_up_down(direction_t dir){
 }
 void display_set_brightness_one_pos(int pos, int brightness){
 	display_dr_set_brightness_one(pos, brightness);
+}
+
+void display_write_or_marquee(char * sentence, direction_t dir){
+	int i =0;
+	for( ; ; i++)
+		if(sentence[i] == NULL_CHAR)
+			break;
+	if(i >= AMOUNT_MAX_DISPLAY_POS)
+		display_marquee(sentence, dir);
+	else
+		display_dr_write_sentence(sentence);
+}
+
+void display_set_brightness_frdm_led_up_down(color_t color, direction_t dir){
+	if(dir == UP)
+		frdm_led_dr_set_brightness(color, frdm_led_dr_get_brightness(color) + 1);
+	else if(dir == DOWN)
+		frdm_led_dr_set_brightness(color, frdm_led_dr_get_brightness(color) - 1);
+}
+void display_frdm_led_reset(){
+	frdm_led_dr_reset();
+}
+
+void display_frdm_led_blink(color_t color, bool on_off){
+	frdm_led_dr_blink(color, on_off);
+}
+
+void display_frdm_led_write(color_t color, bool on_off){
+	frdm_led_dr_write(color, on_off);
+}
+
+bool display_frdm_led_is_blinking(color_t color){
+	return frdm_led_dr_is_blinking(color);
+}
+
+
+void display_set_brightness_frdm_led(color_t color, int brightness){
+	frdm_led_dr_set_brightness(color, brightness);
 }
