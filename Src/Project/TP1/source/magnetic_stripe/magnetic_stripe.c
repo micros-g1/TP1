@@ -16,6 +16,10 @@ void lower_callback(char * card);
 
 void ms_init(ms_callback_t callback)
 {
+    static bool is_init = false;
+    if (is_init)
+        return;
+    is_init = true;
     higher_callback = callback;
     mt_init(lower_callback);
 }

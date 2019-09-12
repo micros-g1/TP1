@@ -23,7 +23,6 @@
 //#define MT_DEGUBPIN		(PORTNUM2PIN(PC, 4u))
 
 static mt_callback_t cb;
-static bool is_init =  false;
 static volatile unsigned char card_buffer[50];
 
 
@@ -53,9 +52,11 @@ static mt_state_t const state_table[MT_N_STATES][MT_N_EVS] = {
 
 void mt_init(mt_callback_t callback)
 {
+    static bool is_init =  false;
     if (is_init)
         return;
     is_init = true;
+
 #ifndef MT_DEBUG
     gpioMode(MT_ENABLEPIN, INPUT); // configure data, enable and clock as input
     gpioMode(MT_CLOCKPIN, INPUT);
@@ -67,7 +68,7 @@ void mt_init(mt_callback_t callback)
     gpioIRQ(MT_CLOCKPIN, GPIO_IRQ_MODE_FALLING_EDGE, mt_clock_callback);
 #endif
     cb = callback;
-    systick_add_callback(mt_periodic, 1000);
+    systick_add_callback(mt_periodic, 100);
     // TODO proper initialization of systick
     event_queue_flush();
     card_buffer[0] = 0;
