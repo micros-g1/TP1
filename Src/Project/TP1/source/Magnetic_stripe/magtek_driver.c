@@ -50,6 +50,10 @@ void mt_init(mt_callback_t callback)
     // configure enable and clock interrupts
     gpioIRQ(MT_ENABLEPIN, GPIO_IRQ_MODE_BOTH_EDGES, mt_enable_callback);
     gpioIRQ(MT_CLOCKPIN, GPIO_IRQ_MODE_FALLING_EDGE, mt_clock_callback);
+    gpioMode(IT_DEDICATED_1_PIN, OUTPUT);
+    gpioWrite(IT_DEDICATED_1_PIN, false);
+    gpioMode(IT_DEDICATED_2_PIN, OUTPUT);
+    gpioWrite(IT_DEDICATED_2_PIN, false);
     cb = callback;
     systick_add_callback(mt_periodic, 100, PERIODIC);
     event_queue_flush();
@@ -59,6 +63,7 @@ void mt_init(mt_callback_t callback)
 
 void mt_enable_callback() {
     mt_ev_t ev;
+    gpioWrite(IT_DEDICATED_1_PIN, true);
     //Active Low
     if (gpioRead(MT_ENABLEPIN)) {
     	ev.type = MT_STOP;
@@ -70,15 +75,18 @@ void mt_enable_callback() {
     	//MT START NOW. front!
     	event_queue_add_event_front(ev);
     }
+    gpioWrite(IT_DEDICATED_1_PIN, false);
 }
 
 void mt_clock_callback(void) {
+	gpioWrite(IT_DEDICATED_2_PIN, true);
 	//clock callback -> read data
     mt_ev_t ev;
     ev.type = MT_DATA;
     //Active low
     ev.data = !gpioRead(MT_DATAPIN);
     event_queue_add_event(ev);
+    gpioWrite(IT_DEDICATED_2_PIN, false);
 }
 
 void mt_periodic(void)

@@ -749,7 +749,7 @@ static void setup_initial_state(void){
 	print_initial_msg();
 }
 
-const fsm_state_t * fsm_get_init_state(){
+fsm_state_t const * fsm_get_init_state(){
 	setup_initial_state();
 	return initial_state;
 }
