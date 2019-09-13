@@ -2,8 +2,10 @@
 // Created by lisan on 6/9/2019.
 //
 
-#include "fsm_sates.h"
+#include <fsm_states.h>
 #include "string.h"
+#include "Display/display_interface.h"
+#include "Display/freedom_leds.h"
 #include <stdbool.h>
 
 #define DISPLAY_DIGITS 4
@@ -179,9 +181,6 @@ fsm_state_t add_card_user_state[] = {
 		{.event = CARD_EV, .next_state = add_card_user_state, .transition = check_card_to_add},
 		{.event = VALID_CARD_EV, .next_state = add_pin_user_state, .transition = setup_waiting_pin},
 		{.event = INVALID_CARD_EV, .next_state = show_error_msg_state_adminmenu, .transition = show_error_msg},
-		{.event = UP_EV, .next_state = add_id_user_state, .transition = increase_digit},
-		{.event = DOWN_EV, .next_state = add_id_user_state, .transition = decrease_digit},
-		{.event = ENTER_EV, .next_state = add_id_user_state, .transition = next_digit},
 		{.event = BACK_EV, .next_state = add_id_user_state, .transition = previous_digit},
 		{.event = GND_EV, .next_state = remove_user_state,.transition = do_nothing}
 };
@@ -504,10 +503,6 @@ static void open_door(void){
 	display_clear_all();
 	display_set_blinking_all(false);
 	display_marquee("door Open",DISPLAY_INT_LEFT);
-	bool blink = false;
-	display_frdm_led_blink(GREEN, blink);
-	display_frdm_led_blink(BLUE, blink);
-	display_frdm_led_blink(RED, blink);
 
 	display_frdm_led_write(BLUE, false);
 	display_frdm_led_write(GREEN, true);
