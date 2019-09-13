@@ -55,7 +55,7 @@
 #define PIN_DIODE_1			PORTNUM2PIN(DISPLAY_PORT, 10)
 
 #define PIN_DOT_0			PORTNUM2PIN(PB, 18)
-#define PIN_DOT_1			PORTNUM2PIN(PB, 19)
+//#define PIN_DOT_1			PORTNUM2PIN(PB, 19)
 
 //Magnetic Stripe Pins
 #define MT_ENABLEPIN   (PORTNUM2PIN(PD, 0u))

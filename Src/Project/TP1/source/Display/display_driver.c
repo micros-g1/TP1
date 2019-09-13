@@ -191,8 +191,10 @@ static void draw_display(int pos){
 
 static void draw_dot(bool on_off, int pos){
 	pos++;
-	gpioWrite(PIN_DOT_0, on_off && (pos & 0X1));
-	gpioWrite(PIN_DOT_1, on_off && (pos & 0X2));
+	gpioWrite (PIN_DISPLAY_ENC0, pos & 0X1);
+	gpioWrite (PIN_DISPLAY_ENC1, pos & 0X2);
+	gpioWrite(PIN_DOT_0, on_off);
+	//gpioWrite(PIN_DOT_1, on_off && (pos & 0X2));
 }
 
 static void draw_char(unsigned char printable_char, int pos){
