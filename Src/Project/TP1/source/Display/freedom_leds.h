@@ -12,7 +12,7 @@
 #define AMOUNT_MAX_FRDM_LEDS_POS	3
 typedef enum {FRDM_RED, FRDM_GREEN, FRDM_BLUE} frdm_led_colors_t;
 #define MAX_BRIGHT_FRDM_LED		5
-#define MIN_BRIGHT_FRDM_LED		0
+#define MIN_BRIGHT_FRDM_LED		1
 /*****************************************
 *************frdm_led_dr_init*************
 ******************************************

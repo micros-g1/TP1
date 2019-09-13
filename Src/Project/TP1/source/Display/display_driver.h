@@ -17,8 +17,8 @@
 
 //symbol equivalent to nothing showing on the display.
 #define NULL_CHAR	0X00
-#define MAX_BRIGHT	5
-#define MIN_BRIGHT	0
+#define DISPLAY_MAX_BRIGHT	5
+#define DISPLAY_MIN_BRIGHT	1
 
 typedef enum{DISPLAY_LEFT, DISPLAY_RIGHT, DISPLAY_UP, DISPLAY_DOWN} direction_display_t;
 

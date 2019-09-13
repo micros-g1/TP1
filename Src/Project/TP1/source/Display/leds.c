@@ -20,8 +20,8 @@
 #if SYSTICK_ISR_FREQUENCY_HZ % CALL_FREQ_HZ != 0
 #warning BLINK cannot implement this exact frequency. Using floor(SYSTICK_ISR_FREQUENCY_HZ/CALL_FREQ_HZ) instead.
 #endif
-#define MAX_BRIGHT	5
-#define MIN_BRIGHT	0
+#define DISPLAY_MAX_BRIGHT	5
+#define DISPLAY_MIN_BRIGHT	0
 /*-------------------------------------------
  ----------GLOBAL_VARIABLES------------------
  -------------------------------------------*/

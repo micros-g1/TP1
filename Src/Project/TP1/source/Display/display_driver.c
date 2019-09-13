@@ -259,7 +259,7 @@ void display_dr_reset(){
 		blinking_dot[i] = false;
 		blink_cleared[i] = false;
 		blink_cleared_dot[i] = false;
-		brightness[i] = MAX_BRIGHT;
+		brightness[i] = DISPLAY_MAX_BRIGHT;
 		bright_counter[i] = 0;
 		last_drawn_word[i] = curr_displaying[i];
 	}
@@ -293,7 +293,7 @@ int display_dr_write_sentence(const char* sentence){
 
 //brightness from MIN_BRIGHT to MAX_BRIGHT
 void display_dr_set_brightness_one(int pos, int bright){
-	if( (bright < MAX_BRIGHT) && (bright >= MIN_BRIGHT) ){
+	if( (bright < DISPLAY_MAX_BRIGHT) && (bright >= DISPLAY_MIN_BRIGHT) ){
 		brightness[pos] = bright;
 		bright_counter[pos] = 0;
 	}
@@ -351,7 +351,7 @@ void display_dr_on_off(bool on_off){
 static bool handle_brightness(int pos){
 
 	bool should_show = true;
-	if(brightness[pos] < MAX_BRIGHT)
+	if(brightness[pos] < DISPLAY_MAX_BRIGHT)
 		if((bright_counter[pos]++) == brightness[pos]){
 			should_show = false;
 			bright_counter[pos] = 0;

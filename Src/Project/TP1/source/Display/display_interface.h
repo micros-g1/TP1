@@ -15,6 +15,9 @@
 typedef enum{DISPLAY_INT_LEFT, DISPLAY_INT_RIGHT, DISPLAY_INT_UP, DISPLAY_INT_DOWN} display_direction_t;
 //freedom led colors
 typedef enum{RED, GREEN, BLUE}display_color_t;
+
+#define DISPLAY_INT_MAX_BRIGHT	5
+#define DISPLAY_INT_MIN_BRIGHT	1
 //callback to call when a new display event (marquee event) has come.
 typedef void (*display_marquee_event_callback_t)(void);
 

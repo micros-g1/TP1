@@ -13,7 +13,7 @@
 typedef enum{LED_LEFT, LED_RIGHT, LED_UP, LED_DOWN} direction_led_t;
 #define AMOUNT_MAX_DIODES_POS		3
 #define MAX_BRIGHT_LED	5
-#define MIN_BRIGHT_LED	0
+#define MIN_BRIGHT_LED	1
 /*****************************************
 *************led_dr_init******************
 ******************************************
