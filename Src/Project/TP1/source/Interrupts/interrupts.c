@@ -96,40 +96,43 @@ void PORTA_IRQHandler(void){
 	int pin_num = get_interrupt_pin(PA);
 	if (pin_num != -1){
 		PORT_ClearInterruptFlag(PA, pin_num);
+		interrupt_matrix[PA][pin_num]();
 	}
-	interrupt_matrix[PA][pin_num]();
+
 }
 
 void PORTB_IRQHandler(void){
 	int pin_num = get_interrupt_pin(PB);
 	if (pin_num != -1){
 		PORT_ClearInterruptFlag(PB, pin_num);
+		interrupt_matrix[PB][pin_num]();
 	}
-	interrupt_matrix[PB][pin_num]();
+
 }
 
 void PORTC_IRQHandler(void){
 	int pin_num = get_interrupt_pin(PC);
 	if (pin_num != -1){
 		PORT_ClearInterruptFlag(PC, pin_num);
+		interrupt_matrix[PC][pin_num]();
 	}
-	interrupt_matrix[PC][pin_num]();
 }
 
 void PORTD_IRQHandler(void){
 	int pin_num = get_interrupt_pin(PD);
 	if (pin_num != -1){
 		PORT_ClearInterruptFlag(PD, pin_num);
+		interrupt_matrix[PD][pin_num]();
 	}
-	interrupt_matrix[PD][pin_num]();
+
 }
 
 void PORTE_IRQHandler(void){
 	int pin_num = get_interrupt_pin(PE);
 	if (pin_num != -1){
 		PORT_ClearInterruptFlag(PE, pin_num);
+		interrupt_matrix[PE][pin_num]();
 	}
-	interrupt_matrix[PE][pin_num]();
 }
 
 void PORT_ClearInterruptFlag (int port_num, int pin_num){

@@ -23,6 +23,20 @@ typedef void (*display_marquee_event_callback_t)(void);
 
 
 /*****************************************
+*******display_init_interface*************
+******************************************
+* display_init_interface initializes the display.
+* The function has no effect whatsoever if the display
+* is already initialized (safe init)
+* 	INPUT:
+*		callback : callback that will be called whenever the marquee finishes displaying.
+*	OUTPUT:
+*		void
+*/
+void display_init_interface(display_marquee_event_callback_t callback);
+
+
+/*****************************************
 *****************display_marquee**********
 ******************************************
 * display_marquee starts the marquee of a sentence.
@@ -167,18 +181,7 @@ void display_set_blinking_one(bool on_off, int pos);
 bool display_get_is_blinking(int pos);
 
 
-/*****************************************
-*******display_init_interface*************
-******************************************
-* display_init_interface initializes the display.
-* The function has no effect whatsoever if the display
-* is already initialized (safe init)
-* 	INPUT:
-*		callback : callback that will be called whenever the marquee finishes displaying.
-*	OUTPUT:
-*		void
-*/
-void display_init_interface(display_marquee_event_callback_t callback);
+
 
 
 /*************************************************

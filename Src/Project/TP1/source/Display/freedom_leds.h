@@ -35,5 +35,4 @@ void frdm_led_dr_init();
 *		void.*/
 void frdm_led_dr_write(frdm_led_colors_t color, bool on_off);
 
-
 #endif /* DISPLAY_FREEDOM_LEDS_H_ */
