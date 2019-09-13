@@ -13,9 +13,10 @@
 static void enable_interrupt_pins(int port_num, int pin_num);
 static void disable_interrupt_pins(int port_num, int pin_num);
 void PORT_ClearInterruptFlag (int port_num, int pin_num);
-
-pinIrqFun_t interrupt_matrix[5][32];
-int interrupt_pins[5][32];
+#define NUM_PORTS			5
+#define NUM_PINS_PER_PORT	32
+pinIrqFun_t interrupt_matrix[NUM_PORTS][NUM_PINS_PER_PORT];
+int interrupt_pins[NUM_PORTS][NUM_PINS_PER_PORT];
 
 void interrupts_init(){
 	NVIC_EnableIRQ(PORTA_IRQn);
@@ -23,9 +24,9 @@ void interrupts_init(){
 	NVIC_EnableIRQ(PORTC_IRQn);
 	NVIC_EnableIRQ(PORTD_IRQn);
 	NVIC_EnableIRQ(PORTE_IRQn);
-	int i, j;
-	for(i = 0; i < 5; i++)
-		for(j = 0; j< 32; j++)
+
+	for(int i = 0; i < NUM_PORTS; i++)
+		for(int j = 0; j< NUM_PINS_PER_PORT; j++)
 			interrupt_pins[i][j] = -1;
 }
 
@@ -143,7 +144,7 @@ void PORT_ClearInterruptFlag (int port_num, int pin_num){
 }
 
 static void enable_interrupt_pins(int port_num, int pin_num){
-	for (int i = 0; i < 32; i++)
+	for (int i = 0; i < NUM_PINS_PER_PORT; i++)
 		if(interrupt_pins[port_num][i] == pin_num)
 			break;
 		else if(interrupt_pins[port_num][i] == -1){
@@ -153,11 +154,11 @@ static void enable_interrupt_pins(int port_num, int pin_num){
 }
 
 static void disable_interrupt_pins(int port_num, int pin_num){
-	for (int i = 0; i < 32; i++)
+	for (int i = 0; i < NUM_PINS_PER_PORT; i++)
 		if(interrupt_pins[port_num][i] == pin_num){
-			for(int j = i + 1; j < 32; j++)
+			for(int j = i + 1; j < NUM_PINS_PER_PORT; j++)
 				interrupt_pins[port_num][j-1] = interrupt_pins[port_num][j];
-			interrupt_pins[port_num][31] = -1;
+			interrupt_pins[port_num][NUM_PINS_PER_PORT-1] = -1;
 			break;
 		}
 }
