@@ -457,6 +457,7 @@ fsm_state_t initial_state[] = {
 };
 
 fsm_state_t waiting_u_id_confirmation_state[] = {
+		{.event = TIMEOUT_EV, .next_state = initial_state, .transition = setup_initial_state},
 		{.event = ENTER_EV, .next_state = waiting_db_id_confirmation_state, .transition = check_id},
 		{.event = BACK_EV, .next_state = waiting_id_state, .transition = setup_waiting_id},
 		{.event = CANCEL_EV, .next_state = initial_state, .transition = setup_initial_state},
@@ -468,6 +469,7 @@ fsm_state_t waiting_u_id_confirmation_state[] = {
 };
 
 fsm_state_t waiting_id_state[] = {
+		{.event = TIMEOUT_EV, .next_state = initial_state, .transition = setup_initial_state},
         {.event = UP_EV, .next_state = waiting_id_state, .transition = increase_digit},
         {.event = DOWN_EV, .next_state = waiting_id_state, .transition = decrease_digit},
         {.event = ENTER_EV, .next_state = waiting_id_state, .transition = next_digit},
@@ -479,24 +481,28 @@ fsm_state_t waiting_id_state[] = {
 };
 
 fsm_state_t show_error_msg_state_inputid[] = {
+		{.event = TIMEOUT_EV, .next_state = initial_state, .transition = setup_initial_state},
 		{.event = ENTER_EV, .next_state = waiting_id_state, .transition = setup_waiting_id},
 		{.event = MARQUEE_END_EV, .next_state = show_error_msg_state_inputid, .transition = show_error_msg},
 		{.event = GND_EV, .next_state = show_error_msg_state_inputid,.transition = do_nothing}
 };
 
 fsm_state_t show_error_msg_state_init[] = {
+		{.event = TIMEOUT_EV, .next_state = initial_state, .transition = setup_initial_state},
 		{.event = ENTER_EV, .next_state = initial_state, .transition = setup_initial_state},
 		{.event = MARQUEE_END_EV, .next_state = show_error_msg_state_init, .transition = show_error_msg},
 		{.event = GND_EV, .next_state = show_error_msg_state_init,.transition = do_nothing}
 };
 
 fsm_state_t show_error_msg_state_adminmenu[] = {
+		{.event = TIMEOUT_EV, .next_state = initial_state, .transition = setup_initial_state},
 		{.event = ENTER_EV, .next_state = admin_menu_state, .transition = setup_admin_menu},
 		{.event = MARQUEE_END_EV, .next_state = show_error_msg_state_adminmenu, .transition = show_error_msg},
 		{.event = GND_EV, .next_state = show_error_msg_state_adminmenu,.transition = do_nothing}
 };
 
 fsm_state_t waiting_db_id_confirmation_state[] = {
+		{.event = TIMEOUT_EV, .next_state = initial_state, .transition = setup_initial_state},
 		{.event = VALID_ID_EV, .next_state = waiting_pin_state, .transition = setup_waiting_pin},
 		{.event = INVALID_ID_EV, .next_state = show_error_msg_state_inputid, .transition = show_error_msg},
 		{.event = USER_BLOCKED_EV, .next_state = show_error_msg_state_init, .transition = show_error_msg},
@@ -504,6 +510,7 @@ fsm_state_t waiting_db_id_confirmation_state[] = {
 };
 
 fsm_state_t waiting_pin_state[] = {
+		{.event = TIMEOUT_EV, .next_state = initial_state, .transition = setup_initial_state},
         {.event = UP_EV, .next_state = waiting_pin_state, .transition = increase_digit},
         {.event = DOWN_EV, .next_state = waiting_pin_state, .transition = decrease_digit},
         {.event = ENTER_EV, .next_state = waiting_pin_state, .transition = next_digit},
@@ -514,6 +521,7 @@ fsm_state_t waiting_pin_state[] = {
 };
 
 fsm_state_t waiting_db_pin_confirmation_state[] = {
+		{.event = TIMEOUT_EV, .next_state = initial_state, .transition = setup_initial_state},
 		{.event = USER_LOGIN, .next_state = door_open_state, .transition = open_door},
 		{.event = ADMIN_LOGIN_CONF, .next_state = admin_menu_state, .transition = setup_admin_menu},
 		{.event = USER_LOGIN_CONF, .next_state = user_menu_state, .transition = print_admin_menu},
@@ -522,12 +530,14 @@ fsm_state_t waiting_db_pin_confirmation_state[] = {
 };
 
 fsm_state_t door_open_state[] = {
+		{.event = TIMEOUT_EV, .next_state = initial_state, .transition = close_door},
 		{.event = ENTER_EV, .next_state = initial_state, .transition = close_door},
 		{.event = MARQUEE_END_EV, .next_state = door_open_state, .transition = do_nothing},
 		{.event = GND_EV, .next_state = door_open_state,.transition = do_nothing}
 };
 
 fsm_state_t admin_menu_state[] = {
+		{.event = TIMEOUT_EV, .next_state = initial_state, .transition = close_door},
 		{.event = UP_EV, .next_state = admin_menu_state, .transition = next_option},
 		{.event = DOWN_EV, .next_state = admin_menu_state, .transition = previous_option},
 		{.event = ENTER_EV, .next_state = admin_menu_state, .transition = select_admin_menu_option},
@@ -540,6 +550,7 @@ fsm_state_t admin_menu_state[] = {
 };
 
 fsm_state_t user_menu_state[] = {
+		{.event = TIMEOUT_EV, .next_state = initial_state, .transition = close_door},
 		{.event = ENTER_EV, .next_state = change_pin_state, .transition = setup_change_pin},
 		{.event = CANCEL_EV, .next_state = initial_state, .transition = setup_initial_state},
 		{.event = MARQUEE_END_EV, .next_state = user_menu_state, .transition = print_admin_menu},
@@ -547,6 +558,7 @@ fsm_state_t user_menu_state[] = {
 };
 
 fsm_state_t remove_user_state[] = {
+		{.event = TIMEOUT_EV, .next_state = initial_state, .transition = close_door},
 		{.event = SUBMIT_DATA_EV, .next_state = remove_user_state, .transition = check_id_to_remove},
 		{.event = VALID_REMOVE_USER_EV, .next_state = delete_succes_state_msg, .transition = submit_remove},
 		{.event = INVALID_ID_EV, .next_state = show_error_msg_state_adminmenu, .transition = show_error_msg},
@@ -558,11 +570,13 @@ fsm_state_t remove_user_state[] = {
 };
 
 fsm_state_t delete_succes_state_msg[] = {
+		{.event = TIMEOUT_EV, .next_state = initial_state, .transition = close_door},
 		{.event = ENTER_EV, .next_state = admin_menu_state, .transition = setup_admin_menu},
 		{.event = GND_EV, .next_state = delete_succes_state_msg,.transition = do_nothing}
 };
 
 fsm_state_t add_id_user_state[] = {
+		{.event = TIMEOUT_EV, .next_state = initial_state, .transition = close_door},
 		{.event = SUBMIT_DATA_EV, .next_state = add_id_user_state, .transition = check_id_to_add},
 		{.event = VALID_ID_EV, .next_state = add_card_user_state, .transition = show_request_card_msg},
 		{.event = INVALID_ID_EV, .next_state = show_error_msg_state_adminmenu, .transition = show_error_msg},
@@ -575,6 +589,7 @@ fsm_state_t add_id_user_state[] = {
 };
 
 fsm_state_t add_card_user_state[] = {
+		{.event = TIMEOUT_EV, .next_state = initial_state, .transition = close_door},
 		{.event = CARD_EV, .next_state = add_card_user_state, .transition = check_card_to_add},
 		{.event = VALID_CARD_EV, .next_state = add_pin_user_state, .transition = setup_waiting_pin},
 		{.event = INVALID_CARD_EV, .next_state = show_error_msg_state_adminmenu, .transition = show_error_msg},
@@ -584,6 +599,7 @@ fsm_state_t add_card_user_state[] = {
 };
 
 fsm_state_t add_pin_user_state[] = {
+		{.event = TIMEOUT_EV, .next_state = initial_state, .transition = close_door},
         {.event = UP_EV, .next_state = add_pin_user_state, .transition = increase_digit},
         {.event = DOWN_EV, .next_state = add_pin_user_state, .transition = decrease_digit},
         {.event = ENTER_EV, .next_state = add_pin_user_state, .transition = next_digit},
@@ -594,12 +610,14 @@ fsm_state_t add_pin_user_state[] = {
 };
 
 fsm_state_t add_success_state[] = {
+		{.event = TIMEOUT_EV, .next_state = initial_state, .transition = close_door},
 		{.event = MARQUEE_END_EV, .next_state = add_success_state, .transition = show_add_success_msg},
 		{.event = ENTER_EV, .next_state = admin_menu_state, .transition = setup_admin_menu},
 		{.event = GND_EV, .next_state = add_success_state,.transition = do_nothing}
 };
 
 fsm_state_t change_pin_state[] = {
+		{.event = TIMEOUT_EV, .next_state = initial_state, .transition = close_door},
 		{.event = UP_EV, .next_state = change_pin_state, .transition = increase_digit},
 		{.event = DOWN_EV, .next_state = change_pin_state, .transition = decrease_digit},
 		{.event = ENTER_EV, .next_state = change_pin_state, .transition = next_digit},
@@ -610,6 +628,7 @@ fsm_state_t change_pin_state[] = {
 };
 
 fsm_state_t change_pin_msg_state[] = {
+		{.event = TIMEOUT_EV, .next_state = initial_state, .transition = close_door},
 		{.event = MARQUEE_END_EV, .next_state = change_pin_msg_state, .transition = show_add_success_msg},
 		{.event = ENTER_EV, .next_state = initial_state, .transition = setup_initial_state},
 		{.event = GND_EV, .next_state = change_pin_msg_state,.transition = do_nothing}

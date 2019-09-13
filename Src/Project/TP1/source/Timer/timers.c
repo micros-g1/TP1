@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <Interrupts/SysTick.h>
 
-#define SYSTICKS_PER_MILLISECOND 8
+#define SYSTICKS_PER_MILLISECOND 6
 
 static void timers_ISR();
 
@@ -74,7 +74,7 @@ void timers_set_timer_callback(unsigned int t_id, timer_callback_t callback)
 
 void timers_ISR()
 {
-	for(int i = 1 ; i < TIMER_TOTAL_TIMERS ; i++)
+	for(int i = 0 ; i < TIMER_TOTAL_TIMERS ; i++)
 		if(timers_array[i].enabled && timers_array[i].period_ms != 0)
 			if(++timers_array[i].time_count_ms == timers_array[i].period_ms)
 			{

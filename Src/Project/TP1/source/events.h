@@ -41,6 +41,7 @@ typedef enum{
 	CHANGE_PIN_OPT_EV,
 	VALID_REMOVE_USER_EV,
 	CARD_EV,
+	TIMEOUT_EV,
 	GND_EV
 
 }fsm_event_code;

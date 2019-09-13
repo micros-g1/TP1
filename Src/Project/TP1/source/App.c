@@ -58,7 +58,7 @@ void App_Init (void)
 	state = fsm_get_init_state();
 
 	timers_set_timer_mode(0, TIMER_REPEAT);
-	timers_set_timer_period(0, 1000);
+	timers_set_timer_period(0, 10*1000);
 	timers_set_timer_callback(0, timeout_callback);
 	timers_set_timer_enabled(0, true);
 }
@@ -67,6 +67,7 @@ void App_Init (void)
 void App_Run (void)
 {
 	if(is_there_event()){
+		timers_reset_timer(0);
 		pop_event(&event);
 		state = fsm_run(state, event);
 	}
@@ -130,8 +131,11 @@ void m_finished()
 	push_event(ev);
 }
 
-void timeout_callback(unsigned int id){
-
+void timeout_callback(unsigned int id)
+{
+	fsm_event_t ev;
+	ev.code = TIMEOUT_EV;
+	push_event(ev);
 }
 
 /*******************************************************************************
