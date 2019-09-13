@@ -49,6 +49,8 @@ void frdm_led_dr_write(frdm_led_colors_t color, bool on_off){
 		case FRDM_BLUE:
 			gpioWrite(PIN_LED_BLUE, !on_off);
 			break;
+		default:
+			break;
 	}
 }
 
