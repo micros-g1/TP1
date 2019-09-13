@@ -32,7 +32,7 @@
 static bool blinking[AMOUNT_MAX_DISPLAY_POS];				//blinking (true) or not (false)
 static bool blink_cleared[AMOUNT_MAX_DISPLAY_POS];		//status of the blinking (showing:true, not showing: false)
 static int brightness[AMOUNT_MAX_DISPLAY_POS];			//brightness level, from MIN_BRIGHT to MAX_BRIGHT
-static int blink_counter_vel = CALL_FREQ_HZ/AMOUNT_MAX_DISPLAY_POS/2;	//half a second.
+static int blink_counter_vel = CALL_FREQ_HZ/AMOUNT_MAX_DISPLAY_POS * (2.0/5.0);	//2/5 of a second.
 
 static unsigned char curr_displaying[AMOUNT_MAX_DISPLAY_POS];			//display buffer. Initialized at init_display()
 static char curr_displaying_photo[AMOUNT_MAX_DISPLAY_POS+1];			//display buffer at the moment get_currently_on_buffer_word was called. null terminated
