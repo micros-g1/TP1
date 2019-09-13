@@ -69,14 +69,6 @@ void display_marquee(char* sentence, display_direction_t dir){
 	clear_marquee_buffer();
 	marquee_curr_dir = (direction_display_t) dir;
 	set_marquee_buffer(sentence);
-	if(marquee_curr_dir == DISPLAY_INT_LEFT){
-		for(int j = 0; j < AMOUNT_MAX_DISPLAY_POS; j++){
-			for(int i = MARQUEE_BUFFER_SIZE-1; i > 0; i++)
-				marquee_buffer[i] = marquee_buffer[i-1];
-			marquee_buffer[j] = NULL_CHAR;
-		}
-	}
-
 	systick_enable_callback(marquee_callback);
 }
 void display_stop_marquee(){
@@ -111,11 +103,11 @@ static void marquee_callback(){
 	char aux = NULL_CHAR;
 
 	if(!should_shift){
-		if(marquee_curr_dir == DISPLAY_LEFT){
-			chars_written = display_dr_write_sentence(marquee_buffer);
-		}
-		else
-			display_clear_all();
+//		if(marquee_curr_dir == DISPLAY_LEFT){
+//			chars_written = display_dr_write_sentence(marquee_buffer);
+//		}
+//		else
+		display_clear_all();
 
 		should_shift = true;
 	}
