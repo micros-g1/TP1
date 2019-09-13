@@ -34,6 +34,9 @@ static bool blink_cleared[AMOUNT_MAX_DISPLAY_POS];		//status of the blinking (sh
 static int brightness[AMOUNT_MAX_DISPLAY_POS];			//brightness level, from MIN_BRIGHT to MAX_BRIGHT
 static int blink_counter_vel = CALL_FREQ_HZ/AMOUNT_MAX_DISPLAY_POS/4;	//2/5 of a second.
 
+static bool blinking_dot[AMOUNT_MAX_DISPLAY_POS];
+static bool blink_cleared_dot[AMOUNT_MAX_DISPLAY_POS];
+
 static unsigned char curr_displaying[AMOUNT_MAX_DISPLAY_POS];			//display buffer. Initialized at init_display()
 static char curr_displaying_photo[AMOUNT_MAX_DISPLAY_POS+1];			//display buffer at the moment get_currently_on_buffer_word was called. null terminated
 
@@ -136,13 +139,38 @@ static bool handle_blinking(int pos);
 /***********************************
 *********handle_brightness***************
 ************************************
-* handle_brightness
+* handle_brightness checks if the display draw should skip a draw or not to handle the
+* brightness level.
 * 	INPUT:
-*		pos :
+*		pos : position of the display that will be handled
+*	OUTPUT:
+*		return false if the display should skip a draw.
+*/
+static bool handle_brightness(int pos);
+
+/******************************************
+*************handle_blinking_dot***************
+*******************************************
+* handle_blinking_dot tells whether the dot should
+* show something or not when the blinking option is enabled.
+* If the blinking option is disabled, handle_blinking_dot will always return false.
+* 	INPUT:
+*		void.
+*	OUTPUT:
+*		true when the dot has blinked (nothing should be shown on the display).
+*/
+static bool handle_blinking_dot(int pos);
+/***********************************
+*********draw_dot***************
+************************************
+* draw_dot turns on or off  a specific dot of the display
+* 	INPUT:
+*		on_off : value to set the dot to.
+*		pos : dot to turn on or off
 *	OUTPUT:
 *		void.
 */
-static bool handle_brightness(int pos);
+static void draw_dot(bool on_off, int pos);
 /*-------------------------------------------
  ------------FUNCTION_IMPLEMENTATION---------
  -------------------------------------------*/
@@ -154,6 +182,16 @@ static void draw_display(int pos){
 	else
 		draw_char(seven_seg_chars[(int)curr_displaying[pos]], pos);
 
+	if(!handle_blinking_dot(pos))
+		draw_dot(false, pos);
+	else
+		draw_dot(true, pos);
+}
+
+static void draw_dot(bool on_off, int pos){
+	pos++;
+	gpioWrite(PIN_DOT_0, on_off && (pos & 0X1));
+	gpioWrite(PIN_DOT_1, on_off && (pos & 0X2));
 }
 
 static void draw_char(unsigned char printable_char, int pos){
@@ -217,7 +255,9 @@ void display_dr_reset(){
 	for(int i = 0; i < AMOUNT_MAX_DISPLAY_POS; i++){
 		curr_displaying[i] = NULL_CHAR;
 		blinking[i] = false;
+		blinking_dot[i] = false;
 		blink_cleared[i] = false;
+		blink_cleared_dot[i] = false;
 		brightness[i] = MAX_BRIGHT;
 		last_drawn_word[i] = curr_displaying[i];
 	}
@@ -331,6 +371,25 @@ char * display_dr_get_currently_curr_displaying_word(){
 	return last_drawn_word_photo;
 }
 
+static bool handle_blinking_dot(int pos){
+	static int blink_counter_dot[AMOUNT_MAX_DISPLAY_POS] = {0,0,0,0};
 
+	if(!blinking_dot[pos]) return true;		//not currently blinking, so should not handle blinking.
+
+	if(blink_counter_dot[pos] < blink_counter_vel)
+		blink_counter_dot[pos]++;				//the time has not come for the blinker to blink
+	else{
+		blink_counter_dot[pos] = 0;
+		blink_cleared_dot[pos] = !blink_cleared_dot[pos];
+	}
+
+	return !blink_cleared_dot[pos];
+}
+
+
+void display_dr_blink_one_dot(int pos, bool on_off){
+	blinking_dot[pos] = on_off;
+	blink_cleared_dot[pos] = false;
+}
 
 

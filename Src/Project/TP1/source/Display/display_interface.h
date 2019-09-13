@@ -140,7 +140,7 @@ bool display_get_is_blinking_any();
 /*****************************************
 **********display_set_blinking_one********
 ******************************************
-* display_set_blinking_one tells sets the blinking state of a specific position
+* display_set_blinking_one sets the blinking state of a specific position
 * of the display to enabled or disabled
 * 	INPUT:
 * 		on_off : true for enabling blinking for the position, false otherwise.
@@ -402,5 +402,15 @@ void display_set_brightness_frdm_led_up_down(display_color_t color, display_dire
 *		void.*/
 void display_set_brightness_frdm_led(display_color_t color, int brightness);
 
-
+/*******************************************
+*****display_set_blinking_dot_one**************
+********************************************
+* display_set_blinking_dot_one sets the blinking state of a specific dot
+* of the display to enabled or disabled
+* 	INPUT:
+*		pos : position of the dot
+*		on_off : enable(true) or disable (false)
+*	OUTPUT:
+*		void.*/
+void display_set_blinking_dot_one(int pos, bool on_off);
 #endif /* DISPLAY_DISPLAY_INTERFACE_H_ */

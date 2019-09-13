@@ -32,15 +32,13 @@
 #define PIN_SW2         // ???
 #define PIN_SW3         PORTNUM2PIN(PA, 4)
 
-#define SW_ACTIVE       // ???
-#define SW_INPUT_TYPE   // ???
 
 // Rotary Encoder Pins
 #define RE_PIN_BUTTON_SIGNAL 	PORTNUM2PIN(PB, 2)
 #define RE_PIN_SIGNAL_A		PORTNUM2PIN(PB, 10)
 #define RE_PIN_SIGNAL_B     PORTNUM2PIN(PB, 3)
 
-
+// Display Pins
 #define DISPLAY_PORT		PC
 #define PIN_DISPLAY_ENC0	PORTNUM2PIN(DISPLAY_PORT, 3)
 #define PIN_DISPLAY_ENC1	PORTNUM2PIN(DISPLAY_PORT, 2)
@@ -56,6 +54,14 @@
 #define PIN_DIODE_0			PORTNUM2PIN(DISPLAY_PORT, 11)
 #define PIN_DIODE_1			PORTNUM2PIN(DISPLAY_PORT, 10)
 
+#define PIN_DOT_0			PORTNUM2PIN(PB, 18)
+#define PIN_DOT_1			PORTNUM2PIN(PB, 19)
+
+//Magnetic Stripe Pins
+#define MT_ENABLEPIN   (PORTNUM2PIN(PD, 0u))
+#define MT_CLOCKPIN    (PORTNUM2PIN(PD, 2u))
+#define MT_DATAPIN     (PORTNUM2PIN(PD, 3u))
+//#define MT_DEGUBPIN		(PORTNUM2PIN(PC, 4u))
 /*******************************************************************************
  ******************************************************************************/
 

@@ -9,18 +9,13 @@
 #include <Magnetic_stripe/magtek_driver.h>
 #include <Magnetic_stripe/magtek_driver_fsm.h>
 #include <stdlib.h>
+#include "board.h"
 #ifdef MT_DEBUG
 #include <stdio.h>
 #endif
 #include <Interrupts/SysTick.h>
 
 #define MT_SYSTICK 0
-
-
-#define MT_ENABLEPIN   (PORTNUM2PIN(PD, 0u))
-#define MT_CLOCKPIN    (PORTNUM2PIN(PD, 2u))
-#define MT_DATAPIN     (PORTNUM2PIN(PD, 3u))
-//#define MT_DEGUBPIN		(PORTNUM2PIN(PC, 4u))
 
 static mt_callback_t cb;
 static volatile unsigned char card_buffer[50];

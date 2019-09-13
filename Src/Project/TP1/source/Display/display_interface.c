@@ -276,3 +276,6 @@ bool display_frdm_led_is_blinking(display_color_t color){
 void display_set_brightness_frdm_led(display_color_t color, int brightness){
 	frdm_led_dr_set_brightness(color, brightness);
 }
+void display_set_blinking_dot_one(int pos, bool on_off){
+	display_dr_blink_one_dot(pos, on_off);
+}
