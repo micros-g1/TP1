@@ -333,32 +333,6 @@ void display_set_brightness_led_up_down(int pos, display_direction_t dir);
 *		void.*/
 void display_set_brightness_leds_up_down(display_direction_t dir);
 
-
-/*****************************************
-*************display_frdm_led_reset*******
-******************************************
-* display_frdm_led_reset resets the led buffer.
-* disables blinking, and sets brightness to maximum.
-* 	INPUT:
-*		void.
-*	OUTPUT:
-*		void.
-*/
-void display_frdm_led_reset();
-
-
-/*****************************************
-**************display_frdm_led_blink******
-******************************************
-* display_frdm_led_blink enables or disables the blinking function for the freedom led
-* 	INPUT:
-* 		color : color to blink
-*		on_off : true if the blinking function should be enabled
-*	OUTPUT:
-*		void.*/
-void display_frdm_led_blink(display_color_t color, bool on_off);
-
-
 /*****************************************
 **************display_frdm_led_write******
 ******************************************
@@ -369,41 +343,6 @@ void display_frdm_led_blink(display_color_t color, bool on_off);
 *	OUTPUT:
 *		void.*/
 void display_frdm_led_write(display_color_t color, bool on_off);
-
-
-/*****************************************
-***********display_frdm_led_is_blinking***
-******************************************
-* display_frdm_led_is_blinking tells the user if the freedom led is currently blinking enabled.
-* 	INPUT:
-*		color : color to ask if is blinking.
-*	OUTPUT:
-*		true if the led is currently blinking enabled.*/
-bool display_frdm_led_is_blinking(display_color_t color);
-
-
-/*******************************************
-***display_set_brightness_frdm_led_up_down**
-********************************************
-* display_set_brightness_frdm_led_up_down sets the brightness level for the freedom led up or down
-* can be called even when current brightness is at its limits!! (has no effect in that case)
-* 	INPUT:
-*		dir : UP or DOWN.
-*	OUTPUT:
-*		void.*/
-void display_set_brightness_frdm_led_up_down(display_color_t color, display_direction_t dir);
-
-
-/*******************************************
-*****display_set_brightness_frdm_led**************
-********************************************
-* display_set_brightness_frdm_led sets the brightness level for the freedom led
-* can be called even with brighteness higher or lower that MAX_BRIGHT/MIN_BRIGHT!! (has no effect in that case)
-* 	INPUT:
-*		brightness : level of brightness to be set.
-*	OUTPUT:
-*		void.*/
-void display_set_brightness_frdm_led(display_color_t color, int brightness);
 
 /*******************************************
 *****display_set_blinking_dot_one**************

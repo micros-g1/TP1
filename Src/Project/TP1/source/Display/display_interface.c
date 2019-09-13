@@ -250,32 +250,10 @@ void display_write_or_marquee(char * sentence, display_direction_t dir){
 		display_dr_write_sentence(sentence);
 }
 
-void display_set_brightness_frdm_led_up_down(display_color_t color, display_direction_t dir){
-	if(dir == DISPLAY_INT_UP)
-		frdm_led_dr_set_brightness(color, frdm_led_dr_get_brightness(color) + 1);
-	else if(dir == DISPLAY_INT_DOWN)
-		frdm_led_dr_set_brightness(color, frdm_led_dr_get_brightness(color) - 1);
-}
-void display_frdm_led_reset(){
-	frdm_led_dr_reset();
-}
-
-void display_frdm_led_blink(display_color_t color, bool on_off){
-	frdm_led_dr_blink(color, on_off);
-}
-
 void display_frdm_led_write(display_color_t color, bool on_off){
 	frdm_led_dr_write(color, on_off);
 }
 
-bool display_frdm_led_is_blinking(display_color_t color){
-	return frdm_led_dr_is_blinking(color);
-}
-
-
-void display_set_brightness_frdm_led(display_color_t color, int brightness){
-	frdm_led_dr_set_brightness(color, brightness);
-}
 void display_set_blinking_dot_one(int pos, bool on_off){
 	display_dr_blink_one_dot(pos, on_off);
 }
