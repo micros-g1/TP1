@@ -43,6 +43,7 @@ typedef enum{
 	UNBLOCK_USER_OPT_EV,
 	VALID_UNBLOCK_USER_EV,
 	CARD_EV,
+	TIMEOUT_EV,
 	GND_EV
 
 }fsm_event_code;
