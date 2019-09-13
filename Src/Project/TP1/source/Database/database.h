@@ -42,7 +42,7 @@ typedef struct {
 
 
 typedef struct {    // id left as whole int for efficiency, two ints would be necessary either way
-    char password [PASSWORD_MAX_LEN];  // 2^26-1=67,108,864; 2^27-1=134,217,727 -> 27 bits necessary for 8 digit id
+    char password [PASSWORD_MAX_LEN + 1];  // 2^26-1=67,108,864; 2^27-1=134,217,727 -> 27 bits necessary for 8 digit id
     uint8_t admin : 1;     // booleans
     uint8_t blocked : 1;
     uint8_t free : 1;      // true if valid user

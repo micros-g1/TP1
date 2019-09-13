@@ -21,14 +21,13 @@
  ******************************************************************************/
 
 
-
 /******************************************************************************
  * FUNCTION PROTOTYPES FOR PRIVATE FUNCTIONS WITH FILE LEVEL SCOPE
  ******************************************************************************/
 void m_finished(void);
 void rotary_encoder_callback(re_event_t ev);
 void timeout_callback(unsigned int id);
-void ms_callback(ms_ev_t ev);
+extern void ms_callback(ms_ev_t ev);
 
 
 fsm_state_t * state;
@@ -45,6 +44,7 @@ void App_Init (void)
 {
 	rotary_encoder_init();
 	rotary_encoder_set_callback(rotary_encoder_callback);
+
 	display_init_interface(m_finished);
 	u_init();
 	timers_init();
@@ -57,19 +57,15 @@ void App_Init (void)
 	init_event_queue();
 	state = fsm_get_init_state();
 
-
 	timers_set_timer_mode(0, TIMER_REPEAT);
 	timers_set_timer_period(0, 1000);
 	timers_set_timer_callback(0, timeout_callback);
 	timers_set_timer_enabled(0, true);
-
-
 }
 
 /* Función que se llama constantemente en un ciclo infinito */
 void App_Run (void)
 {
-
 	if(is_there_event()){
 		pop_event(&event);
 		state = fsm_run(state, event);
@@ -136,15 +132,6 @@ void m_finished()
 
 void timeout_callback(unsigned int id){
 
-}
-
-void ms_callback(ms_ev_t ev){
-	fsm_event_t event;
-	if(ev.type == MS_SUCCESS){
-		event.code = CARD_EV;
-		strcpy(event.data, ev.data);
-	}
-	push_event(event);
 }
 
 /*******************************************************************************

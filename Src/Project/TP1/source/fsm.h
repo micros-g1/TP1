@@ -6,8 +6,11 @@
 #define FSM_H_
 
 #include "events.h"
+#include "Magnetic_stripe/magnetic_stripe.h"
 
 typedef struct state_table fsm_state_t;
+
+void ms_callback(ms_ev_t ev);
 
 struct state_table{
     fsm_event_t event;
