@@ -11,6 +11,7 @@
 #include "Display/display_interface.h"
 #include "Rotary_encoder/rotary_encoder.h"
 #include "Database/database.h"
+#include "Timer/timers.h"
 #include "fsm.h"
 #include "events.h"
 
@@ -23,11 +24,9 @@
 /******************************************************************************
  * FUNCTION PROTOTYPES FOR PRIVATE FUNCTIONS WITH FILE LEVEL SCOPE
  ******************************************************************************/
-void enable_callback(void);
-void clock_callback(void);
-void systick_callback(void);
 void m_finished(void);
 void rotary_encoder_callback(re_event_t ev);
+void timeout_callback(unsigned int id);
 
 fsm_state_t * state;
 fsm_event_t event;
@@ -45,24 +44,29 @@ void App_Init (void)
 	rotary_encoder_set_callback(rotary_encoder_callback);
 	display_init_interface(m_finished);
 	u_init();
-
+	timers_init();
 
 	display_write_to_led(1, true);
 	display_write_to_led(0, true);
 	display_write_to_led(2, true);
 
-	display_write_char(' ', 0);
-	display_write_char(' ', 1);
-	display_write_char(' ', 2);
-	display_write_char(' ', 3);
-
 	init_event_queue();
 	state = fsm_get_init_state();
+
+	display_write_word("BOCA");
+
+	timers_set_timer_mode(0, TIMER_REPEAT);
+	timers_set_timer_period(0, 1000);
+	timers_set_timer_callback(0, timeout_callback);
+	timers_set_timer_enabled(0, true);
+
+
 }
 
 /* Función que se llama constantemente en un ciclo infinito */
 void App_Run (void)
 {
+
 	if(is_there_event()){
 		pop_event(&event);
 		state = fsm_run(state, event);
@@ -70,7 +74,6 @@ void App_Run (void)
 }
 
 char* ev_name[] = {"RE_LL_LEFT","RE_LL_RIGHT","RE_LL_BUTTON_DOWN","RE_LL_BUTTON_UP","RE_LL_TIMEOUT","RE_LL_NO_EVENT","RE_LL_TOTAL_EVENTS"};
-
 
 void rotary_encoder_callback(re_event_t ev)
 {
@@ -124,19 +127,6 @@ void rotary_encoder_callback(re_event_t ev)
  *******************************************************************************
  ******************************************************************************/
 
-void systick_callback(void)
-{
-
-	display_write_to_led(1, true);
-	display_write_to_led(0, true);
-	display_write_to_led(2, true);
-	for(int i = 0; i< 3; i++)
-		display_set_blinking_led_one(i, true);
-	display_set_blinking_all(false);
-	display_marquee("123456", DISPLAY_INT_LEFT);
-
-}
-
 void m_finished()
 {
 	fsm_event_t ev;
@@ -144,6 +134,9 @@ void m_finished()
 	push_event(ev);
 }
 
+void timeout_callback(unsigned int id){
+
+}
 
 /*******************************************************************************
  ******************************************************************************/
