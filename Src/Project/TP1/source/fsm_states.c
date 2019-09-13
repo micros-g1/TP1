@@ -20,6 +20,11 @@ void ms_callback(ms_ev_t ev){
 		aux_ms_ev.data = ev.data;
 		event.code = CARD_EV;
 	}
+	else
+	{
+		event.code = CARD_EV;
+		aux_ms_ev.data = NULL;
+	}
 	push_event(event);
 }
 
@@ -44,6 +49,8 @@ fsm_state_t add_card_user_state[];
 fsm_state_t add_pin_user_state[];
 fsm_state_t add_success_state[];
 fsm_state_t change_pin_msg_state[];
+fsm_state_t show_error_msg_state_inputid[];
+fsm_state_t user_menu_state[];
 
 /*****************************************
 *************do_nothing**************
@@ -423,6 +430,18 @@ static void show_request_card_msg(void);
 *		void
 */
 static void check_card_to_add(void);
+
+/*****************************************
+*************check_id_card****************
+******************************************
+* check_id_card checks if a given card exists.
+* 	INPUT:
+*		void.
+*	OUTPUT:
+*		void
+*/
+static void check_id_card(void);
+
 static void show_add_success_msg(void);
 static void commit_add(void);
 static void submit_remove(void);
@@ -443,6 +462,8 @@ fsm_state_t waiting_u_id_confirmation_state[] = {
 		{.event = CANCEL_EV, .next_state = initial_state, .transition = setup_initial_state},
 		{.event = MARQUEE_END_EV, .next_state = waiting_u_id_confirmation_state, .transition = show_id},
 		{.event = VALID_ID_EV, .next_state = waiting_pin_state, .transition = setup_waiting_pin},
+		{.event = VALID_CARD_EV, .next_state = waiting_db_id_confirmation_state, .transition = check_id},
+		{.event = INVALID_CARD_EV, .next_state = show_error_msg_state_inputid, .transition = show_error_msg},
 		{.event = GND_EV, .next_state = waiting_u_id_confirmation_state,.transition = do_nothing}
 };
 
@@ -453,6 +474,7 @@ fsm_state_t waiting_id_state[] = {
         {.event = BACK_EV, .next_state = waiting_id_state, .transition = previous_digit},
 		{.event = CANCEL_EV, .next_state = initial_state, .transition = setup_initial_state},
 		{.event = SUBMIT_DATA_EV, .next_state = waiting_u_id_confirmation_state, .transition = show_id},
+		{.event = CARD_EV, .next_state = waiting_u_id_confirmation_state, .transition = check_id_card},
 		{.event = GND_EV, .next_state = waiting_u_id_confirmation_state,.transition = do_nothing}
 };
 
@@ -494,7 +516,7 @@ fsm_state_t waiting_pin_state[] = {
 fsm_state_t waiting_db_pin_confirmation_state[] = {
 		{.event = USER_LOGIN, .next_state = door_open_state, .transition = open_door},
 		{.event = ADMIN_LOGIN_CONF, .next_state = admin_menu_state, .transition = setup_admin_menu},
-		{.event = USER_LOGIN_CONF, .next_state = set_pin_state, .transition = setup_set_pin},
+		{.event = USER_LOGIN_CONF, .next_state = user_menu_state, .transition = print_admin_menu},
 		{.event = INVALID_PIN_EV, .next_state = show_error_msg_state_init, .transition = show_error_msg},
 		{.event = GND_EV, .next_state = waiting_db_pin_confirmation_state,.transition = do_nothing}
 };
@@ -515,6 +537,13 @@ fsm_state_t admin_menu_state[] = {
 		{.event = ADD_USER_OPT_EV, .next_state = add_id_user_state, .transition = setup_add_user},
 		{.event = CHANGE_PIN_OPT_EV, .next_state = change_pin_state, .transition = setup_change_pin},
 		{.event = GND_EV, .next_state = admin_menu_state,.transition = do_nothing}
+};
+
+fsm_state_t user_menu_state[] = {
+		{.event = ENTER_EV, .next_state = change_pin_state, .transition = setup_change_pin},
+		{.event = CANCEL_EV, .next_state = initial_state, .transition = setup_initial_state},
+		{.event = MARQUEE_END_EV, .next_state = user_menu_state, .transition = print_admin_menu},
+		{.event = GND_EV, .next_state = user_menu_state,.transition = do_nothing}
 };
 
 fsm_state_t remove_user_state[] = {
@@ -795,7 +824,10 @@ static void check_id(void){
 	if(user_data_helper.input_type == EIGHT_DIGIT_PIN)
 		strcpy(data, user_data_helper.id);
 	else if (user_data_helper.input_type == MAGNETIC_CARD)
+	{
 		strcpy(data, user_data_helper.card);
+		u_get_pin_from_card(data, user_data_helper.id);
+	}
 
 	if(u_exists(user_data_helper.input_type, data)){
 		if(u_is_blocked(user_data_helper.input_type, data)){
@@ -889,6 +921,7 @@ static void pin_submited(void){
 					ev.code = USER_LOGIN_CONF;
 					strcpy(logged_usr.id, user_data_helper.id);
 					strcpy(logged_usr.pin, user_data_helper.pin);
+					admin_menu_helper.option = CHANGE_PIN_ENTRY;
 				}
 			}else
 				ev.code = USER_LOGIN;
@@ -1051,12 +1084,35 @@ static void show_request_card_msg(void){
 
 static void check_card_to_add(void){
 	fsm_event_t ev;
-	if(!u_exists(MAGNETIC_CARD, aux_ms_ev.data)){
-		strcpy(aux_user.card, aux_ms_ev.data);
+	if(aux_ms_ev.data != NULL)
+	{
+		if(!u_exists(MAGNETIC_CARD, aux_ms_ev.data)){
+			strcpy(aux_user.card, aux_ms_ev.data);
+			ev.code = VALID_CARD_EV;
+		}else{
+			ev.code = INVALID_CARD_EV;
+			data_helper.error_code = CARD_IN_USE_ERROR;
+		}
+	}
+	else
+	{
+		ev.code = INVALID_CARD_EV;
+		data_helper.error_code = ERROR_CARD_READ;
+	}
+	push_event(ev);
+}
+
+static void check_id_card(void){
+	fsm_event_t ev;
+	if(aux_ms_ev.data != NULL){
 		ev.code = VALID_CARD_EV;
+		user_data_helper.input_type = MAGNETIC_CARD;
+		strcpy(user_data_helper.card,aux_ms_ev.data);
+
 	}else{
 		ev.code = INVALID_CARD_EV;
-		data_helper.error_code = CARD_IN_USE_ERROR;
+		data_helper.error_code = ERROR_CARD_READ;
+
 	}
 	push_event(ev);
 }

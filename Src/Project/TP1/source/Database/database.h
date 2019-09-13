@@ -168,4 +168,7 @@ void u_remove(id_type_t id_type, char * id);
  ******************************************************************************/
 
 uint8_t u_get_tries(id_type_t id_type, char * id);
+
+void u_get_pin_from_card(char * card, char * pin);
+
 #endif //SOURCE_DATABASE_H

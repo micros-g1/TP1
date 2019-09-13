@@ -11,7 +11,6 @@
 
 #include <string.h>
 #include <stdlib.h>
-//#include <ctype.h>
 #include <Database/database.h>
 
 
@@ -40,8 +39,8 @@ static user_t database[MAX_USER_N];
 // reduce need for iteration when quering multiple times for the same user
 static unsigned char last_queried_user;
 
-static char cards[CARD_LEN+1][MAX_USER_N]; // leave one space for terminator
-static char pins[PIN_LEN+1][MAX_USER_N];
+static char cards[MAX_USER_N][CARD_LEN+1]; // leave one space for terminator
+static char pins[MAX_USER_N][PIN_LEN+1];
 
 
 /*******************************************************************************
@@ -108,9 +107,9 @@ void u_init()
             database[i].ids[j].type = j;
         }
         database[i].ids[EIGHT_DIGIT_PIN].data = pins[i];
-        pins[i][0] = 0;
+        memset(pins[i], 0, sizeof(pins[i]));
         database[i].ids[MAGNETIC_CARD].data = cards[i];
-        cards[i][0] = 0;
+        memset(cards[i], 0, sizeof(cards[i]));
     }
 
     strcpy(database[0].ids[EIGHT_DIGIT_PIN].data, "00000000");  // default admin data
@@ -434,6 +433,17 @@ bool update_password(user_t * u, char * password)
         }
     }
     return success;
+}
+
+
+void u_get_pin_from_card(char * card, char * pin)
+{
+	if (card != NULL) {
+		unsigned int index = query(MAGNETIC_CARD, card);
+		if (index < MAX_USER_N) {
+			strcpy(pin, database[index].ids[EIGHT_DIGIT_PIN].data);
+		}
+	}
 }
 
 

@@ -10,7 +10,7 @@
 #include "Database/database.h"
 
 #define ID_LENGTH 8
-#define CARD_DATA_LENGTH 8
+#define CARD_DATA_LENGTH 40
 #define PIN_LENGTH 5
 #define MAX_INPUT_LENGTH 10
 
@@ -25,12 +25,13 @@ typedef enum{
 	WRONG_PASS,
 	LAST_ADMIN_ERROR,
 	DONT_EXIST_ERROR,
-	ALREADY_EXISTS_ERROR,
 	CARD_IN_USE_ERROR,
-	ERROR_TYPE_NUM
+	ALREADY_EXISTS_ERROR,
+	ERROR_CARD_READ,
+	ERROR_TYPE_NUM,
 }fsm_error_code_t;
 
-char * error_msgs[] = {"id not found", "id bloc", "pin incorrect","error cant delete super user", "user not found", "error card in use","error repeated user"};
+char * error_msgs[] = {"id not found", "id bloc", "pin incorrect","error cant delete super user", "user not found", "error card in use","error repeated user","error reading"};
 char * admin_options[] = {"add user","delete user","change pin"};
 
 
