@@ -21,6 +21,6 @@ void mt_cb_ssbit(mt_ev_t ev);
 void mt_cb_databit(mt_ev_t ev);
 void mt_cb_lrcbit(mt_ev_t ev);
 
-void mt_get_card(char * buffer);
+void mt_get_card(unsigned char * buffer);
 
 #endif //SOURCE_MAGTEK_DRIVER_FSM_H

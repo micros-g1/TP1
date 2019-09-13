@@ -19,6 +19,11 @@ pinIrqFun_t interrupt_matrix[NUM_PORTS][NUM_PINS_PER_PORT];
 int interrupt_pins[NUM_PORTS][NUM_PINS_PER_PORT];
 
 void interrupts_init(){
+	static bool is_init = false;
+	if (is_init)
+		return;
+	is_init = true;
+
 	NVIC_EnableIRQ(PORTA_IRQn);
 	NVIC_EnableIRQ(PORTB_IRQn);
 	NVIC_EnableIRQ(PORTC_IRQn);

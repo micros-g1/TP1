@@ -11,7 +11,7 @@
 
 static ms_callback_t higher_callback;
 
-void lower_callback(char * card);
+void lower_callback(unsigned char * card);
 
 
 void ms_init(ms_callback_t callback)
@@ -26,7 +26,7 @@ void ms_init(ms_callback_t callback)
 
 
 
-void lower_callback (char * card)
+void lower_callback (unsigned char * card)
 {
     ms_ev_t ev;
     ev.data = card;

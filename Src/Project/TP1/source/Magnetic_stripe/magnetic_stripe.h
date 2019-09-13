@@ -31,7 +31,7 @@ typedef enum {MS_SUCCESS, MS_FAIL, MS_N_EVS} ms_ev_type_t;
 
 typedef struct {
     ms_ev_type_t type;
-    char * data; // only relevant in success
+    unsigned char * data; // only relevant in success
 } ms_ev_t;
 
 typedef void(*ms_callback_t)(ms_ev_t);
