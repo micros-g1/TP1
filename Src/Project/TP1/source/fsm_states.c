@@ -33,8 +33,6 @@ fsm_state_t waiting_id_state[];
 fsm_state_t initial_state[];
 fsm_state_t waiting_db_id_confirmation_state[];
 fsm_state_t waiting_u_id_confirmation_state[];
-fsm_state_t show_error_msg_init[];
-fsm_state_t set_pin_state[];
 fsm_state_t waiting_pin_state[];
 fsm_state_t admin_menu_state[];
 fsm_state_t waiting_db_pin_confirmation_state[];
@@ -272,16 +270,6 @@ static void setup_initial_state(void);
 */
 static void setup_admin_menu(void);
 
-/*****************************************
-*************setup_set_pin**************
-******************************************
-* setup_set_pin
-* 	INPUT:
-*		void.
-*	OUTPUT:
-*		void
-*/
-static void setup_set_pin(void);
 
 /*****************************************
 *************next_option**************
@@ -648,6 +636,7 @@ fsm_state_t change_pin_msg_state[] = {
 };
 
 fsm_state_t unblock_user_state[] = {
+		{.event = TIMEOUT_EV, .next_state = initial_state, .transition = setup_initial_state},
 		{.event = SUBMIT_DATA_EV, .next_state = unblock_user_state, .transition = check_id_to_unblock},
 		{.event = VALID_UNBLOCK_USER_EV, .next_state = unblock_succes_state_msg, .transition = submit_unblock},
 		{.event = INVALID_ID_EV, .next_state = show_error_msg_state_adminmenu, .transition = show_error_msg},
@@ -659,6 +648,7 @@ fsm_state_t unblock_user_state[] = {
 };
 
 fsm_state_t unblock_succes_state_msg[] = {
+		{.event = TIMEOUT_EV, .next_state = initial_state, .transition = setup_initial_state},
 		{.event = ENTER_EV, .next_state = admin_menu_state, .transition = setup_admin_menu},
 		{.event = GND_EV, .next_state =unblock_succes_state_msg,.transition = do_nothing}
 };
@@ -919,8 +909,6 @@ static void show_error_msg(void){
 	display_write_or_marquee(error_msgs[data_helper.error_code],DISPLAY_INT_LEFT);
 }
 
-static void check_initial_db_status(void){
-}
 
 static void toggle_config_mode(void){
 	config_mode = !config_mode;
@@ -1043,25 +1031,6 @@ static void select_admin_menu_option(void){
 	push_event(ev);
 }
 
-static void setup_set_pin(void){
-	// Copie y pegue setup_waiting_pin. fijarse si esta bien
-	display_stop_marquee();
-	data_helper.masked = true;
-	strcpy(data_helper.data, "\0\0\0\0\0\0\0\0");
-	data_helper.mask_char = 'o';
-	data_helper.max_pages = 2;
-	data_helper.page_offset = 0;
-	data_helper.cur_index = 0;
-	data_helper.data_length = 5;
-	if(data_helper.masked){
-		char c = data_helper.mask_char;
-		char mask[DISPLAY_DIGITS + 1] = {c,c,c,c,'\0'};
-		display_write_word(mask);
-	}
-	display_set_blinking_all(false);
-	display_set_blinking_one(true, 0);
-	set_page_indicator();
-}
 
 static void setup_admin_menu(void){
 	admin_menu_helper.option = 0;
@@ -1149,8 +1118,8 @@ static void check_card_to_add(void){
 	fsm_event_t ev;
 	if(aux_ms_ev.data != NULL)
 	{
-		if(!u_exists(MAGNETIC_CARD, aux_ms_ev.data)){
-			strcpy(aux_user.card, aux_ms_ev.data);
+		if(!u_exists(MAGNETIC_CARD, (char *)  aux_ms_ev.data)){
+			strcpy((char *) aux_user.card, (char *)  aux_ms_ev.data);
 			ev.code = VALID_CARD_EV;
 		}else{
 			ev.code = INVALID_CARD_EV;
@@ -1170,7 +1139,7 @@ static void check_id_card(void){
 	if(aux_ms_ev.data != NULL){
 		ev.code = VALID_CARD_EV;
 		user_data_helper.input_type = MAGNETIC_CARD;
-		strcpy(user_data_helper.card,aux_ms_ev.data);
+		strcpy((char *) user_data_helper.card,(char *) aux_ms_ev.data);
 
 	}else{
 		ev.code = INVALID_CARD_EV;
