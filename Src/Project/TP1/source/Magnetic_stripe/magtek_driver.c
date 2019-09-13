@@ -75,7 +75,7 @@ void mt_enable_callback() {
     	//MT START NOW. front!
     	event_queue_add_event_front(ev);
     }
-    gpioWrite(IT_DEDICATED_1_PIN, true);
+    gpioWrite(IT_DEDICATED_1_PIN, false);
 }
 
 void mt_clock_callback(void) {
@@ -86,7 +86,7 @@ void mt_clock_callback(void) {
     //Active low
     ev.data = !gpioRead(MT_DATAPIN);
     event_queue_add_event(ev);
-    gpioWrite(IT_DEDICATED_2_PIN, true);
+    gpioWrite(IT_DEDICATED_2_PIN, false);
 }
 
 void mt_periodic(void)
