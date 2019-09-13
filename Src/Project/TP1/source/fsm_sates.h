@@ -23,11 +23,16 @@ typedef enum{
 	INVALID_ERROR,
 	BLOCKED_ERROR,
 	WRONG_PASS,
-	SAME_PIN_ERROR,
 	LAST_ADMIN_ERROR,
+	DONT_EXIST_ERROR,
 	ALREADY_EXISTS_ERROR,
+	CARD_IN_USE_ERROR,
 	ERROR_TYPE_NUM
 }fsm_error_code_t;
+
+char * error_msgs[] = {"id not found", "id bloc", "pin incorrect","error cant delete super user", "user not found", "error card in use","error repeated user"};
+char * admin_options[] = {"add user","delete user","change pin"};
+
 
 typedef enum{
 	ADD_USER_ENTRY,
@@ -67,8 +72,6 @@ typedef struct{
 	fsm_admin_menu_entries option;
 }admin_menu_helper_t;
 
-char * error_msgs[] = {"id not found", "id bloc", "pin incorrect"};
-char * admin_options[] = {"add user","delete user","change pin"};
 
 admin_menu_helper_t admin_menu_helper;
 fsm_user_data_t aux_user;
@@ -82,7 +85,7 @@ bool config_mode;
 #define PIN_LED_GREEN   PORTNUM2PIN(PE,26)
 #define PIN_LED_BLUE    PORTNUM2PIN(PB,21)
 
-fsm_state_t * fsm_get_init_state(void);
+const fsm_state_t * fsm_get_init_state(void);
 
 
 
