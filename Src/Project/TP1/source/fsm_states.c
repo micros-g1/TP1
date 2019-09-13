@@ -8,7 +8,10 @@
 #include "Display/freedom_leds.h"
 #include <stdbool.h>
 
+//amount of display positions.
 #define DISPLAY_DIGITS 4
+
+//FSM states
 fsm_state_t waiting_id_state[];
 fsm_state_t initial_state[];
 fsm_state_t waiting_db_id_confirmation_state[];
@@ -28,40 +31,383 @@ fsm_state_t show_error_msg_state_adminmenu[];
 fsm_state_t add_card_user_state[];
 fsm_state_t add_pin_user_state[];
 
-
+/*****************************************
+*************do_nothing**************
+******************************************
+* do_nothing refer to title for behaviour.
+* 	INPUT:
+*		void.
+*	OUTPUT:
+*		void
+*/
 static void do_nothing(void){}
+
+/*****************************************
+*************setup_waiting_id**************
+******************************************
+* setup_waiting_id sets the conditions for the user to start inputting an id.
+* This includes changing the display, setting the inital id to 00000000
+* and the current input digit to 0.
+* 	INPUT:
+*		void.
+*	OUTPUT:
+*		void
+*/
 static void setup_waiting_id(void);
+
+/*****************************************
+*************increase_digit**************
+******************************************
+* increase_digit increments the digit on display and logically when
+* inputting an id or a pin.
+* 	INPUT:
+*		void.
+*	OUTPUT:
+*		void
+*/
 static void increase_digit(void);
+
+/*****************************************
+*************decrease_digit**************
+******************************************
+* decrease_digit decreases the digit on display and logically when
+* inputting an id or a pin.
+* 	INPUT:
+*		void.
+*	OUTPUT:
+*		void
+*/
 static void decrease_digit(void);
+
+/*****************************************
+*************next_digit**************
+******************************************
+* next_digit changes the input conditions (logical and graphical)
+* to the next corresponding digit, changing indexes and blinking digit.
+* 	INPUT:
+*		void.
+*	OUTPUT:
+*		void
+*/
 static void next_digit(void);
+
+/*****************************************
+*************previous_digit**************
+******************************************
+* previous_digit changes the input conditions (logical and graphical)
+* to the previous corresponding digit, changing indexes and blinking digit.
+* 	INPUT:
+*		void.
+*	OUTPUT:
+*		void
+*/
 static void previous_digit(void);
+
+/*****************************************
+*************re_print_data**************
+******************************************
+* re_print_data prints on display the new input configuration whenever a
+* new page has been set (as a consequence of having inputted a new digit or
+* successfully entered an id).
+* 	INPUT:
+*		void.
+*	OUTPUT:
+*		void
+*/
 static void re_print_data(void);
+
+/*****************************************
+*************set_page_indicator**************
+******************************************
+* set_page_indicator changes the leds of the display according to the
+* current page the user is in so that he/she/it/apache helicopter may have a reference of
+* his current input status even though the amount of display positions is limited.
+* 	INPUT:
+*		void.
+*	OUTPUT:
+*		void
+*/
 static void set_page_indicator(void);
+
+/*****************************************
+*************check_id*********************
+******************************************
+* check_id checks if the given id exists and is not blocked. Otherwise, an invalid id event
+* is appended to fsm event queue.
+* 	INPUT:
+*		void.
+*	OUTPUT:
+*		void
+*/
 static void check_id(void);
+
+/*****************************************
+*************show_id**************
+******************************************
+* show_id shows the entered id on screen, marqueeing it due to the limited amount
+* of display positions.
+* 	INPUT:
+*		void.
+*	OUTPUT:
+*		void
+*/
 static void show_id(void);
+
+/*****************************************
+*************show_error_msg**************
+******************************************
+* show_error_msg prints an error message on the display in case of error.
+* 	INPUT:
+*		void.
+*	OUTPUT:
+*		void
+*/
 static void show_error_msg(void);
-static void check_initial_db_status(void);
+
+/*****************************************
+*************setup_waiting_pin**************
+******************************************
+* setup_waiting_pin sets tlhe graphical parts to the 'waiting for pin' state
+* 	INPUT:
+*		void.
+*	OUTPUT:
+*		void
+*/
 static void setup_waiting_pin(void);
+
+/*****************************************
+*************toggle_config_mode**************
+******************************************
+* toggle_config_mode
+* 	INPUT:
+*		void.
+*	OUTPUT:
+*		void
+*/
 static void toggle_config_mode(void);
+
+/*****************************************
+*************open_door**************
+******************************************
+* open_door opens the door after successfully validating the identity of the user.
+* 	INPUT:
+*		void.
+*	OUTPUT:
+*		void
+*/
 static void open_door(void);
+
+/*****************************************
+*************close_door**************
+******************************************
+* close_door closes the door (after a timeout has been reached) for security reasons.
+* 	INPUT:
+*		void.
+*	OUTPUT:
+*		void
+*/
 static void close_door(void);
+
+/*****************************************
+*************pin_submited**************
+******************************************
+* pin_submited refer to title for behaviour.
+* 	INPUT:
+*		void.
+*	OUTPUT:
+*		void
+*/
 static void pin_submited(void);
+
+/*****************************************
+*************setup_initial_state**************
+******************************************
+* setup_initial_state
+* 	INPUT:
+*		void.
+*	OUTPUT:
+*		void
+*/
 static void setup_initial_state(void);
+
+/*****************************************
+*************setup_admin_menu**************
+******************************************
+* setup_admin_menu
+* 	INPUT:
+*		void.
+*	OUTPUT:
+*		void
+*/
 static void setup_admin_menu(void);
+
+/*****************************************
+*************setup_set_pin**************
+******************************************
+* setup_set_pin
+* 	INPUT:
+*		void.
+*	OUTPUT:
+*		void
+*/
 static void setup_set_pin(void);
+
+/*****************************************
+*************next_option**************
+******************************************
+* next_option
+* 	INPUT:
+*		void.
+*	OUTPUT:
+*		void
+*/
 static void next_option(void);
+
+/*****************************************
+*************previous_option**************
+******************************************
+* previous_option
+* 	INPUT:
+*		void.
+*	OUTPUT:
+*		void
+*/
 static void previous_option(void);
+
+/*****************************************
+*************select_admin_menu_option**************
+******************************************
+* select_admin_menu_option
+* 	INPUT:
+*		void.
+*	OUTPUT:
+*		void
+*/
 static void select_admin_menu_option(void);
+
+/*****************************************
+*************set_led_page**************
+******************************************
+* set_led_page
+* 	INPUT:
+*		void.
+*	OUTPUT:
+*		void
+*/
 static void set_led_page(int);
+
+/*****************************************
+*************print_admin_menu**************
+******************************************
+* print_admin_menu
+* 	INPUT:
+*		void.
+*	OUTPUT:
+*		void
+*/
 static void print_admin_menu(void);
+
+/*****************************************
+*************setup_remove_user**************
+******************************************
+* setup_remove_user
+* 	INPUT:
+*		void.
+*	OUTPUT:
+*		void
+*/
 static void setup_remove_user(void);
+
+/*****************************************
+*************setup_add_user**************
+******************************************
+* setup_add_user
+* 	INPUT:
+*		void.
+*	OUTPUT:
+*		void
+*/
 static void setup_add_user(void);
+
+/*****************************************
+*************setup_change_pin**************
+******************************************
+* setup_change_pin sets the display to the changing pin configuration.
+* 	INPUT:
+*		void.
+*	OUTPUT:
+*		void
+*/
 static void setup_change_pin(void);
+
+/*****************************************
+*************check_id_to_remove**************
+******************************************
+* check_id_to_remove checks if a given id may be removed whenever an admin
+* tries to remove an id using his config option.
+* 	INPUT:
+*		void.
+*	OUTPUT:
+*		void
+*/
 static void check_id_to_remove(void);
+
+/*****************************************
+*************print_initial_msg**************
+******************************************
+* print_initial_msg prints config message or access message on the display
+* for the two menu options, according to the current control status.
+* 	INPUT:
+*		void.
+*	OUTPUT:
+*		void
+*/
 static void print_initial_msg(void);
+
+/*****************************************
+*************show_delete_success_msg**************
+******************************************
+* show_delete_success_msg prints on display a message informing the user that
+* a delete user operation has been successful.
+* 	INPUT:
+*		void.
+*	OUTPUT:
+*		void
+*/
 static void show_delete_success_msg(void);
+
+/*****************************************
+*************check_id_to_add**************
+******************************************
+* check_id_to_add checks if the id entered and about to be added to the database is a valid id
+* (the id doesn't exist on the current database) and appends an error to the event queue in case it is invalid.
+* 	INPUT:
+*		void.
+*	OUTPUT:
+*		void
+*/
 static void check_id_to_add(void);
+
+/*****************************************
+*************show_request_card_msg**************
+******************************************
+* show_request_card_msg refer to title for behaviour.
+* 	INPUT:
+*		void.
+*	OUTPUT:
+*		void
+*/
 static void show_request_card_msg(void);
+
+/*****************************************
+*************check_card_to_add**************
+******************************************
+* check_card_to_add checks if a given card may be added to the database.
+* 	INPUT:
+*		void.
+*	OUTPUT:
+*		void
+*/
 static void check_card_to_add(void);
 
 fsm_state_t initial_state[] = {
