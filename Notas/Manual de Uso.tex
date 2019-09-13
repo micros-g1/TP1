@@ -5,16 +5,25 @@
 \usepackage{amsfonts}
 \usepackage{amssymb}
 \usepackage{graphicx}
-\usepackage[left=2cm,right=2cm,top=2cm,bottom=2cm]{geometry}
-\author{Tomás González Orlando}
+\usepackage[a4paper, total={6in, 8in}]{geometry}
+
+\usepackage{verbatim}
+
+\author{22.99 Grupo 1}
+\title{Control de acceso}
+\date{2019}
+
 \begin{document}
 
+\maketitle
+\vspace{20px}
+\tableofcontents
+\clearpage
 
-\section{Manual de Uso}
+El presente escrito es una guía de usuario para el control de acceso de puerta hecho por el grupo 1 en el trabajo práctico.
 
-El presente escrito pretende ser una guía de usuario para el control de acceso de puerta hecho por el grupo 1 en el trabajo práctico.
-\subsection{Idea general del producto}
-El control de acceso tendrá el control sobre una puerta con traba magnética de manera tal que sólo aquellas personas habilitadas a ingresar por dicha puerta podrán hacerlo. \par
+\section{Introducci\'on}
+El sistema tendrá el control sobre una puerta con traba magnética de manera tal que sólo aquellas personas habilitadas a ingresar por dicha puerta podrán hacerlo. \par
 Para reconocer a las personas permitidas, se les concederá a las mismas un ID de ingreso y una tarjeta magnética de identificación, ambas asociadas al mismo PIN de seguridad para verificar su identidad. \par
 Se presenta a continuación las distintas personalidades permitidas dentro del sistema, con sus respectivas características, habilidades y funcionalidades:\par
 
@@ -37,30 +46,33 @@ El mismo, además de poseer todas las facultades de un usuario normal, cuenta ad
 
 \end{itemize}
 
-\subsection{Acceso de usuario}
+\section{Acceso de usuario}
 Como se indicó, un usuario puede identificarse ingresando el ID de 8 dígitos o pasando la tarjeta por el lector magnético. A continuación se indican las instrucciones para el ingreso.
-\subsubsection{Identificación mediante ID}
-Partiendo del estadio incial, el cual se identifica con un mensaje "Access" en el display, el usuario puede hacer click corto o bien rotar el encoder para ingresar a la pantalla de ingreso del ID. Una vez en la pantalla de ID, podemos modificar el dígito indicado por el indicador parpadeante rotando el encoder. Para avanzar al siguiente dígito se debe hacer un click corto, y para retroceder al digito anterior se debe ingresar un click intermedio (de 0.5 segundos de extensión). Una vez que ingresamos el último dígito, el ID ingresado se muestra en el display mediante una marquesina. En esta instancia, el usuario puede ingresar un click corto para confirmar el ID ingresado, ingresar un click intermedio para regresar a la pantalla de ingreso de ID o un click largo (de 1 segundo de extensión) para regresar al estado inicial. Cuando el usuario confirma el ID, de ser valido (existe en la base de datos y no esta bloqueado), se presenta la pantalla para ingresar el PIN. La dinámica de navegación y edición es análoga a la del ingreso del ID. El quinto dígito del PIN puede ser seteado como nulo para ingresar un PIN de 4 dígitos. una vez ingresado el ultimo dígito, si la combinación de ID-PIN fuera valida, se concederá el acceso al usuario. 
+\subsection{Identificación mediante ID}
+Partiendo del estado incial, el cual se identifica con un mensaje ``Access'' en el display, el usuario puede hacer click corto o bien rotar el encoder para ingresar a la pantalla de ingreso del ID. Una vez en la pantalla de ID, podemos modificar el dígito indicado por el indicador parpadeante rotando el encoder. Para avanzar al siguiente dígito se debe hacer un click corto, y para retroceder al digito anterior se debe ingresar un click intermedio (de 0.5 segundos de extensión). Una vez que ingresamos el último dígito, el ID ingresado se muestra en el display mediante una marquesina. En esta instancia, el usuario puede ingresar un click corto para confirmar el ID ingresado, ingresar un click intermedio para regresar a la pantalla de ingreso de ID o un click largo (de 1 segundo de extensión) para regresar al estado inicial. Cuando el usuario confirma el ID, de ser v\'alido (existe en la base de datos y no est\'a bloqueado), se presenta la pantalla para ingresar el PIN. La dinámica de navegación y edición es análoga a la del ingreso del ID. El quinto dígito del PIN puede ser seteado como nulo para ingresar un PIN de 4 dígitos. una vez ingresado el ultimo dígito, si la combinación de ID-PIN fuera valida, se concederá el acceso al usuario. 
 
-\subsubsection{Identificación mediante tarjeta magnética}
-Cuando el sistema se encontrase en los estados iniciales o de ingreso de ID, el usario podrá realizar la identificación mediante el lector magnetico con su tarjeta asociada. Si la tarjeta ingresada perteneciera a un usuario valido, se presentará la pantalla de ingreso de PIN, y a partir de este punto, la dinámica es iguall 
+\subsection{Identificación mediante tarjeta magnética}
+Cuando el sistema se encuentre en los estados iniciales o de ingreso de ID, el usario podrá realizar la identificación mediante el lector magn\'etico con su tarjeta asociada. Si la tarjeta ingresada perteneciera a un usuario valido, se presentará la pantalla de ingreso de PIN, y a partir de este punto, la dinámica es igual a lo explicado para ingreso por ID. 
 
-\subsection{Agregar usuario}
-Para agregar un usuario, es necesario ingresar al modo configuración. Desde el estado incial, ingresamos un click largo, hasta que los leds comiencen a parpadear y se muestre el mensaje "Config" en el display. Desde aquí el administrador podrá acceder al menu de administrador identificandose mediante su ID o mediante su tarjeta magnética. Una vez validada la identidad del administrador se muestra un menu navegable con 3 opciones, las cuales se pueden navegar mediante el encoder. Al seleccionar "Add User", se presenta la pantalla para ingresar el ID del nuevo usuario. Si el ID fuera valido se indica que debe pasarse la tarjeta asociada por el lector magnético. Si la tarjeta fuera valida, se deberá ingresar el PIN del nuevo usuario. Una vez completada con éxito la operación se retorna al menú de administrador. Si la operación no fuera exitosa también se retorna al menú de administrador.
+\section{Agregar usuario}
+Para agregar un usuario, es necesario ingresar al modo configuración. Desde el estado incial, ingresamos un click largo, hasta que los leds comiencen a parpadear y se muestre el mensaje ``Config'' en el display. Desde aquí el administrador podrá acceder al menu de administrador identificandose mediante su ID o mediante su tarjeta magnética. Una vez validada la identidad del administrador se muestra un menu navegable con 3 opciones, las cuales se pueden navegar mediante el encoder. Al seleccionar ``Add User'', se presenta la pantalla para ingresar el ID del nuevo usuario. Si el ID fuera valido se indica que debe pasarse la tarjeta asociada por el lector magnético. Si la tarjeta fuera valida, se deberá ingresar el PIN del nuevo usuario. Una vez completada con éxito la operación se retorna al menú de administrador. Si la operación no fuera exitosa también se retorna al menú de administrador.
 
-\subsection{Eliminar usuario}
-Para eliminar el usuario se debe navegar el menú de administrador hasta la opción "Remove User". Se solicitará ingresar el ID del usuario que se desea eliminar. Si el ID fuera válido se presentará un mensaje informativo y se regresará al menú de administrador. Si el ID ingresado fuera inválido se mostrará un mensaje de error y se retorna al menú de administrador.
+\section{Eliminar usuario}
+Para eliminar el usuario se debe navegar el menú de administrador hasta la opción ``Remove User''. Se solicitará ingresar el ID del usuario que se desea eliminar. Si el ID fuera válido se presentará un mensaje informativo y se regresará al menú de administrador. Si el ID ingresado fuera inválido se mostrará un mensaje de error y se retorna al menú de administrador.
 
-\subsection{Cambiar PIN}
+\section{Cambiar PIN}
 La validación de identidad en modo configuración discrimina entre usuarios ordinarios y usuario administrador. Mientras que al usuario administrador le brinda la posiblidad de agregar y eliminar usuarios y de cambiar su propio PIN, a un usuario ordinario solo le brindará la posibilidad de modificar su PIN.
 
-\subsubsection{Usuario ordinario}
+\subsection{Usuario ordinario}
 Una vez seteado el sistema en modo configuración, el usuario procede a validad su identidad. Si la validación es correcta, se presenta una pantalla de ingreso del PIN. Se deberá ingresar el nuevo PIN, y al validar el ultimo dígito, se atualizará el dato en la base de datos. Una vez completada la acción correctamente, se retorna al estado inicial en modo configuración.
 
-\subsubsection{Usuario administrador}
-Como se indico en las secciones "Agregar usuario" y "Eliminar usuario", al usuario administrador se le presenta un menú de opciones navegable al validarse en modo configuración. Al seleccionar la opción Change PIN, el usuario debe ingresar el nuevo PIN. Al validarse se actualiza la base de datos y se regresa al menú de administrador. 
+\subsection{Usuario administrador}
+Como se indico en las secciones ``Agregar usuario'' y ``Eliminar usuario'', al usuario administrador se le presenta un menú de opciones navegable al validarse en modo configuración. Al seleccionar la opción Change PIN, el usuario debe ingresar el nuevo PIN. Al validarse se actualiza la base de datos y se regresa al menú de administrador. 
 
-\subsection{Pasos de acceso, interacción con el usuario}
+
+%%%%%%%%%%55
+\begin{comment}
+\section{Pasos de acceso, interacción con el usuario}
 En cualquier momento del intento de acceso se podrá pasar la tarjeta por el lector de tarjetas, lo cual autoriza el acceso inmediatamente.\par
 El control de acceso se encuentra con el display apagado en su estado inicial/de reposo. Luego de un período de inactividad determinado, el control de acceso volverá al estado de reposo desde cualquier estado en el que se encuentre.\par
 Para salir del estado de reposo, el usuario deberá dar un click corto en el encoder, luego de lo cual el display mostrará una pantalla llena de ceros y se deberá proceder a ingresar el ID (de ocho dígitos) del usuario que solicita el acceso. \par
@@ -71,8 +83,11 @@ Una vez confirmado el ID, si existe el usuario, se procede a completar el PIN. I
 Si al estar completando el PIN uno quiere volver a ingresar el ID, lo podrá hacer con un click largo al estar completando el primer carácter. Si en cambio, el usuario realiza un click todavía más largo (sin importar cuál carácter se esté completando), el mismo podrá volver a completar el ID. El PIN no será mostrado luego de completado.\par
 Dado que el PIN puede ser de cuatro o cinco dígitos, si el mismo es de cuatro dígitos, deberá completarse con un carácter nulo el quinto dígito. \par
 Si el PIN es correcto, la puerta se abrirá. De lo contrario, el PIN es incorrecto. Si el PIN es incorrecto, el usuario será notificado y deberá volver a ingresar su PIN, para el cual tendrá tres intentos totales (contando al primero), luego de los cuales será bloqueado.\par
+\end{comment}
+%%%%%%%%%%%%%
 
-\subsection{Modo configuración}
+
+\section{Modo configuración}
 En el estado inicial/de reposo, si se mantiene un click largo, los leds auxiliares del display comenzarán a parpadear, lo cual indica al usuario que se encuentra en el modo configuración.\par
 Luego de ingresado el ID y el PIN correcto, el control de acceso detectará si el usuario es un administrador o un usuario normal y desplegará un menú de opciones con las facultades propias de la personalidad correspondiente (ver Administrador y Usuario).\par
 Si se entra en modo configuración y se pasa la tarjeta sin haber ingresado el ID todavía, esta permite ingresar al menú de opciones directamente:
