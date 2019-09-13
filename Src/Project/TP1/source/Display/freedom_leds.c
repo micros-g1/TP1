@@ -54,9 +54,12 @@ void frdm_led_dr_init(){
 }
 static void frdm_led_draw_callback(){
 	static int pos = 0;
-
+	//first, clear display in order to prevent bleeding
+	draw_frdm_led(pos, false);
+	//now, increment led pointer
+	pos = (pos == AMOUNT_MAX_FRDM_LEDS_POS-1) ? 0 : pos + 1;
+	//finally, draw leds
 	frdm_draw_leds(pos);
-	pos = (pos == (AMOUNT_MAX_FRDM_LEDS_POS-1)) ? 0 : pos+1;
 }
 
 static void frdm_draw_leds(int pos){

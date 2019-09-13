@@ -90,9 +90,12 @@ void led_dr_reset(){
 
 static void led_draw_callback(){
 	static int pos = 0;
-
+	//first, clear display in order to prevent bleeding
+	draw_diode(pos, false);
+	//now, increment diode pointer
+	pos = (pos == AMOUNT_MAX_DIODES_POS-1) ? 0 : pos + 1;
+	//finally, draw leds
 	draw_leds(pos);
-	pos = (pos == (AMOUNT_MAX_DIODES_POS-1)) ? 0 : pos+1;
 
 }
 
