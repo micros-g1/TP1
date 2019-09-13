@@ -43,6 +43,7 @@ static char curr_displaying_photo[AMOUNT_MAX_DISPLAY_POS+1];			//display buffer 
 static char last_drawn_word[AMOUNT_MAX_DISPLAY_POS]; //last drawn word Initialized at init_display().
 static char last_drawn_word_photo[AMOUNT_MAX_DISPLAY_POS + 1]; //last drawn word at the moment get_currently_curr_displaying_word was called. null terminated
 
+static int bright_counter[AMOUNT_MAX_DISPLAY_POS];
 
 //https://en.wikichip.org/wiki/seven-segment_display/representing_letters
 static const unsigned char seven_seg_chars[AMOUNT_POSSIBLE_CHAR]= {
@@ -259,6 +260,7 @@ void display_dr_reset(){
 		blink_cleared[i] = false;
 		blink_cleared_dot[i] = false;
 		brightness[i] = MAX_BRIGHT;
+		bright_counter[i] = 0;
 		last_drawn_word[i] = curr_displaying[i];
 	}
 	last_drawn_word[AMOUNT_MAX_DISPLAY_POS] = NULL_TERMINATOR;
@@ -291,8 +293,11 @@ int display_dr_write_sentence(const char* sentence){
 
 //brightness from MIN_BRIGHT to MAX_BRIGHT
 void display_dr_set_brightness_one(int pos, int bright){
-	if( (bright < MAX_BRIGHT) && (bright >= MIN_BRIGHT) )
+	if( (bright < MAX_BRIGHT) && (bright >= MIN_BRIGHT) ){
 		brightness[pos] = bright;
+		bright_counter[pos] = 0;
+	}
+
 }
 int display_dr_get_brightness_one(int pos){
 	return brightness[pos];
@@ -344,7 +349,6 @@ void display_dr_on_off(bool on_off){
 }
 
 static bool handle_brightness(int pos){
-	static int bright_counter[AMOUNT_MAX_DISPLAY_POS] = {0, 0, 0, 0};
 
 	bool should_show = true;
 	if(brightness[pos] < MAX_BRIGHT)

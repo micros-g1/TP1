@@ -30,7 +30,7 @@ static bool blink_cleared[AMOUNT_MAX_DIODES_POS];		//status of the blinking (sho
 static int brightness[AMOUNT_MAX_DIODES_POS];			//brightness level, from MIN_BRIGHT to MAX_BRIGHT
 static int blink_counter_vel = CALL_FREQ_HZ/AMOUNT_MAX_DIODES_POS/2;	//half a second.
 static bool curr_displaying[AMOUNT_MAX_DIODES_POS];			//leds buffer. Initialized at leds_init()
-
+static int bright_counter[AMOUNT_MAX_DIODES_POS];
 /*-------------------------------------------
  ----------STATIC_FUNCTION_DECLARATION-------
  -------------------------------------------*/
@@ -79,11 +79,11 @@ void led_dr_init(){
 }
 
 void led_dr_reset(){
-
 	for(int i = 0; i < AMOUNT_MAX_DIODES_POS; i++){
 		curr_displaying[i] = false;
 		blinking[i] = false;
 		blink_cleared[i] = false;
+		bright_counter[i] = 0;
 		brightness[i] = MAX_BRIGHT_LED;
 	}
 }
@@ -96,7 +96,6 @@ static void led_draw_callback(){
 	pos = (pos == AMOUNT_MAX_DIODES_POS-1) ? 0 : pos + 1;
 	//finally, draw leds
 	draw_leds(pos);
-
 }
 
 //brightness from MIN_BRIGHT_LED to MAX_BRIGHT_LED
@@ -146,7 +145,7 @@ void led_dr_on_off(bool on_off){
 		systick_enable_callback(led_draw_callback);
 }
 static bool handle_brightness(int pos){
-	static int bright_counter[AMOUNT_MAX_DIODES_POS] = {false, false, false};
+
 
 	bool should_show = true;
 	if(brightness[pos] < MAX_BRIGHT_LED)

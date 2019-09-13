@@ -25,6 +25,8 @@ static bool blink_cleared[AMOUNT_MAX_FRDM_LEDS_POS];		//status of the blinking (
 static int brightness[AMOUNT_MAX_FRDM_LEDS_POS];			//brightness level, from MIN_BRIGHT to MAX_BRIGHT
 static int blink_counter_vel = CALL_FREQ_HZ/AMOUNT_MAX_FRDM_LEDS_POS/2;	//half a second.
 static bool curr_displaying[AMOUNT_MAX_FRDM_LEDS_POS];			//leds buffer. Initialized at leds_init()
+static int bright_counter[AMOUNT_MAX_FRDM_LEDS_POS];
+
 /*-------------------------------------------
  ----------STATIC_FUNCTION_DECLARATION-------
  -------------------------------------------*/
@@ -88,6 +90,7 @@ void frdm_led_dr_reset(){
 		blinking[i] = false;
 		blink_cleared[i] = false;
 		brightness[i] = MAX_BRIGHT_FRDM_LED;
+		bright_counter[i] = 0;
 	}
 }
 
@@ -119,7 +122,6 @@ static bool handle_blinking(frdm_led_colors_t color){
 	return !blink_cleared[(int)color];
 }
 static bool handle_brightness(frdm_led_colors_t color){
-	static int bright_counter[AMOUNT_MAX_FRDM_LEDS_POS] = {0, 0, 0};
 	int pos = (int) color;
 
 	bool should_show = true;
