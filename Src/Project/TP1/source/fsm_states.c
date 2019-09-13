@@ -6,10 +6,22 @@
 #include "string.h"
 #include "Display/display_interface.h"
 #include "Display/freedom_leds.h"
+#include "Magnetic_stripe/magnetic_stripe.h"
 #include <stdbool.h>
+
+ms_ev_t aux_ms_ev;
 
 //amount of display positions.
 #define DISPLAY_DIGITS 4
+
+void ms_callback(ms_ev_t ev){
+	fsm_event_t event;
+	if(ev.type == MS_SUCCESS){
+		aux_ms_ev.data = ev.data;
+		event.code = CARD_EV;
+	}
+	push_event(event);
+}
 
 //FSM states
 fsm_state_t waiting_id_state[];
@@ -31,6 +43,7 @@ fsm_state_t show_error_msg_state_adminmenu[];
 fsm_state_t add_card_user_state[];
 fsm_state_t add_pin_user_state[];
 fsm_state_t add_success_state[];
+fsm_state_t change_pin_msg_state[];
 
 /*****************************************
 *************do_nothing**************
@@ -411,6 +424,10 @@ static void show_request_card_msg(void);
 */
 static void check_card_to_add(void);
 static void show_add_success_msg(void);
+static void commit_add(void);
+static void submit_remove(void);
+static void commit_change_pin(void);
+static void show_pin_change_msg(void);
 
 fsm_state_t initial_state[] = {
 		{.event = CANCEL_EV, .next_state = initial_state, .transition = toggle_config_mode},
@@ -453,6 +470,7 @@ fsm_state_t show_error_msg_state_init[] = {
 
 fsm_state_t show_error_msg_state_adminmenu[] = {
 		{.event = ENTER_EV, .next_state = admin_menu_state, .transition = setup_admin_menu},
+		{.event = MARQUEE_END_EV, .next_state = show_error_msg_state_adminmenu, .transition = show_error_msg},
 		{.event = GND_EV, .next_state = show_error_msg_state_adminmenu,.transition = do_nothing}
 };
 
@@ -476,7 +494,7 @@ fsm_state_t waiting_pin_state[] = {
 fsm_state_t waiting_db_pin_confirmation_state[] = {
 		{.event = USER_LOGIN, .next_state = door_open_state, .transition = open_door},
 		{.event = ADMIN_LOGIN_CONF, .next_state = admin_menu_state, .transition = setup_admin_menu},
-		{.event = USER_LOGIN_CONF, .next_state = initial_state, .transition = setup_set_pin},
+		{.event = USER_LOGIN_CONF, .next_state = set_pin_state, .transition = setup_set_pin},
 		{.event = INVALID_PIN_EV, .next_state = show_error_msg_state_init, .transition = show_error_msg},
 		{.event = GND_EV, .next_state = waiting_db_pin_confirmation_state,.transition = do_nothing}
 };
@@ -501,7 +519,7 @@ fsm_state_t admin_menu_state[] = {
 
 fsm_state_t remove_user_state[] = {
 		{.event = SUBMIT_DATA_EV, .next_state = remove_user_state, .transition = check_id_to_remove},
-		{.event = VALID_ID_EV, .next_state = delete_succes_state_msg, .transition = show_delete_success_msg},
+		{.event = VALID_REMOVE_USER_EV, .next_state = delete_succes_state_msg, .transition = submit_remove},
 		{.event = INVALID_ID_EV, .next_state = show_error_msg_state_adminmenu, .transition = show_error_msg},
 		{.event = UP_EV, .next_state = remove_user_state, .transition = increase_digit},
 		{.event = DOWN_EV, .next_state = remove_user_state, .transition = decrease_digit},
@@ -523,6 +541,7 @@ fsm_state_t add_id_user_state[] = {
 		{.event = DOWN_EV, .next_state = add_id_user_state, .transition = decrease_digit},
 		{.event = ENTER_EV, .next_state = add_id_user_state, .transition = next_digit},
 		{.event = BACK_EV, .next_state = add_id_user_state, .transition = previous_digit},
+		{.event = CANCEL_EV, .next_state = admin_menu_state, .transition = setup_admin_menu},
 		{.event = GND_EV, .next_state = add_id_user_state,.transition = do_nothing}
 };
 
@@ -540,8 +559,8 @@ fsm_state_t add_pin_user_state[] = {
         {.event = DOWN_EV, .next_state = add_pin_user_state, .transition = decrease_digit},
         {.event = ENTER_EV, .next_state = add_pin_user_state, .transition = next_digit},
         {.event = BACK_EV, .next_state = add_pin_user_state, .transition = previous_digit},
-		{.event = SUBMIT_DATA_EV, .next_state = add_success_state, .transition = show_add_success_msg},
-		{.event = CANCEL_EV, .next_state = initial_state, .transition = setup_initial_state},
+		{.event = SUBMIT_DATA_EV, .next_state = add_success_state, .transition = commit_add},
+		{.event = CANCEL_EV, .next_state = admin_menu_state, .transition = setup_admin_menu},
 		{.event = GND_EV, .next_state = waiting_pin_state,.transition = do_nothing}
 };
 
@@ -551,6 +570,21 @@ fsm_state_t add_success_state[] = {
 		{.event = GND_EV, .next_state = add_success_state,.transition = do_nothing}
 };
 
+fsm_state_t change_pin_state[] = {
+		{.event = UP_EV, .next_state = change_pin_state, .transition = increase_digit},
+		{.event = DOWN_EV, .next_state = change_pin_state, .transition = decrease_digit},
+		{.event = ENTER_EV, .next_state = change_pin_state, .transition = next_digit},
+		{.event = BACK_EV, .next_state = change_pin_state, .transition = previous_digit},
+		{.event = SUBMIT_DATA_EV, .next_state = change_pin_msg_state, .transition = commit_change_pin},
+		{.event = CANCEL_EV, .next_state = initial_state, .transition = setup_initial_state},
+		{.event = GND_EV, .next_state = waiting_pin_state,.transition = do_nothing}
+};
+
+fsm_state_t change_pin_msg_state[] = {
+		{.event = MARQUEE_END_EV, .next_state = change_pin_msg_state, .transition = show_add_success_msg},
+		{.event = ENTER_EV, .next_state = initial_state, .transition = setup_initial_state},
+		{.event = GND_EV, .next_state = change_pin_msg_state,.transition = do_nothing}
+};
 
 static void increase_digit(void){
     char c = data_helper.data[data_helper.cur_index + data_helper.page_offset];
@@ -647,11 +681,8 @@ static void setup_initial_state(void){
 }
 
 const fsm_state_t * fsm_get_init_state(){
-	setup_admin_menu();
-	return admin_menu_state;
-
-//	setup_initial_state();
-//	return initial_state;
+	setup_initial_state();
+	return initial_state;
 }
 
 static void re_print_data(void){
@@ -812,7 +843,7 @@ static void setup_waiting_pin(void){
 	display_stop_marquee();
 	data_helper.masked = true;
 	data_helper.is_pin = true;
-	strcpy(data_helper.data, "00000000");
+	strcpy(data_helper.data, "00000\0");
 	data_helper.mask_char = 'o';
 	data_helper.max_pages = 2;
 	data_helper.page_offset = 0;
@@ -849,10 +880,16 @@ static void pin_submited(void){
 		if(!blocked){
 			if(config_mode){
 				is_admin = u_is_admin(user_data_helper.input_type, data);
-				if(is_admin)
+				if(is_admin){
 					ev.code = ADMIN_LOGIN_CONF;
-				else
+					strcpy(logged_usr.id, user_data_helper.id);
+					strcpy(logged_usr.pin, user_data_helper.pin);
+				}
+				else{
 					ev.code = USER_LOGIN_CONF;
+					strcpy(logged_usr.id, user_data_helper.id);
+					strcpy(logged_usr.pin, user_data_helper.pin);
+				}
 			}else
 				ev.code = USER_LOGIN;
 		}
@@ -915,7 +952,7 @@ static void setup_set_pin(void){
 	display_stop_marquee();
 	data_helper.masked = true;
 	strcpy(data_helper.data, "\0\0\0\0\0\0\0\0");
-	data_helper.mask_char = 'P';
+	data_helper.mask_char = 'o';
 	data_helper.max_pages = 2;
 	data_helper.page_offset = 0;
 	data_helper.cur_index = 0;
@@ -961,6 +998,7 @@ static void check_id_to_remove(void){
 	fsm_event_t ev;
 	if(u_exists(EIGHT_DIGIT_PIN, aux_user.id) && !u_is_admin(EIGHT_DIGIT_PIN, aux_user.id)){
 		ev.code = VALID_REMOVE_USER_EV;
+		strcpy(aux_user.id, data_helper.data);
 	}else if(!u_exists(EIGHT_DIGIT_PIN, aux_user.id)){
 		ev.code = INVALID_ID_EV;
 		data_helper.error_code = DONT_EXIST_ERROR;
@@ -972,6 +1010,7 @@ static void check_id_to_remove(void){
 }
 
 static void print_initial_msg(void){
+	display_clear_all();
 	display_stop_marquee();
 	if(config_mode)
 		display_write_or_marquee("config", DISPLAY_INT_LEFT);
@@ -979,14 +1018,23 @@ static void print_initial_msg(void){
 		display_write_or_marquee("access", DISPLAY_INT_LEFT);
 }
 
-static void show_delete_success_msg(void){
+static void submit_remove(void){
+	u_remove(EIGHT_DIGIT_PIN, aux_user.id);
+	show_delete_success_msg();
+}
 
+static void show_delete_success_msg(void){
+	display_clear_all();
+	display_stop_marquee();
+	display_set_blinking_all(false);
+	display_write_or_marquee("User deleted" , DISPLAY_INT_LEFT);
 }
 
 static void check_id_to_add(void){
 	strcpy(aux_user.id, data_helper.data);
 	fsm_event_t ev;
 	if(!u_exists(EIGHT_DIGIT_PIN, aux_user.id)){
+		strcpy(aux_user.id, data_helper.data);
 		ev.code = VALID_ID_EV;
 	}else{
 		ev.code = INVALID_ID_EV;
@@ -1002,6 +1050,22 @@ static void show_request_card_msg(void){
 }
 
 static void check_card_to_add(void){
+	fsm_event_t ev;
+	if(!u_exists(MAGNETIC_CARD, aux_ms_ev.data)){
+		strcpy(aux_user.card, aux_ms_ev.data);
+		ev.code = VALID_CARD_EV;
+	}else{
+		ev.code = INVALID_CARD_EV;
+		data_helper.error_code = CARD_IN_USE_ERROR;
+	}
+	push_event(ev);
+}
+
+static void commit_add(void){
+	strcpy(aux_user.pin, data_helper.data);
+	u_add(EIGHT_DIGIT_PIN, aux_user.id, aux_user.pin);
+	u_new_id(EIGHT_DIGIT_PIN, aux_user.id, MAGNETIC_CARD, aux_user.card);
+	show_add_success_msg();
 
 }
 
@@ -1009,4 +1073,15 @@ static void show_add_success_msg(void){
 	display_clear_all();
 	display_set_blinking_all(false);
 	display_write_or_marquee("User added", DISPLAY_INT_LEFT);
+}
+
+static void commit_change_pin(void){
+	u_change_password(EIGHT_DIGIT_PIN, logged_usr.id, data_helper.data);
+	show_pin_change_msg();
+}
+
+static void show_pin_change_msg(void){
+	display_clear_all();
+	display_set_blinking_all(false);
+	display_write_or_marquee("pin changed", DISPLAY_INT_LEFT);
 }

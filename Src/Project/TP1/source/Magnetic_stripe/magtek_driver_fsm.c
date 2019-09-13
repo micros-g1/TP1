@@ -150,7 +150,7 @@ void mt_cb_lrcbit(mt_ev_t ev)
 }
 
 void mt_get_card(unsigned char * buffer) {
-    unsigned int i = 0, j = 0, k = 0;
+    unsigned int i = 0, j = 0;
     unsigned char aux;
     while (card_buffer[i] != 0) {
     	aux = 0;
@@ -163,7 +163,7 @@ void mt_get_card(unsigned char * buffer) {
         buffer[i] = aux;
         i++;
     }
-    buffer[k] = 0;
+    buffer[i] = 0;
 }
 
 

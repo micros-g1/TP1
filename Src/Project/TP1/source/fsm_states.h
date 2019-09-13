@@ -74,6 +74,7 @@ typedef struct{
 
 
 admin_menu_helper_t admin_menu_helper;
+fsm_user_data_t logged_usr;
 fsm_user_data_t aux_user;
 fsm_user_data_t user_data_helper;
 input_data_helper_t data_helper;

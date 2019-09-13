@@ -424,8 +424,8 @@ bool update_password(user_t * u, char * password)
             unsigned int i = 0;
             success = true;
             while (i < len && success) {
-            	i++;
 				success = (password[i] >= '0' && password[i] <='9') ? 1 : 0;
+				i++;
             }
 
             if (success) {
