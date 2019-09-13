@@ -9,6 +9,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include "core_cm4.h"
+#include "board.h"
 
 /*-------------------------------------------
  ----------------DEFINES---------------------
@@ -66,12 +67,14 @@ void systick_init ()
 	SysTick->CTRL = SysTick_CTRL_CLKSOURCE_Msk| SysTick_CTRL_TICKINT_Msk | SysTick_CTRL_ENABLE_Msk;
 	for (int i = 0; i < MAX_N_ST_CALLBACKS; i++)
 		reset_callback_data(&st_callbacks[i]);
-
+	gpioMode(IT_PERIODIC_PIN, OUTPUT);
+	gpioWrite(IT_PERIODIC_PIN, false);
 	initialized = true;
 }
 
 // DO NOT CHANGE THE NAME, overrides core_cm4.h weak definition
 void SysTick_Handler(void){
+	gpioWrite(IT_PERIODIC_PIN, true);
 	/* for SysTick, clearing the interrupt flag is not necessary
 	* it is not an omission!*/
     for (int i = 0; i < MAX_N_ST_CALLBACKS; i++) {
@@ -88,6 +91,7 @@ void SysTick_Handler(void){
             }
         }
     }
+	gpioWrite(IT_PERIODIC_PIN, false);
 }
 
 

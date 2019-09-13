@@ -60,7 +60,12 @@
 #define MT_ENABLEPIN   (PORTNUM2PIN(PD, 0u))
 #define MT_CLOCKPIN    (PORTNUM2PIN(PD, 2u))
 #define MT_DATAPIN     (PORTNUM2PIN(PD, 3u))
-//#define MT_DEGUBPIN		(PORTNUM2PIN(PC, 4u))
+
+
+//Interrupts timing pins
+#define IT_PERIODIC_PIN	(PORTNUM2PIN(PB, 19u))
+#define IT_DEDICATED_1_PIN	(PORTNUM2PIN(PB, 20u))
+#define IT_DEDICATED_2_PIN	(PORTNUM2PIN(PB, 23u))
 /*******************************************************************************
  ******************************************************************************/
 

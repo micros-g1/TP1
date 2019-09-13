@@ -32,7 +32,7 @@ typedef enum{
 }fsm_error_code_t;
 
 char * error_msgs[] = {"id not found", "id bloc", "pin incorrect","error cant delete super user", "user not found", "error card in use","error repeated user","error reading"};
-char * admin_options[] = {"add user","delete user","change pin"};
+char * admin_options[] = {"add user","delete user","change pin","unbl user"};
 
 
 typedef enum{
@@ -88,6 +88,6 @@ bool config_mode;
 #define PIN_LED_GREEN   PORTNUM2PIN(PE,26)
 #define PIN_LED_BLUE    PORTNUM2PIN(PB,21)
 
-const fsm_state_t * fsm_get_init_state(void);
+fsm_state_t const * fsm_get_init_state(void);
 
 #endif
