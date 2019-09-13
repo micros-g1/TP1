@@ -196,17 +196,5 @@ char* display_dr_get_currently_curr_displaying_word();
 char* display_dr_get_currently_on_buffer_word();
 
 
-/***********************************
-*********display_dr_blink_one_dot***
-************************************
-* display_dr_blink_one_dot enables or disables the blinking function
-* for one specific dot of the display.
-* 	INPUT:
-* 		pos : dot of the display for whcich the blink will be enabled or disabled.
-*		on_off : true for enabling the blinking function. false for disabling it.
-*	OUTPUT:
-*		void.
-*/
-void display_dr_blink_one_dot(int pos, bool on_off);
 
 #endif /* DISPLAY_DISPLAY_DRIVER_H_ */

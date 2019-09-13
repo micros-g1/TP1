@@ -149,29 +149,7 @@ static bool handle_blinking(int pos);
 */
 static bool handle_brightness(int pos);
 
-/******************************************
-*************handle_blinking_dot***************
-*******************************************
-* handle_blinking_dot tells whether the dot should
-* show something or not when the blinking option is enabled.
-* If the blinking option is disabled, handle_blinking_dot will always return false.
-* 	INPUT:
-*		void.
-*	OUTPUT:
-*		true when the dot has blinked (nothing should be shown on the display).
-*/
-static bool handle_blinking_dot(int pos);
-/***********************************
-*********draw_dot***************
-************************************
-* draw_dot turns on or off  a specific dot of the display
-* 	INPUT:
-*		on_off : value to set the dot to.
-*		pos : dot to turn on or off
-*	OUTPUT:
-*		void.
-*/
-static void draw_dot(bool on_off, int pos);
+
 /*-------------------------------------------
  ------------FUNCTION_IMPLEMENTATION---------
  -------------------------------------------*/
@@ -183,10 +161,6 @@ static void draw_display(int pos){
 	else
 		draw_char(seven_seg_chars[(int)curr_displaying[pos]], pos);
 
-	if(!handle_blinking_dot(pos))
-		draw_dot(false, pos);
-	else
-		draw_dot(true, pos);
 }
 
 static void draw_dot(bool on_off, int pos){
@@ -377,20 +351,6 @@ char * display_dr_get_currently_curr_displaying_word(){
 	return last_drawn_word_photo;
 }
 
-static bool handle_blinking_dot(int pos){
-	static int blink_counter_dot[AMOUNT_MAX_DISPLAY_POS] = {0,0,0,0};
-
-	if(!blinking_dot[pos]) return true;		//not currently blinking, so should not handle blinking.
-
-	if(blink_counter_dot[pos] < blink_counter_vel)
-		blink_counter_dot[pos]++;				//the time has not come for the blinker to blink
-	else{
-		blink_counter_dot[pos] = 0;
-		blink_cleared_dot[pos] = !blink_cleared_dot[pos];
-	}
-
-	return !blink_cleared_dot[pos];
-}
 
 
 void display_dr_blink_one_dot(int pos, bool on_off){

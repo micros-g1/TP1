@@ -347,15 +347,4 @@ void display_set_brightness_leds_up_down(display_direction_t dir);
 *		void.*/
 void display_frdm_led_write(display_color_t color, bool on_off);
 
-/*******************************************
-*****display_set_blinking_dot_one**************
-********************************************
-* display_set_blinking_dot_one sets the blinking state of a specific dot
-* of the display to enabled or disabled
-* 	INPUT:
-*		pos : position of the dot
-*		on_off : enable(true) or disable (false)
-*	OUTPUT:
-*		void.*/
-void display_set_blinking_dot_one(int pos, bool on_off);
 #endif /* DISPLAY_DISPLAY_INTERFACE_H_ */

@@ -254,6 +254,3 @@ void display_frdm_led_write(display_color_t color, bool on_off){
 	frdm_led_dr_write(color, on_off);
 }
 
-void display_set_blinking_dot_one(int pos, bool on_off){
-	display_dr_blink_one_dot(pos, on_off);
-}
