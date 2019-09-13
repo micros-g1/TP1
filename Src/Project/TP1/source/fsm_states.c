@@ -51,7 +51,8 @@ fsm_state_t add_success_state[];
 fsm_state_t change_pin_msg_state[];
 fsm_state_t show_error_msg_state_inputid[];
 fsm_state_t user_menu_state[];
-
+fsm_state_t unblock_succes_state_msg[];
+fsm_state_t unblock_user_state[];
 /*****************************************
 *************do_nothing**************
 ******************************************
@@ -228,7 +229,16 @@ static void open_door(void);
 *		void
 */
 static void close_door(void);
-
+/*****************************************
+*************setup_unblock_user***********
+******************************************
+* setup_unblock_user
+* 	INPUT:
+*		void.
+*	OUTPUT:
+*		void
+*/
+static void setup_unblock_user(void);
 /*****************************************
 *************pin_submited**************
 ******************************************
@@ -441,12 +451,14 @@ static void check_card_to_add(void);
 *		void
 */
 static void check_id_card(void);
-
+static void submit_unblock(void);
 static void show_add_success_msg(void);
 static void commit_add(void);
 static void submit_remove(void);
 static void commit_change_pin(void);
 static void show_pin_change_msg(void);
+static void show_unblock_success_msg(void);
+static void check_id_to_unblock(void);
 
 fsm_state_t initial_state[] = {
 		{.event = CANCEL_EV, .next_state = initial_state, .transition = toggle_config_mode},
@@ -534,6 +546,7 @@ fsm_state_t admin_menu_state[] = {
 		{.event = CANCEL_EV, .next_state = initial_state, .transition = setup_initial_state},
 		{.event = MARQUEE_END_EV, .next_state = admin_menu_state, .transition = print_admin_menu},
 		{.event = REMOVE_USER_OPT_EV, .next_state = remove_user_state, .transition = setup_remove_user},
+		{.event = UNBLOCK_USER_OPT_EV, .next_state = unblock_user_state, .transition = setup_unblock_user},
 		{.event = ADD_USER_OPT_EV, .next_state = add_id_user_state, .transition = setup_add_user},
 		{.event = CHANGE_PIN_OPT_EV, .next_state = change_pin_state, .transition = setup_change_pin},
 		{.event = GND_EV, .next_state = admin_menu_state,.transition = do_nothing}
@@ -614,6 +627,24 @@ fsm_state_t change_pin_msg_state[] = {
 		{.event = ENTER_EV, .next_state = initial_state, .transition = setup_initial_state},
 		{.event = GND_EV, .next_state = change_pin_msg_state,.transition = do_nothing}
 };
+
+fsm_state_t unblock_user_state[] = {
+		{.event = SUBMIT_DATA_EV, .next_state = unblock_user_state, .transition = check_id_to_unblock},
+		{.event = VALID_UNBLOCK_USER_EV, .next_state = unblock_succes_state_msg, .transition = submit_unblock},
+		{.event = INVALID_ID_EV, .next_state = show_error_msg_state_adminmenu, .transition = show_error_msg},
+		{.event = UP_EV, .next_state = unblock_user_state, .transition = increase_digit},
+		{.event = DOWN_EV, .next_state = unblock_user_state, .transition = decrease_digit},
+		{.event = ENTER_EV, .next_state = unblock_user_state, .transition = next_digit},
+		{.event = BACK_EV, .next_state = unblock_user_state, .transition = previous_digit},
+		{.event = GND_EV, .next_state = unblock_user_state,.transition = do_nothing}
+};
+
+fsm_state_t unblock_succes_state_msg[] = {
+		{.event = ENTER_EV, .next_state = admin_menu_state, .transition = setup_admin_menu},
+		{.event = GND_EV, .next_state =unblock_succes_state_msg,.transition = do_nothing}
+};
+
+
 
 static void increase_digit(void){
     char c = data_helper.data[data_helper.cur_index + data_helper.page_offset];
@@ -833,8 +864,16 @@ static void check_id(void){
 		if(u_is_blocked(user_data_helper.input_type, data)){
 			ev.code = USER_BLOCKED_EV;
 			data_helper.error_code = BLOCKED_ERROR;
-		}else
-			ev.code = VALID_ID_EV;
+		}else{
+			if( (u_get_n_tries(EIGHT_DIGIT_PIN, user_data_helper.id) >=3) && !u_is_admin(EIGHT_DIGIT_PIN, user_data_helper.id)){
+				u_block(EIGHT_DIGIT_PIN, user_data_helper.id);
+				ev.code = USER_BLOCKED_EV;
+				data_helper.error_code = BLOCKED_ERROR;
+			}
+			else
+				ev.code = VALID_ID_EV;
+		}
+
 	}else{
 		ev.code = INVALID_ID_EV;
 		data_helper.error_code = INVALID_ERROR;
@@ -849,7 +888,10 @@ static void show_id(void){
 
 
 }
-
+static void setup_unblock_user(void){
+	//pedir que ingrese el id a eliminar o pase la tarjeta
+	setup_waiting_id();
+}
 static void show_error_msg(void){
 	display_stop_marquee();
 	display_clear_all();
@@ -977,6 +1019,8 @@ static void select_admin_menu_option(void){
 		ev.code = REMOVE_USER_OPT_EV;
 	else if(admin_menu_helper.option == CHANGE_PIN_ENTRY)
 		ev.code = CHANGE_PIN_OPT_EV;
+	else if(admin_menu_helper.option == UNBLOCK_USER_ENTRY)
+		ev.code = UNBLOCK_USER_OPT_EV;
 	push_event(ev);
 }
 
@@ -1140,4 +1184,35 @@ static void show_pin_change_msg(void){
 	display_clear_all();
 	display_set_blinking_all(false);
 	display_write_or_marquee("pin changed", DISPLAY_INT_LEFT);
+}
+
+
+
+
+static void check_id_to_unblock(void){
+	strcpy(aux_user.id, data_helper.data);
+	fsm_event_t ev;
+	if(u_exists(EIGHT_DIGIT_PIN, aux_user.id)){
+		ev.code = VALID_UNBLOCK_USER_EV;
+		strcpy(aux_user.id, data_helper.data);
+	}else if(!u_exists(EIGHT_DIGIT_PIN, aux_user.id)){
+		ev.code = INVALID_ID_EV;
+		data_helper.error_code = DONT_EXIST_ERROR;
+	}
+	push_event(ev);
+}
+
+
+
+static void submit_unblock(void){
+	u_unblock(EIGHT_DIGIT_PIN, aux_user.id);
+	show_unblock_success_msg();
+}
+
+
+static void show_unblock_success_msg(void){
+	display_clear_all();
+	display_stop_marquee();
+	display_set_blinking_all(false);
+	display_write_or_marquee("User unblocEd" , DISPLAY_INT_LEFT);
 }

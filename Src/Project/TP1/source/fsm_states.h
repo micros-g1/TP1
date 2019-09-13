@@ -39,6 +39,7 @@ typedef enum{
 	ADD_USER_ENTRY,
 	DELETE_USER_ENTRY,
 	CHANGE_PIN_ENTRY,
+	UNBLOCK_USER_ENTRY,
 	N_ENTRIES
 }fsm_admin_menu_entries;
 
