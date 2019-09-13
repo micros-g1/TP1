@@ -28,14 +28,37 @@ El usuario es la persona básica del sistema. Cada usuario tendrá asociado su I
 
 \subsection{Administrador}
 Por default, el usuario administrador tiene el ID: 00000000. \par
-Podrá haber más de un usuario administrador en el sistema, pero no menos de uno.\par
+El sistema contará con un único usuario administrador, y este no podrá ser eliminado.\par
 El mismo, además de poseer todas las facultades de un usuario normal, cuenta además con ciertas habilidades adicionales, a saber:
 
 \begin{itemize}
-\item \textbf{Borrado de ID's ajenos: } Podrá eliminar a otros usuarios de la lista de ID's permitidos o reconocidos por sistema. El administrador podrá eliminar a otros administradores del sistema.
+\item \textbf{Borrado de ID's ajenos: } Podrá eliminar a otros usuarios de la lista de ID's permitidos o reconocidos por sistema.
 \item \textbf{Agregado de ID's: } Podrá crear ID's con ingreso permitido.
 
 \end{itemize}
+
+\subsection{Acceso de usuario}
+Como se indicó, un usuario puede identificarse ingresando el ID de 8 dígitos o pasando la tarjeta por el lector magnético. A continuación se indican las instrucciones para el ingreso.
+\subsubsection{Identificación mediante ID}
+Partiendo del estadio incial, el cual se identifica con un mensaje "Access" en el display, el usuario puede hacer click corto o bien rotar el encoder para ingresar a la pantalla de ingreso del ID. Una vez en la pantalla de ID, podemos modificar el dígito indicado por el indicador parpadeante rotando el encoder. Para avanzar al siguiente dígito se debe hacer un click corto, y para retroceder al digito anterior se debe ingresar un click intermedio (de 0.5 segundos de extensión). Una vez que ingresamos el último dígito, el ID ingresado se muestra en el display mediante una marquesina. En esta instancia, el usuario puede ingresar un click corto para confirmar el ID ingresado, ingresar un click intermedio para regresar a la pantalla de ingreso de ID o un click largo (de 1 segundo de extensión) para regresar al estado inicial. Cuando el usuario confirma el ID, de ser valido (existe en la base de datos y no esta bloqueado), se presenta la pantalla para ingresar el PIN. La dinámica de navegación y edición es análoga a la del ingreso del ID. El quinto dígito del PIN puede ser seteado como nulo para ingresar un PIN de 4 dígitos. una vez ingresado el ultimo dígito, si la combinación de ID-PIN fuera valida, se concederá el acceso al usuario. 
+
+\subsubsection{Identificación mediante tarjeta magnética}
+Cuando el sistema se encontrase en los estados iniciales o de ingreso de ID, el usario podrá realizar la identificación mediante el lector magnetico con su tarjeta asociada. Si la tarjeta ingresada perteneciera a un usuario valido, se presentará la pantalla de ingreso de PIN, y a partir de este punto, la dinámica es iguall 
+
+\subsection{Agregar usuario}
+Para agregar un usuario, es necesario ingresar al modo configuración. Desde el estado incial, ingresamos un click largo, hasta que los leds comiencen a parpadear y se muestre el mensaje "Config" en el display. Desde aquí el administrador podrá acceder al menu de administrador identificandose mediante su ID o mediante su tarjeta magnética. Una vez validada la identidad del administrador se muestra un menu navegable con 3 opciones, las cuales se pueden navegar mediante el encoder. Al seleccionar "Add User", se presenta la pantalla para ingresar el ID del nuevo usuario. Si el ID fuera valido se indica que debe pasarse la tarjeta asociada por el lector magnético. Si la tarjeta fuera valida, se deberá ingresar el PIN del nuevo usuario. Una vez completada con éxito la operación se retorna al menú de administrador. Si la operación no fuera exitosa también se retorna al menú de administrador.
+
+\subsection{Eliminar usuario}
+Para eliminar el usuario se debe navegar el menú de administrador hasta la opción "Remove User". Se solicitará ingresar el ID del usuario que se desea eliminar. Si el ID fuera válido se presentará un mensaje informativo y se regresará al menú de administrador. Si el ID ingresado fuera inválido se mostrará un mensaje de error y se retorna al menú de administrador.
+
+\subsection{Cambiar PIN}
+La validación de identidad en modo configuración discrimina entre usuarios ordinarios y usuario administrador. Mientras que al usuario administrador le brinda la posiblidad de agregar y eliminar usuarios y de cambiar su propio PIN, a un usuario ordinario solo le brindará la posibilidad de modificar su PIN.
+
+\subsubsection{Usuario ordinario}
+Una vez seteado el sistema en modo configuración, el usuario procede a validad su identidad. Si la validación es correcta, se presenta una pantalla de ingreso del PIN. Se deberá ingresar el nuevo PIN, y al validar el ultimo dígito, se atualizará el dato en la base de datos. Una vez completada la acción correctamente, se retorna al estado inicial en modo configuración.
+
+\subsubsection{Usuario administrador}
+Como se indico en las secciones "Agregar usuario" y "Eliminar usuario", al usuario administrador se le presenta un menú de opciones navegable al validarse en modo configuración. Al seleccionar la opción Change PIN, el usuario debe ingresar el nuevo PIN. Al validarse se actualiza la base de datos y se regresa al menú de administrador. 
 
 \subsection{Pasos de acceso, interacción con el usuario}
 En cualquier momento del intento de acceso se podrá pasar la tarjeta por el lector de tarjetas, lo cual autoriza el acceso inmediatamente.\par

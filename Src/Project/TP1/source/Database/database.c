@@ -116,7 +116,7 @@ void u_init()
     strcpy(database[0].ids[EIGHT_DIGIT_PIN].data, "00000000");  // default admin data
     database[0].admin = true;
     database[0].free = false;
-    strcpy(database[0].password, "0000");
+    strcpy(database[0].password, "00000");
 
 }
 

@@ -22,11 +22,12 @@ fsm_state_t door_open_state[];
 fsm_state_t admin_menu_state[];
 fsm_state_t change_pin_state[];
 fsm_state_t remove_user_state[];
-fsm_state_t add_user_state[];
+fsm_state_t add_id_user_state[];
 fsm_state_t delete_succes_state_msg[];
 fsm_state_t show_error_msg_state_adminmenu[];
 fsm_state_t add_card_user_state[];
 fsm_state_t add_pin_user_state[];
+fsm_state_t add_success_state[];
 
 
 static void do_nothing(void){}
@@ -63,6 +64,7 @@ static void show_delete_success_msg(void);
 static void check_id_to_add(void);
 static void show_request_card_msg(void);
 static void check_card_to_add(void);
+static void show_add_success_msg(void);
 
 fsm_state_t initial_state[] = {
 		{.event = CANCEL_EV, .next_state = initial_state, .transition = toggle_config_mode},
@@ -75,6 +77,7 @@ fsm_state_t initial_state[] = {
 fsm_state_t waiting_u_id_confirmation_state[] = {
 		{.event = ENTER_EV, .next_state = waiting_db_id_confirmation_state, .transition = check_id},
 		{.event = BACK_EV, .next_state = waiting_id_state, .transition = setup_waiting_id},
+		{.event = CANCEL_EV, .next_state = initial_state, .transition = setup_initial_state},
 		{.event = MARQUEE_END_EV, .next_state = waiting_u_id_confirmation_state, .transition = show_id},
 		{.event = VALID_ID_EV, .next_state = waiting_pin_state, .transition = setup_waiting_pin},
 		{.event = GND_EV, .next_state = waiting_u_id_confirmation_state,.transition = do_nothing}
@@ -145,7 +148,7 @@ fsm_state_t admin_menu_state[] = {
 		{.event = CANCEL_EV, .next_state = initial_state, .transition = setup_initial_state},
 		{.event = MARQUEE_END_EV, .next_state = admin_menu_state, .transition = print_admin_menu},
 		{.event = REMOVE_USER_OPT_EV, .next_state = remove_user_state, .transition = setup_remove_user},
-		{.event = ADD_USER_OPT_EV, .next_state = add_user_state, .transition = setup_add_user},
+		{.event = ADD_USER_OPT_EV, .next_state = add_id_user_state, .transition = setup_add_user},
 		{.event = CHANGE_PIN_OPT_EV, .next_state = change_pin_state, .transition = setup_change_pin},
 		{.event = GND_EV, .next_state = admin_menu_state,.transition = do_nothing}
 };
@@ -163,27 +166,45 @@ fsm_state_t remove_user_state[] = {
 
 fsm_state_t delete_succes_state_msg[] = {
 		{.event = ENTER_EV, .next_state = admin_menu_state, .transition = setup_admin_menu},
-		{.event = GND_EV, .next_state = remove_user_state,.transition = do_nothing}
+		{.event = GND_EV, .next_state = delete_succes_state_msg,.transition = do_nothing}
 };
 
 fsm_state_t add_id_user_state[] = {
-		{.event = SUBMIT_DATA_EV, .next_state = remove_user_state, .transition = check_id_to_add},
+		{.event = SUBMIT_DATA_EV, .next_state = add_id_user_state, .transition = check_id_to_add},
 		{.event = VALID_ID_EV, .next_state = add_card_user_state, .transition = show_request_card_msg},
 		{.event = INVALID_ID_EV, .next_state = show_error_msg_state_adminmenu, .transition = show_error_msg},
 		{.event = UP_EV, .next_state = add_id_user_state, .transition = increase_digit},
 		{.event = DOWN_EV, .next_state = add_id_user_state, .transition = decrease_digit},
 		{.event = ENTER_EV, .next_state = add_id_user_state, .transition = next_digit},
 		{.event = BACK_EV, .next_state = add_id_user_state, .transition = previous_digit},
-		{.event = GND_EV, .next_state = remove_user_state,.transition = do_nothing}
+		{.event = GND_EV, .next_state = add_id_user_state,.transition = do_nothing}
 };
 
 fsm_state_t add_card_user_state[] = {
 		{.event = CARD_EV, .next_state = add_card_user_state, .transition = check_card_to_add},
 		{.event = VALID_CARD_EV, .next_state = add_pin_user_state, .transition = setup_waiting_pin},
 		{.event = INVALID_CARD_EV, .next_state = show_error_msg_state_adminmenu, .transition = show_error_msg},
-		{.event = BACK_EV, .next_state = add_id_user_state, .transition = previous_digit},
-		{.event = GND_EV, .next_state = remove_user_state,.transition = do_nothing}
+		{.event = CANCEL_EV, .next_state = admin_menu_state, .transition = setup_admin_menu},
+		{.event = MARQUEE_END_EV, .next_state = add_card_user_state, .transition = show_request_card_msg},
+		{.event = GND_EV, .next_state = add_card_user_state,.transition = do_nothing}
 };
+
+fsm_state_t add_pin_user_state[] = {
+        {.event = UP_EV, .next_state = add_pin_user_state, .transition = increase_digit},
+        {.event = DOWN_EV, .next_state = add_pin_user_state, .transition = decrease_digit},
+        {.event = ENTER_EV, .next_state = add_pin_user_state, .transition = next_digit},
+        {.event = BACK_EV, .next_state = add_pin_user_state, .transition = previous_digit},
+		{.event = SUBMIT_DATA_EV, .next_state = add_success_state, .transition = show_add_success_msg},
+		{.event = CANCEL_EV, .next_state = initial_state, .transition = setup_initial_state},
+		{.event = GND_EV, .next_state = waiting_pin_state,.transition = do_nothing}
+};
+
+fsm_state_t add_success_state[] = {
+		{.event = MARQUEE_END_EV, .next_state = add_success_state, .transition = show_add_success_msg},
+		{.event = ENTER_EV, .next_state = admin_menu_state, .transition = setup_admin_menu},
+		{.event = GND_EV, .next_state = add_success_state,.transition = do_nothing}
+};
+
 
 static void increase_digit(void){
     char c = data_helper.data[data_helper.cur_index + data_helper.page_offset];
@@ -280,8 +301,11 @@ static void setup_initial_state(void){
 }
 
 const fsm_state_t * fsm_get_init_state(){
-	setup_initial_state();
-	return initial_state;
+	setup_admin_menu();
+	return admin_menu_state;
+
+//	setup_initial_state();
+//	return initial_state;
 }
 
 static void re_print_data(void){
@@ -544,7 +568,7 @@ static void setup_set_pin(void){
 	// Copie y pegue setup_waiting_pin. fijarse si esta bien
 	display_stop_marquee();
 	data_helper.masked = true;
-	strcpy(data_helper.data, "00000000");
+	strcpy(data_helper.data, "\0\0\0\0\0\0\0\0");
 	data_helper.mask_char = 'P';
 	data_helper.max_pages = 2;
 	data_helper.page_offset = 0;
@@ -627,12 +651,16 @@ static void check_id_to_add(void){
 
 static void show_request_card_msg(void){
 	display_clear_all();
+	display_set_blinking_all(false);
 	display_write_or_marquee("slide card", DISPLAY_INT_LEFT);
 }
 
 static void check_card_to_add(void){
-	// dummy para probar
-	fsm_event_t ev;
-	ev.code = VALID_CARD_EV;
-	push_event(ev);
+
+}
+
+static void show_add_success_msg(void){
+	display_clear_all();
+	display_set_blinking_all(false);
+	display_write_or_marquee("User added", DISPLAY_INT_LEFT);
 }

@@ -12,6 +12,7 @@
 #include "Rotary_encoder/rotary_encoder.h"
 #include "Database/database.h"
 #include "Timer/timers.h"
+#include "Magnetic_stripe/magnetic_stripe.h"
 #include "fsm.h"
 #include "events.h"
 
@@ -27,6 +28,8 @@
 void m_finished(void);
 void rotary_encoder_callback(re_event_t ev);
 void timeout_callback(unsigned int id);
+void ms_callback(ms_ev_t ev);
+
 
 fsm_state_t * state;
 fsm_event_t event;
@@ -45,6 +48,7 @@ void App_Init (void)
 	display_init_interface(m_finished);
 	u_init();
 	timers_init();
+	ms_init(ms_callback);
 
 	display_write_to_led(1, true);
 	display_write_to_led(0, true);
@@ -53,7 +57,6 @@ void App_Init (void)
 	init_event_queue();
 	state = fsm_get_init_state();
 
-	display_write_word("BOCA");
 
 	timers_set_timer_mode(0, TIMER_REPEAT);
 	timers_set_timer_period(0, 1000);
@@ -73,12 +76,15 @@ void App_Run (void)
 	}
 }
 
-char* ev_name[] = {"RE_LL_LEFT","RE_LL_RIGHT","RE_LL_BUTTON_DOWN","RE_LL_BUTTON_UP","RE_LL_TIMEOUT","RE_LL_NO_EVENT","RE_LL_TOTAL_EVENTS"};
 
+/*******************************************************************************
+ *******************************************************************************
+                        LOCAL FUNCTION DEFINITIONS
+ *******************************************************************************
+ ******************************************************************************/
 void rotary_encoder_callback(re_event_t ev)
 {
 	fsm_event_t new_event;
-	new_event.args = NULL;
 	bool ev_flag = false;
 	switch(ev)
 	{
@@ -121,12 +127,6 @@ void rotary_encoder_callback(re_event_t ev)
 		push_event(new_event);
 }
 
-/*******************************************************************************
- *******************************************************************************
-                        LOCAL FUNCTION DEFINITIONS
- *******************************************************************************
- ******************************************************************************/
-
 void m_finished()
 {
 	fsm_event_t ev;
@@ -136,6 +136,15 @@ void m_finished()
 
 void timeout_callback(unsigned int id){
 
+}
+
+void ms_callback(ms_ev_t ev){
+	fsm_event_t event;
+	if(ev.type == MS_SUCCESS){
+		event.code = CARD_EV;
+		strcpy(event.data, ev.data);
+	}
+	push_event(event);
 }
 
 /*******************************************************************************

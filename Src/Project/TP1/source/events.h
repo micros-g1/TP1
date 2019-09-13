@@ -6,6 +6,7 @@
 #define EVENTS_H_
 
 #define MAX_QUEUE_LENGTH    10
+#define MAX_DATA_LENGTH 100
 #include <stdbool.h>
 
 typedef enum{
@@ -44,9 +45,10 @@ typedef enum{
 
 }fsm_event_code;
 
+
 typedef struct{
     fsm_event_code code;
-    void * args;
+    char data[MAX_DATA_LENGTH];
 }fsm_event_t;
 
 typedef struct {

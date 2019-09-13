@@ -87,6 +87,4 @@ bool config_mode;
 
 const fsm_state_t * fsm_get_init_state(void);
 
-
-
 #endif
