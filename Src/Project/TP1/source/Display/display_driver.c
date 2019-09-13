@@ -34,8 +34,6 @@ static bool blink_cleared[AMOUNT_MAX_DISPLAY_POS];		//status of the blinking (sh
 static int brightness[AMOUNT_MAX_DISPLAY_POS];			//brightness level, from MIN_BRIGHT to MAX_BRIGHT
 static int blink_counter_vel = CALL_FREQ_HZ/AMOUNT_MAX_DISPLAY_POS/4;	//2/5 of a second.
 
-static bool blinking_dot[AMOUNT_MAX_DISPLAY_POS];
-static bool blink_cleared_dot[AMOUNT_MAX_DISPLAY_POS];
 
 static unsigned char curr_displaying[AMOUNT_MAX_DISPLAY_POS];			//display buffer. Initialized at init_display()
 static char curr_displaying_photo[AMOUNT_MAX_DISPLAY_POS+1];			//display buffer at the moment get_currently_on_buffer_word was called. null terminated
@@ -163,13 +161,6 @@ static void draw_display(int pos){
 
 }
 
-static void draw_dot(bool on_off, int pos){
-	pos++;
-	gpioWrite (PIN_DISPLAY_ENC0, pos & 0X1);
-	gpioWrite (PIN_DISPLAY_ENC1, pos & 0X2);
-	gpioWrite(PIN_DOT_0, on_off);
-	//gpioWrite(PIN_DOT_1, on_off && (pos & 0X2));
-}
 
 static void draw_char(unsigned char printable_char, int pos){
 	GPIO_Type * addr_array[] = GPIO_BASE_PTRS;
@@ -232,9 +223,7 @@ void display_dr_reset(){
 	for(int i = 0; i < AMOUNT_MAX_DISPLAY_POS; i++){
 		curr_displaying[i] = NULL_CHAR;
 		blinking[i] = false;
-		blinking_dot[i] = false;
 		blink_cleared[i] = false;
-		blink_cleared_dot[i] = false;
 		brightness[i] = DISPLAY_MAX_BRIGHT;
 		bright_counter[i] = 0;
 		last_drawn_word[i] = curr_displaying[i];
@@ -349,13 +338,6 @@ char * display_dr_get_currently_curr_displaying_word(){
 		last_drawn_word_photo[i] = last_drawn_word[i];
 	last_drawn_word_photo[AMOUNT_MAX_DISPLAY_POS+1] = NULL_TERMINATOR;
 	return last_drawn_word_photo;
-}
-
-
-
-void display_dr_blink_one_dot(int pos, bool on_off){
-	blinking_dot[pos] = on_off;
-	blink_cleared_dot[pos] = false;
 }
 
 
