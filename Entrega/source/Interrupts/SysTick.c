@@ -14,7 +14,7 @@
 /*-------------------------------------------
  ----------------DEFINES---------------------
  -------------------------------------------*/
-#define FCLK	100000000U // clock frequency, Hz
+#define FCLK	120000000U // clock frequency, Hz
 
 #if FCLK % SYSTICK_ISR_FREQUENCY_HZ != 0
 #warning SYSTICK cannot implement this exact frequency. Using floor(FCLK/SYSTICK_ISR_FREQUENCY_HZ) instead.
@@ -67,14 +67,14 @@ void systick_init ()
 	SysTick->CTRL = SysTick_CTRL_CLKSOURCE_Msk| SysTick_CTRL_TICKINT_Msk | SysTick_CTRL_ENABLE_Msk;
 	for (int i = 0; i < MAX_N_ST_CALLBACKS; i++)
 		reset_callback_data(&st_callbacks[i]);
-	//gpioMode(IT_PERIODIC_PIN, OUTPUT);
-	//gpioWrite(IT_PERIODIC_PIN, false);
+	gpioMode(IT_PERIODIC_PIN, OUTPUT);
+	gpioWrite(IT_PERIODIC_PIN, false);
 	initialized = true;
 }
 
 // DO NOT CHANGE THE NAME, overrides core_cm4.h weak definition
 void SysTick_Handler(void){
-	//gpioWrite(IT_PERIODIC_PIN, true);
+	gpioWrite(IT_PERIODIC_PIN, true);
 	/* for SysTick, clearing the interrupt flag is not necessary
 	* it is not an omission!*/
     for (int i = 0; i < MAX_N_ST_CALLBACKS; i++) {
@@ -91,51 +91,43 @@ void SysTick_Handler(void){
             }
         }
     }
-	//gpioWrite(IT_PERIODIC_PIN, false);
+	gpioWrite(IT_PERIODIC_PIN, false);
 }
 
 
 
 void systick_add_callback(systick_callback_t cb, unsigned int reload, callback_conf_t conf)
 {
-	if(cb != NULL) {
-        for (int i = 0; i < MAX_N_ST_CALLBACKS; i++) {
-            if (st_callbacks[i].func == NULL) {
-                st_callbacks[i].func = cb;
-                st_callbacks[i].enabled = true;
-                st_callbacks[i].counter = COUNTER_INIT;
-                st_callbacks[i].reload = reload;
-                st_callbacks[i].conf = conf;
-                break;                        //this break instruction is important here
-            }
-        }
-    }
+	if(cb != NULL)
+		for(int i =0; i < MAX_N_ST_CALLBACKS; i++)
+			if(st_callbacks[i].func == NULL){
+				st_callbacks[i].func = cb;
+				st_callbacks[i].enabled = true;
+				st_callbacks[i].counter = COUNTER_INIT;
+				st_callbacks[i].reload = reload;
+				st_callbacks[i].conf = conf;
+				break;						//this break instruction is important here
+			}
 }
 
 void systick_enable_callback(systick_callback_t callback) {
-	for(int i = 0; i < MAX_N_ST_CALLBACKS; i++) {
-        if (st_callbacks[i].func == callback)
-            st_callbacks[i].enabled = true;
-    }
+	for(int i = 0; i < MAX_N_ST_CALLBACKS; i++)
+		if ( st_callbacks[i].func == callback )
+			st_callbacks[i].enabled = true;
 }
 
 void systick_disable_callback(systick_callback_t callback) {
-	for(int i = 0; i < MAX_N_ST_CALLBACKS; i++) {
-        if (st_callbacks[i].func == callback) {
-            st_callbacks[i].enabled = false;
-            st_callbacks[i].counter = COUNTER_INIT;
-            break;
-        }
-    }
+	for(int i = 0; i < MAX_N_ST_CALLBACKS; i++)
+		if ( st_callbacks[i].func == callback ){
+			st_callbacks[i].enabled = false;
+			st_callbacks[i].counter = COUNTER_INIT;
+		}
 }
 
 void systick_delete_callback(systick_callback_t callback){
-	for(int i = 0; i < MAX_N_ST_CALLBACKS; i++) {
-        if (st_callbacks[i].func == callback) {
-            reset_callback_data(&st_callbacks[i]);
-            break;
-        }
-    }
+	for(int i = 0; i < MAX_N_ST_CALLBACKS; i++)
+		if(st_callbacks[i].func == callback)
+			reset_callback_data(&st_callbacks[i]);
 }
 
 void reset_callback_data(st_cb_data_t* data){
@@ -156,10 +148,8 @@ bool systick_has_callback(systick_callback_t callback){
 callback_conf_t systick_get_callback_conf(systick_callback_t callback){
 	callback_conf_t conf = PERIODIC;
 	for(int i = 0; i < MAX_N_ST_CALLBACKS; i++)
-		if(st_callbacks[i].func == callback) {
-            conf = st_callbacks[i].conf;
-            break;
-        }
+		if(st_callbacks[i].func == callback)
+			conf = st_callbacks[i].conf;
 	return conf;
 }
 

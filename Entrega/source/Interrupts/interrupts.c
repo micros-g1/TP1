@@ -148,7 +148,13 @@ void PORT_ClearInterruptFlag (int port_num, int pin_num){
 	port->PCR[pin_num] |= PORT_PCR_ISF_MASK;
 }
 
- 
+static void enable_interrupt_pins(int port_num, int pin_num){
+	for (int i = 0; i < NUM_PINS_PER_PORT; i++)
+		if(interrupt_pins[port_num][i] == pin_num)
+			break;
+		else if(interrupt_pins[port_num][i] == -1){
+			interrupt_pins[port_num][i] = pin_num;
+			break;
 		}
 }
 
